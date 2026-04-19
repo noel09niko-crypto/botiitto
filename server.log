@@ -1,0 +1,6 @@
+Background worker thread started. Interval: 4h
+[2026-04-18 20:14:06.384922] Starting autonomous scenario generation...
+ * Serving Flask app 'web'
+ * Debug mode: on
+Address already in use
+Port 8080 is in use by another program. Either identify and stop that program, or start the server with a different port.

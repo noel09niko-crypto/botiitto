@@ -85,9 +85,9 @@ st.divider()
 
 # --- Aja analyysi ---
 if run_btn:
-    from news_fetcher import fetch_all_news, format_news_for_prompt
-    from stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
-    from ai_analyzer import analyze_market, quick_news_scan, get_client
+    from src.news_fetcher import fetch_all_news, format_news_for_prompt
+    from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
+    from src.ai_analyzer import analyze_market, quick_news_scan, get_client
 
     client = get_client()
 

@@ -14,9 +14,9 @@ from rich.panel import Panel
 from rich.text import Text
 from rich import print as rprint
 
-from news_fetcher import fetch_all_news, format_news_for_prompt
-from stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt
-from ai_analyzer import analyze_market, quick_news_scan, get_client
+from src.news_fetcher import fetch_all_news, format_news_for_prompt
+from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt
+from src.ai_analyzer import analyze_market, quick_news_scan, get_client
 
 load_dotenv()
 console = Console()
@@ -64,7 +64,7 @@ def run_analysis():
     console.print("\n[cyan]Haetaan kurssitiedot...[/cyan]")
     console.print("[dim](Tämä voi kestää 30-60 sekuntia)[/dim]")
 
-    from stock_analyzer import WATCHLIST
+    from src.stock_analyzer import WATCHLIST
     all_tickers = list(dict.fromkeys(mentioned_tickers + WATCHLIST))
     snapshot = get_market_snapshot(all_tickers)
 

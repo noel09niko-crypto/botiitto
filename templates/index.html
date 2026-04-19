@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strateginen Sijoitusmonitori</title>
+    <!-- Professional typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>S</text></svg>">
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="nav-content">
+            <h1 class="logo">SijoitusMonitori</h1>
+            
+            <div class="filter-bar">
+                <select id="filterSector" class="custom-select">
+                    <option value="ALL">Kaikki toimialat</option>
+                    <!-- JavaScript adds options here -->
+                </select>
+                <select id="filterRisk" class="custom-select">
+                    <option value="ALL">Kaikki riskitasot</option>
+                    <option value="Matala">Matala riski</option>
+                    <option value="Keskisuuri">Keskisuuri riski</option>
+                    <option value="Korkea">Korkea riski</option>
+                </select>
+                <button id="sortBtn" class="action-btn">Lajittele: Luottamus %</button>
+            </div>
+            
+            <div id="statusMessage" class="status-msg">Järjestelmää alustetaan...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Two-column dashboard -->
+        <main class="dashboard-grid">
+            
+            <!-- Active Opportunities -->
+            <section class="scenarios-column">
+                <div class="column-header">
+                    <h2>Markkinamahdollisuudet</h2>
+                    <span class="badge badge-subtle">Reaaliaikainen analyysi</span>
+                </div>
+                <div id="activeScenariosList" class="folder-list">
+                    <!-- JavaScript populates this -->
+                    <div class="skeleton-folder"></div>
+                    <div class="skeleton-folder"></div>
+                </div>
+            </section>
+
+            <!-- Monitored/Favorites -->
+            <section class="favorites-column">
+                <div class="column-header">
+                    <h2>Seurattavat Skenaariot</h2>
+                    <span class="badge badge-subtle">Oma salkku</span>
+                </div>
+                <div id="favoriteScenariosList" class="folder-list">
+                    <!-- JavaScript populates this -->
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <!-- Modal for Scenario Details -->
+    <div id="folderModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle">Skenaarion Yksityiskohdat</h2>
+                    <div class="modal-tags">
+                        <span class="tag tag-border" id="modalPrimaryTicker">OSAKE</span>
+                        <span class="tag tag-border" id="modalRecommendation">Suositus</span>
+                        <span class="tag tag-text" id="modalRiskLevel">Riski</span>
+                        <span class="tag tag-text" id="modalConfidence">Luottamus %</span>
+                        <span class="tag tag-text" id="modalSector">Toimiala</span>
+                        <span class="tag tag-text" id="modalTimeHorizon">Horisontti</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="modalFavBtn" class="action-btn">Lisää Seurantaan</button>
+                    <span class="close-btn">&times;</span>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Stock Live Data Section -->
+                <div class="report-section stock-live-section">
+                    <h3>Reaaliaikainen Markkinadata <span id="liveDataLoading" style="display:none">(Ladataan...)</span></h3>
+                    <div class="stock-stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">Hinta</span>
+                            <span class="stat-value" id="stockPrice">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Päivän muutos</span>
+                            <span class="stat-value" id="stockChange">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">P / E</span>
+                            <span class="stat-value" id="stockPE">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">P / B</span>
+                            <span class="stat-value" id="stockPB">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">EV / EBITDA</span>
+                            <span class="stat-value" id="stockEV">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">EPS-kasvu %</span>
+                            <span class="stat-value" id="stockEPSG">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">LV-kasvu %</span>
+                            <span class="stat-value" id="stockRevG">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Nettokate %</span>
+                            <span class="stat-value" id="stockMargin">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">ROE %</span>
+                            <span class="stat-value" id="stockROE">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Vapaa kassavirta</span>
+                            <span class="stat-value" id="stockFCF">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Velka / Omapääoma</span>
+                            <span class="stat-value" id="stockDE">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Osinkotuotto %</span>
+                            <span class="stat-value" id="stockDiv">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">52vk Korkein</span>
+                            <span class="stat-value" id="stockHigh">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">52vk Matalin</span>
+                            <span class="stat-value" id="stockLow">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">RSI-arvo (14d)</span>
+                            <span class="stat-value" id="stockRSI">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Beta</span>
+                            <span class="stat-value" id="stockBeta">--</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Markkina-arvo</span>
+                            <span class="stat-value" id="stockCap">--</span>
+                        </div>
+                    </div>
+                    <p id="stockSummary" class="stock-summary-text"></p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- 2. Pikakuvaus -->
+                <div class="report-section">
+                    <h3>Pikakuvaus yhtiöstä</h3>
+                    <p id="modalSummary" class="summary-text"></p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- 3. Mitä maailmalla tapahtuu -->
+                <div class="report-section">
+                    <h3>Mitä maailmalla tapahtuu?</h3>
+                    <p id="modalGlobalContext" class="reasoning-text"></p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- 4. Miksi juuri tämä osake nousee -->
+                <div class="report-section">
+                    <h3>Miksi juuri tämä osake nousee?</h3>
+                    <p id="modalReasoning" class="reasoning-text"></p>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 5. Yhtiön numerot -->
+                <div class="report-section">
+                    <h3>Yhtiön numerot sanallistettuna</h3>
+                    <p id="modalMetricsExp" class="reasoning-text"></p>
+                </div>
+
+                <div class="divider"></div>
+                
+                <!-- 6. Ostohorisontti -->
+                <div class="report-section">
+                    <h3>Ostohorisontti ja trendin seuranta</h3>
+                    <p id="modalTimeHorizon" class="history-text"></p>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <!-- 7. Yhtiön historia ja tarina -->
+                <div class="report-section">
+                    <h3>Yhtiön tarina ja viimeaikaiset tapahtumat</h3>
+                    <p id="modalCompanyHistory" class="reasoning-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
