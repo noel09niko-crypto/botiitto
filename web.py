@@ -62,15 +62,12 @@ def clear_all_scenarios():
 @app.route('/api/force_scan', methods=['GET'])
 def force_scan():
     import threading
-    from src.background_worker import quick_scan_market, analyze_and_save_tickers
+    from src.background_worker import run_scenario_generation
     
     def run_scan():
         print("[FORCE SCAN] Aloitetaan pakotettu täysi markkinaskannaus...")
-        tickers = quick_scan_market()
-        if tickers:
-            print(f"[FORCE SCAN] Löydettiin {len(tickers)} potentiaalista: {tickers}")
-            analyze_and_save_tickers(tickers)
-            print("[FORCE SCAN] Valmis!")
+        run_scenario_generation(force=True)
+        print("[FORCE SCAN] Valmis!")
             
     threading.Thread(target=run_scan).start()
     return "<h1>Skannaus käynnistetty taustalla!</h1><p>Tekoäly haravoi uutisia juuri nyt. Palaa etusivulle ja päivitä sivu n. 2-3 minuutin kuluttua.</p><a href='/'>Palaa etusivulle</a>"
