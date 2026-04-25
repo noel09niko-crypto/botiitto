@@ -45,6 +45,19 @@ def favorite_scenario(scenario_id):
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+# Endpoint analyysien nollaamiseen (Puhdas pöytä)
+@app.route('/api/clear_all', methods=['GET'])
+def clear_all_scenarios():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE scenarios SET is_active = FALSE")
+        conn.commit()
+        conn.close()
+        return "<h1>Pöytä on pyyhitty puhtaaksi!</h1><p>Mene takaisin etusivulle, niin näet että kaikki on poissa.</p><a href='/'>Palaa etusivulle</a>"
+    except Exception as e:
+        return f"Error: {e}"
+
 # MANUAALINEN HAKU JA ANALYYSI
 @app.route('/api/search_and_analyze', methods=['POST'])
 def search_and_analyze():
