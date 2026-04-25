@@ -25,7 +25,7 @@ def run_scenario_generation(force=False):
         fav_tickers = get_favorite_tickers()
 
         print("1/3 Fetching news data...")
-        articles = fetch_all_news(max_age_hours=24)
+        articles = fetch_all_news(max_age_hours=168)
         news_text = format_news_for_prompt(articles, max_articles=60)
         mentioned = quick_news_scan(news_text, client) if articles else []
 

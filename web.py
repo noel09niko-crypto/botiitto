@@ -109,7 +109,7 @@ def search_and_analyze():
         
         # 4. Pyydä AI-analyysi (ilman uutisia, tai hae uutisia jos halutaan)
         from src.news_fetcher import fetch_all_news, format_news_for_prompt
-        news_articles = fetch_all_news(max_age_hours=48) # Hieman laajempi haku manuaaliselle
+        news_articles = fetch_all_news(max_age_hours=168) # Laajempi haku manuaaliselle (7 päivää)
         news_text = format_news_for_prompt(news_articles, max_articles=40)
         
         scenarios = generate_scenarios(news_text, movers_text, client)
