@@ -27,15 +27,33 @@ def init_db():
             company_history TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             is_active BOOLEAN DEFAULT 1,
-            is_favorite BOOLEAN DEFAULT 0
+            is_favorite BOOLEAN DEFAULT 0,
+            is_manual BOOLEAN DEFAULT 0,
+            is_pinned BOOLEAN DEFAULT 0,
+            price_change_24h REAL DEFAULT 0.0
         )
     ''')
     
-    # Migraatio: Lisää sarakkeet jos ne puuttuvat
-    cols = ["supporting_news", "global_context", "metrics_explanation", "company_history"]
-    for col in cols:
+    # Migraatiot
+    cols = [
+        ("supporting_news", "TEXT"), 
+        ("global_context", "TEXT"), 
+        ("metrics_explanation", "TEXT"), 
+        ("company_history", "TEXT"),
+        ("is_pinned", "BOOLEAN DEFAULT 0"),
+        ("is_manual", "BOOLEAN DEFAULT 0"),
+        ("price_change_24h", "REAL DEFAULT 0.0"),
+        ("summary_title", "TEXT"),
+        ("global_title", "TEXT"),
+        ("reasoning_title", "TEXT"),
+        ("metrics_title", "TEXT"),
+        ("horizon_title", "TEXT"),
+        ("history_title", "TEXT"),
+        ("is_updated", "BOOLEAN DEFAULT 0")
+    ]
+    for col, col_type in cols:
         try:
-            cursor.execute(f"ALTER TABLE scenarios ADD COLUMN {col} TEXT")
+            cursor.execute(f"ALTER TABLE scenarios ADD COLUMN {col} {col_type}")
         except sqlite3.OperationalError:
             pass
         
@@ -47,7 +65,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-def add_scenario(data):
+def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_updated=False):
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -57,59 +75,73 @@ def add_scenario(data):
             return json.dumps(val, ensure_ascii=False)
         return val
 
-    # Smart mapper for AI-generated keys
-    def get_field(data, keys, default="N/A"):
+    def get_field(data, keys, default="Analyysi valmistuu..."):
         for k in keys:
-            if k in data:
+            if k in data and data[k] and str(data[k]).strip().lower() not in ["n/a", "none", "null", ""]:
                 return data[k]
         return default
 
-    title = get_field(data, ["title", "otsikko", "nimi", "company", "yhtiö"])
-    tickers = get_field(data, ["tickers", "ticker", "tarkkavala", "symboli"])
-    summary = get_field(data, ["summary", "johdanto", "yhteenveto", "tiivistelmä", "kuvaus", "pikakuvaus"])
-    reasoning = get_field(data, ["reasoning", "perustelut", "selite", "analyysi", "miksi_nousee"])
-    risks = get_field(data, ["invalidation_risks", "riskit", "uhka", "riski"])
-    news = get_field(data, ["supporting_news", "uutiset", "news", "viimeaikaiset_tapahtumat"])
-    sector = get_field(data, ["sector", "toimiala", "ala"])
-    horizon = get_field(data, ["time_horizon", "aikajänne", "horisontti", "aikaväli", "ostohorisontti"])
-    history = get_field(data, ["historical_comparison", "historia", "vertailu"])
-    
-    # Uudet storytelling-kentät
-    global_context = get_field(data, ["global_context", "maailman_tapahtumat", "konteksti", "mitä_maailmalla_tapahtuu"])
-    metrics_exp = get_field(data, ["metrics_explanation", "yhtiön_numerot", "tunnusluvut_selitettynä", "numerot"])
-    company_hist = get_field(data, ["company_history", "yhtiön_historia", "tarina", "yhtiön_tarina"])
+    title = get_field(data, ["title", "otsikko", "nimi", "company", "yhtiö"], "Tuntematon Yhtiö")
+    tickers = get_field(data, ["tickers", "ticker", "tarkkavala", "symboli"], "YLEINEN")
+    conf = get_field(data, ["confidence", "luottamus", "varmuus"], 75)
+
+    if not is_manual:
+        existing = cursor.execute('SELECT id, confidence FROM scenarios WHERE tickers = ? AND is_active = 1 AND is_favorite = 0', (ensure_str(tickers),)).fetchone()
+        if existing:
+            if conf <= existing['confidence']:
+                conn.close()
+                return False
+            else:
+                cursor.execute('UPDATE scenarios SET is_active = 0 WHERE id = ?', (existing['id'],))
+    else:
+        cursor.execute('UPDATE scenarios SET is_active = 0 WHERE tickers = ?', (ensure_str(tickers),))
+
+    summary = get_field(data, ["summary", "johdanto", "yhteenveto", "tiivistelmä", "kuvaus", "pikakuvaus"], "Tarkempi tiivistelmä tulossa.")
+    reasoning = get_field(data, ["reasoning", "perustelut", "selite", "analyysi", "miksi_nousee"], "Analyysi osakkeen nousuajureista valmistuu.")
+    risks = get_field(data, ["invalidation_risks", "riskit", "uhka", "riski"], "Riskiarviointi kesken.")
+    news = get_field(data, ["supporting_news", "uutiset", "news", "viimeaikaiset_tapahtumat"], "Ei tuoreita uutisviitteitä.")
+    sector = get_field(data, ["sector", "toimiala", "ala"], "Teknologia")
+    horizon = get_field(data, ["time_horizon", "aikajänne", "horisontti", "aikaväli", "ostohorisontti"], "Seuraa tilannetta viikoittain.")
+    history = get_field(data, ["historical_comparison", "historia", "vertailu"], "Historiallinen vertailu analysoitavana.")
+    global_context = get_field(data, ["global_context", "maailman_tapahtumat", "konteksti", "mitä_maailmalla_tapahtuu"], "Maailmanmarkkinoiden tilanne analysoitavana tämän yhtiön osalta.")
+    metrics_exp = get_field(data, ["metrics_explanation", "yhtiön_numerot", "tunnusluvut_selitettynä", "numerot"], "Tunnuslukujen tarkempi analyysi päivittyy pian.")
+    company_hist = get_field(data, ["company_history", "yhtiön_historia", "tarina", "yhtiön_tarina"], "Yhtiön tausta ja historia tarkentuu seuraavassa päivityksessä.")
+
+    # Dynaamiset otsikot
+    sum_title = get_field(data, ["pikakuvaus_otsikko", "summary_title"], "Pikakuvaus yhtiöstä")
+    glob_title = get_field(data, ["maailman_tapahtumat_otsikko", "global_title"], "Mitä maailmalla tapahtuu?")
+    reasons_title = get_field(data, ["perustelut_otsikko", "reasoning_title"], "Miksi juuri tämä osake nousee?")
+    met_title = get_field(data, ["yhtiön_numerot_otsikko", "metrics_title"], "Yhtiön luvut sanallistettuna")
+    hor_title = get_field(data, ["ostohorisontti_otsikko", "horizon_title"], "Ostohorisontti")
+    hist_title = get_field(data, ["yhtiön_tarina_otsikko", "history_title"], "Yhtiön historia")
 
     cursor.execute('''
         INSERT INTO scenarios (
             title, tickers, summary, reasoning, time_horizon, 
             recommendation, risk_level, confidence, historical_comparison, 
             invalidation_risks, sector, supporting_news,
-            global_context, metrics_explanation, company_history
+            global_context, metrics_explanation, company_history, is_pinned, is_manual, is_favorite, price_change_24h,
+            summary_title, global_title, reasoning_title, metrics_title, horizon_title, history_title, is_updated
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
-        ensure_str(title),
-        ensure_str(tickers),
-        ensure_str(summary),
-        ensure_str(reasoning),
-        ensure_str(horizon),
-        ensure_str(get_field(data, ["recommendation", "suositus", "toimenpide"], "OSTA (Core)")),
-        ensure_str(get_field(data, ["risk_level", "riskitaso", "riski_taso"], "Matala")),
-        get_field(data, ["confidence", "luottamus", "varmuus"], 75),
-        ensure_str(history),
-        ensure_str(risks),
-        ensure_str(sector),
-        ensure_str(news),
-        ensure_str(global_context),
-        ensure_str(metrics_exp),
-        ensure_str(company_hist)
+        ensure_str(title), ensure_str(tickers), ensure_str(summary), ensure_str(reasoning), ensure_str(horizon),
+        ensure_str(get_field(data, ["recommendation", "suositus"], "Tarkkaile")), 
+        ensure_str(get_field(data, ["risk_level", "riskitaso", "riski"], "Keskisuuri")), 
+        conf, ensure_str(history), ensure_str(risks), ensure_str(sector), ensure_str(news),
+        ensure_str(global_context), ensure_str(metrics_exp), ensure_str(company_hist), 
+        1 if is_pinned else 0, 1 if is_manual else 0, 0, price_change,
+        ensure_str(sum_title), ensure_str(glob_title), ensure_str(reasons_title), 
+        ensure_str(met_title), ensure_str(hor_title), ensure_str(hist_title),
+        1 if is_updated else 0
     ))
     conn.commit()
     conn.close()
+    return True
 
 def get_active_scenarios(limit=25):
     conn = get_db_connection()
-    scenarios = conn.execute('SELECT * FROM scenarios WHERE is_active = 1 AND is_favorite = 0 ORDER BY created_at DESC LIMIT ?', (limit,)).fetchall()
+    scenarios = conn.execute('SELECT * FROM scenarios WHERE is_active = 1 AND is_favorite = 0 ORDER BY confidence DESC, created_at DESC LIMIT ?', (limit,)).fetchall()
     conn.close()
     return [dict(ix) for ix in scenarios]
 
@@ -119,12 +151,47 @@ def get_favorite_scenarios():
     conn.close()
     return [dict(ix) for ix in scenarios]
 
+def get_favorite_tickers():
+    conn = get_db_connection()
+    tickers = conn.execute('SELECT DISTINCT tickers FROM scenarios WHERE is_favorite = 1').fetchall()
+    conn.close()
+    return [row['tickers'] for row in tickers]
+
 def toggle_favorite(scenario_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    row = cursor.execute('SELECT is_favorite FROM scenarios WHERE id = ?', (scenario_id,)).fetchone()
+    row = cursor.execute('SELECT is_favorite, is_manual FROM scenarios WHERE id = ?', (scenario_id,)).fetchone()
     if row:
         new_status = 0 if row['is_favorite'] else 1
-        cursor.execute('UPDATE scenarios SET is_favorite = ? WHERE id = ?', (new_status, scenario_id))
+        if row['is_manual'] and not new_status:
+            cursor.execute('UPDATE scenarios SET is_favorite = 0, is_active = 0 WHERE id = ?', (scenario_id,))
+        else:
+            cursor.execute('UPDATE scenarios SET is_favorite = ? WHERE id = ?', (new_status, scenario_id))
         conn.commit()
+    conn.close()
+
+def deactivate_scenario(scenario_id):
+    """Merkitsee analyysin passiiviseksi, jolloin se poistuu dashboardilta."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE scenarios SET is_active = 0 WHERE id = ?', (scenario_id,))
+    conn.commit()
+    conn.close()
+
+def prune_old_scenarios(keep_limit=15):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        DELETE FROM scenarios 
+        WHERE id IN (
+            SELECT id FROM scenarios 
+            WHERE is_favorite = 0 AND is_pinned = 0 AND is_active = 1
+            ORDER BY confidence ASC, created_at ASC
+            LIMIT -1 OFFSET ?
+        )
+    ''', (keep_limit,))
+    count = cursor.rowcount
+    if count > 0:
+        print(f"  Puhdistettu {count} heikkolaatuisempaa analyysia.")
+    conn.commit()
     conn.close()

@@ -18,10 +18,6 @@
             <h1 class="logo">SijoitusMonitori</h1>
             
             <div class="filter-bar">
-                <select id="filterSector" class="custom-select">
-                    <option value="ALL">Kaikki toimialat</option>
-                    <!-- JavaScript adds options here -->
-                </select>
                 <select id="filterRisk" class="custom-select">
                     <option value="ALL">Kaikki riskitasot</option>
                     <option value="Matala">Matala riski</option>
@@ -39,26 +35,44 @@
         <!-- Two-column dashboard -->
         <main class="dashboard-grid">
             
-            <!-- Active Opportunities -->
-            <section class="scenarios-column">
+            <!-- 1. 10 Parasta -->
+            <section class="scenarios-column top-ten-column">
                 <div class="column-header">
-                    <h2>Markkinamahdollisuudet</h2>
-                    <span class="badge badge-subtle">Reaaliaikainen analyysi</span>
+                    <h2>5 Parasta</h2>
+                    <span class="badge badge-subtle">Eliitti-kohteet</span>
                 </div>
-                <div id="activeScenariosList" class="folder-list">
+                <div id="topTenList" class="folder-list">
                     <!-- JavaScript populates this -->
-                    <div class="skeleton-folder"></div>
                     <div class="skeleton-folder"></div>
                 </div>
             </section>
 
-            <!-- Monitored/Favorites -->
+            <!-- 2. Muut -->
+            <section class="scenarios-column">
+                <div class="column-header">
+                    <h2>Muut analyysit</h2>
+                    <span class="badge badge-subtle">Reaaliaikainen</span>
+                </div>
+                <div id="othersList" class="folder-list">
+                    <!-- JavaScript populates this -->
+                </div>
+            </section>
+
+            <!-- 3. Suosikit -->
             <section class="favorites-column">
                 <div class="column-header">
-                    <h2>Seurattavat Skenaariot</h2>
+                    <h2>Suosikit</h2>
                     <span class="badge badge-subtle">Oma salkku</span>
                 </div>
-                <div id="favoriteScenariosList" class="folder-list">
+                
+                <!-- Manual Search Bar -->
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Hae yhtiötä (esim. Tesla)..." class="search-input">
+                    <button id="searchBtn" class="search-btn">🔍 Tutki</button>
+                    <button id="refreshBtn" class="refresh-btn-secondary" title="Päivitä lista">🔄</button>
+                </div>
+
+                <div id="favoritesList" class="folder-list">
                     <!-- JavaScript populates this -->
                 </div>
             </section>
@@ -78,11 +92,11 @@
                         <span class="tag tag-text" id="modalRiskLevel">Riski</span>
                         <span class="tag tag-text" id="modalConfidence">Luottamus %</span>
                         <span class="tag tag-text" id="modalSector">Toimiala</span>
-                        <span class="tag tag-text" id="modalTimeHorizon">Horisontti</span>
+                        <span class="tag tag-text" id="modalTimeHorizonTag">Horisontti</span>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button id="modalFavBtn" class="action-btn">Lisää Seurantaan</button>
+                    <button id="modalFavBtn" class="action-btn">Lisää Suosikkeihin</button>
                     <span class="close-btn">&times;</span>
                 </div>
             </div>
@@ -168,7 +182,7 @@
                 
                 <!-- 2. Pikakuvaus -->
                 <div class="report-section">
-                    <h3>Pikakuvaus yhtiöstä</h3>
+                    <h3 id="headerSummary">Pikakuvaus yhtiöstä</h3>
                     <p id="modalSummary" class="summary-text"></p>
                 </div>
                 
@@ -176,7 +190,7 @@
                 
                 <!-- 3. Mitä maailmalla tapahtuu -->
                 <div class="report-section">
-                    <h3>Mitä maailmalla tapahtuu?</h3>
+                    <h3 id="headerGlobalContext">Mitä maailmalla tapahtuu?</h3>
                     <p id="modalGlobalContext" class="reasoning-text"></p>
                 </div>
                 
@@ -184,7 +198,7 @@
                 
                 <!-- 4. Miksi juuri tämä osake nousee -->
                 <div class="report-section">
-                    <h3>Miksi juuri tämä osake nousee?</h3>
+                    <h3 id="headerReasoning">Miksi juuri tämä osake nousee?</h3>
                     <p id="modalReasoning" class="reasoning-text"></p>
                 </div>
 
@@ -192,7 +206,7 @@
 
                 <!-- 5. Yhtiön numerot -->
                 <div class="report-section">
-                    <h3>Yhtiön numerot sanallistettuna</h3>
+                    <h3 id="headerMetricsExp">Yhtiön numerot sanallistettuna</h3>
                     <p id="modalMetricsExp" class="reasoning-text"></p>
                 </div>
 
@@ -200,7 +214,7 @@
                 
                 <!-- 6. Ostohorisontti -->
                 <div class="report-section">
-                    <h3>Ostohorisontti ja trendin seuranta</h3>
+                    <h3 id="headerTimeHorizon">Ostohorisontti ja trendin seuranta</h3>
                     <p id="modalTimeHorizon" class="history-text"></p>
                 </div>
                 
@@ -208,7 +222,7 @@
                 
                 <!-- 7. Yhtiön historia ja tarina -->
                 <div class="report-section">
-                    <h3>Yhtiön tarina ja viimeaikaiset tapahtumat</h3>
+                    <h3 id="headerCompanyHistory">Yhtiön tarina ja viimeaikaiset tapahtumat</h3>
                     <p id="modalCompanyHistory" class="reasoning-text"></p>
                 </div>
             </div>

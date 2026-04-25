@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const activeList = document.getElementById('activeScenariosList');
-    const favoritesList = document.getElementById('favoriteScenariosList');
+    const topTenList = document.getElementById('topTenList');
+    const othersList = document.getElementById('othersList');
+    const favoritesList = document.getElementById('favoritesList');
     const statusMessage = document.getElementById('statusMessage');
     
-    // Filters & Sorting
-    const filterSectorBtn = document.getElementById('filterSector');
     const filterRiskBtn = document.getElementById('filterRisk');
     const sortBtn = document.getElementById('sortBtn');
     
@@ -12,17 +11,70 @@ document.addEventListener('DOMContentLoaded', () => {
     let allActiveScenarios = [];
     let allFavoriteScenarios = [];
     let currentSortOrder = 'desc'; // desc = highest confidence first
-    let availableSectors = new Set();
 
     // Modal Elements
     const modal = document.getElementById('folderModal');
     const closeBtn = document.querySelector('.close-btn');
     const modalFavBtn = document.getElementById('modalFavBtn');
 
+    // Search Elements
+    const searchInput = document.getElementById('searchInput');
+    const refreshBtn = document.getElementById('refreshBtn');
     let currentModalScenarioId = null;
 
     fetchScenarios();
-    setInterval(fetchScenarios, 5 * 60 * 1000);
+    // Faster refresh during debugging/initial setup
+    setInterval(fetchScenarios, 60 * 1000); 
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            refreshBtn.classList.add('rotating');
+            fetchScenarios().then(() => {
+                setTimeout(() => refreshBtn.classList.remove('rotating'), 500);
+            });
+        });
+    }
+
+    // Manual Search Handler
+    async function handleSearch() {
+        const query = searchInput.value.trim();
+        if (!query) return;
+
+        // UI Loading State
+        searchBtn.disabled = true;
+        const originalText = searchBtn.innerHTML;
+        searchBtn.innerHTML = '<span class="loading-spinner"></span> Luodaan analyysia...';
+        statusMessage.textContent = `Tutkitaan yhtiötä '${query}'... Tämä voi kestää 15-30 sekuntia.`;
+
+        try {
+            const response = await fetch('/api/search_and_analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                searchInput.value = '';
+                statusMessage.textContent = `Analyysi valmis: ${data.ticker}. Lisätty seurantaan.`;
+                await fetchScenarios(); // Refresh lists
+            } else {
+                alert("Haku epäonnistui: " + data.error);
+                statusMessage.textContent = "Haku epäonnistui.";
+            }
+        } catch (error) {
+            console.error("Search error:", error);
+            alert("Yhteysvirhe haun aikana.");
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = originalText;
+        }
+    }
+
+    searchBtn.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch();
+    });
 
     async function fetchScenarios() {
         try {
@@ -33,14 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = `Viimeksi päivitetty: ${data.timestamp} | AI-Moottori Aktiivinen`;
                 allActiveScenarios = data.active;
                 allFavoriteScenarios = data.favorites;
-                
-                // Extract sectors dynamically for the dropdown
-                availableSectors.clear();
-                [...allActiveScenarios, ...allFavoriteScenarios].forEach(s => {
-                    if(s.sector) availableSectors.add(s.sector);
-                });
-                updateSectorDropdown();
-                
                 applyFiltersAndRender();
             } else {
                 statusMessage.textContent = "Virhe markkinadatan haussa.";
@@ -51,39 +95,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateSectorDropdown() {
-        const currentVal = filterSectorBtn.value;
-        filterSectorBtn.innerHTML = '<option value="ALL">Kaikki toimialat</option>';
-        [...availableSectors].sort().forEach(sector => {
-            const opt = document.createElement('option');
-            opt.value = sector;
-            opt.textContent = sector;
-            filterSectorBtn.appendChild(opt);
-        });
-        filterSectorBtn.value = currentVal; // preserve selection
-    }
-
     // Event Listeners for Filters
-    filterSectorBtn.addEventListener('change', applyFiltersAndRender);
     filterRiskBtn.addEventListener('change', applyFiltersAndRender);
     sortBtn.addEventListener('click', () => {
         currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
-        sortBtn.textContent = currentSortOrder === 'desc' ? 'Lajittele: Luottamus % (Ylinensin)' : 'Lajittele: Luottamus % (Alin ensin)';
+        sortBtn.textContent = currentSortOrder === 'desc' ? 'Lajittele: Luottamus %' : 'Lajittele: Luottamus % (Nouseva)';
         applyFiltersAndRender();
     });
 
     function applyFiltersAndRender() {
-        const selSector = filterSectorBtn.value;
         const selRisk = filterRiskBtn.value;
 
         let filteredActive = allActiveScenarios.filter(s => {
-            if (selSector !== 'ALL' && s.sector !== selSector) return false;
             if (selRisk !== 'ALL' && s.risk_level !== selRisk) return false;
             return true;
         });
 
         let filteredFavs = allFavoriteScenarios.filter(s => {
-            if (selSector !== 'ALL' && s.sector !== selSector) return false;
             if (selRisk !== 'ALL' && s.risk_level !== selRisk) return false;
             return true;
         });
@@ -102,30 +130,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderLists(active, favorites) {
-        activeList.innerHTML = '';
+        topTenList.innerHTML = '';
+        othersList.innerHTML = '';
         favoritesList.innerHTML = '';
 
-        if (active.length === 0) {
-            activeList.innerHTML = '<p style="color:var(--text-secondary); padding:20px;">Ei skenaarioita saatavilla. AI hakee uusia...</p>';
+        // Scoring for Top 10
+        const getRankScore = (item) => {
+            let score = item.confidence || 0;
+            const risk = (item.risk_level || '').toLowerCase();
+            const rec = (item.recommendation || '').toLowerCase();
+
+            // Strategy 1.1: PINNED (Huippu) analysts get massive priority
+            if (item.is_pinned) score += 1000; 
+
+            if (risk === 'matala') score += 5; // Value/Stability bonus
+            if (rec.includes('core')) score += 10; // Strong conviction bonus
+            if (rec.includes('speculative')) score += 5; // Growth potential
+            return score;
+        };
+
+        const sortedByRank = [...active].sort((a, b) => getRankScore(b) - getRankScore(a));
+        const topFive = sortedByRank.slice(0, 5);
+        const others = sortedByRank.slice(5);
+
+        // 1. Top 5
+        if (topFive.length === 0) {
+            topTenList.innerHTML = '<p class="empty-msg">Analyysejä tulossa...</p>';
         } else {
-            active.forEach(item => {
-                try {
-                    activeList.appendChild(createFolderElement(item, false));
-                } catch(e) {
-                    console.error("Error rendering card:", e, item);
-                }
+            topFive.forEach(item => {
+                topTenList.appendChild(createFolderElement(item, false));
             });
         }
 
+        // 2. Others
+        if (others.length === 0) {
+            othersList.innerHTML = '<p class="empty-msg">Ei muita kohteita.</p>';
+        } else {
+            others.forEach(item => {
+                othersList.appendChild(createFolderElement(item, false));
+            });
+        }
+
+        // 3. Favorites
         if (favorites.length === 0) {
-            favoritesList.innerHTML = '<p style="color:var(--text-secondary); padding:20px;">Ei seurattavia skenaarioita.</p>';
+            favoritesList.innerHTML = '<p class="empty-msg">Ei suosikkeja.</p>';
         } else {
             favorites.forEach(item => {
-                try {
-                    favoritesList.appendChild(createFolderElement(item, true));
-                } catch(e) {
-                    console.error("Error rendering fav card:", e, item);
-                }
+                favoritesList.appendChild(createFolderElement(item, true));
             });
         }
     }
@@ -134,10 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tickersStr) return "YLEINEN";
         return tickersStr.split(',')[0].trim() || "YLEINEN";
     }
-    
-    // Extractor just for the raw ticker code (e.g. AAPL) to query yfinance
+
     function extractRawTickerSymbol(primaryTickerStr) {
-        return primaryTickerStr.split(' ')[0].trim();
+        if (!primaryTickerStr || primaryTickerStr === 'N/A') return 'N/A';
+        const match = primaryTickerStr.match(/\$([A-Z.0-9]+)/);
+        if (match) return match[1];
+        return primaryTickerStr.split(' ')[0].trim().replace(/[^A-Z]/g, '');
     }
 
     function getRecClass(rec) {
@@ -148,15 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'rec-tarkkaile';
     }
 
-    function extractCompanyName(titleStr) {
-        if (!titleStr) return 'Tuntematon yhtiö';
-        // If format is 'COMPANY: idea', return just the company part
+    function extractCompanyName(item) {
+        const titleStr = item.title;
+        const tickersStr = item.tickers || '';
+        
+        if (!titleStr) return tickersStr || 'Tuntematon yhtiö';
         const colonIdx = titleStr.indexOf(':');
-        if (colonIdx > 0 && colonIdx < 60) {
-            return titleStr.substring(0, colonIdx).trim();
-        }
-        // If the title starts with a long word in caps (AI put name first), use it
-        // Otherwise truncate to 50 chars max
+        if (colonIdx > 0 && colonIdx < 60) return titleStr.substring(0, colonIdx).trim();
+        if (titleStr.length > 30 && tickersStr) return tickersStr.split(',')[0].trim();
         return titleStr.length > 50 ? titleStr.substring(0, 50).trim() + '…' : titleStr;
     }
 
@@ -164,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const src = item.global_context || item.summary || '';
         if (!src || src === 'N/A') return '';
         const firstSentence = src.split(/[.!?]/)[0].trim() + '.';
-        // Detect hallucination: if any word repeats 3+ times, reject and try fallback
         const words = firstSentence.toLowerCase().split(/\s+/).filter(w => w.length > 3);
         const wordCount = {};
         for (const w of words) { wordCount[w] = (wordCount[w] || 0) + 1; }
@@ -181,37 +232,62 @@ document.addEventListener('DOMContentLoaded', () => {
         const rec = item.recommendation || 'Tarkkaile';
         const recClass = getRecClass(rec);
         
-        // Border color based on recommendation
         let borderClass = 'rec-watch-border';
         if (recClass === 'rec-osta') borderClass = 'rec-buy-border';
         if (recClass === 'rec-valta') borderClass = 'rec-sell-border';
 
-        div.className = `folder-card ${isFav ? 'tracked-style' : borderClass}`;
-        
-        const dateStr = new Date(item.created_at).toLocaleString('fi-FI', { month: 'short', day: 'numeric' });
-        const primaryTicker = extractPrimaryTicker(item.tickers);
-        const conf = item.confidence ? `${item.confidence}%` : '?';
-        const companyName = extractCompanyName(item.title);
-        const worldHint = getWorldHint(item);
-
-        // Simple rec label: just OSTA or MYY
+        const priceChange = item.price_change_24h || 0;
         let recLabel = 'OSTA';
-        if (rec.toLowerCase().includes('myy') || rec.toLowerCase().includes('vältä') || rec.toLowerCase().includes('short')) {
+        let finalRecClass = recClass;
+        let finalBorderClass = borderClass;
+
+        if (priceChange < 0) {
             recLabel = 'MYY';
+            finalRecClass = 'rec-valta';
+            finalBorderClass = 'rec-sell-border';
+        } else if (rec.toLowerCase().includes('myy') || rec.toLowerCase().includes('vältä') || rec.toLowerCase().includes('short')) {
+            recLabel = 'MYY';
+            finalRecClass = 'rec-valta';
+            finalBorderClass = 'rec-sell-border';
+        } else {
+            // Kaikki muut (osta, tarkkaile, odota jne.) ovat nyt "OSTA" keltaisella pohjalla
+            recLabel = 'OSTA';
+            finalRecClass = 'rec-osta';
+            finalBorderClass = 'rec-buy-border';
         }
 
+        div.className = `folder-card ${isFav ? 'tracked-style' : finalBorderClass}`;
+
+        const dateStr = new Date(item.created_at).toLocaleString('fi-FI', { month: 'short', day: 'numeric' });
+        const updateTime = new Date(item.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+        const updatedTag = item.is_updated ? `<div class="updated-badge">🔄 PÄIVITETTY ${updateTime}</div>` : '';
+        const primaryTicker = extractPrimaryTicker(item.tickers);
+        const conf = item.confidence ? `${item.confidence}%` : '?';
+        const companyName = extractCompanyName(item);
+        const worldHint = getWorldHint(item);
+
+        const isStrong = (item.confidence || 0) >= 90;
+
+        let confClass = 'conf-low';
+        const numConf = item.confidence || 0;
+        if (numConf >= 90) confClass = 'conf-high-glow';
+        else if (numConf >= 85) confClass = 'conf-high';
+        else if (numConf >= 70) confClass = 'conf-med';
+
         div.innerHTML = `
+            ${isStrong ? '<div class="strong-recommendation-badge">✨ Vahva suositus</div>' : ''}
+            ${updatedTag}
             <div class="card-top-row">
                 <div class="folder-title">${companyName}</div>
                 <button class="track-btn-small ${isFav ? 'active' : ''}" data-id="${item.id}">
-                    ${isFav ? '★ Seurannassa' : '+ Seuraa'}
+                    ${isFav ? '★ SUOSIKKI' : '+ SUOSIKKEIHIN'}
                 </button>
             </div>
             ${worldHint ? `<div class="card-world-hint">${worldHint}</div>` : ''}
             <div class="folder-meta">
                 <span class="primary-ticker">${primaryTicker}</span>
-                <span class="rec-tag ${recClass}">${recLabel}</span>
-                <span class="conf-tag">Luottamus ${conf}</span>
+                <span class="rec-tag ${finalRecClass}">${recLabel}</span>
+                <span class="conf-tag ${confClass}">Luottamus ${conf}</span>
                 <span class="date-meta">${dateStr}</span>
             </div>
         `;
@@ -242,55 +318,53 @@ document.addEventListener('DOMContentLoaded', () => {
     async function openModal(item) {
         try {
             currentModalScenarioId = item.id;
-            
-            // Helper functions to safely parse data
             const primaryTicker = extractPrimaryTicker(item.tickers);
             const primaryTickerRaw = extractRawTickerSymbol(primaryTicker);
             
-            // Show modal and reset scrolling
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Setup base modal texts
             document.getElementById('modalTitle').textContent = item.title;
             document.getElementById('modalPrimaryTicker').textContent = primaryTickerRaw;
             
+            if (item.is_favorite) {
+                modalFavBtn.classList.add('active');
+                modalFavBtn.textContent = 'Poista Suosikeista';
+            } else {
+                modalFavBtn.classList.remove('active');
+                modalFavBtn.textContent = 'Lisää Suosikkeihin';
+            }
+
             let recommendation = (item.recommendation || 'Tarkkaile').toUpperCase();
             const recEl = document.getElementById('modalRecommendation');
             recEl.textContent = recommendation;
-            recEl.className = 'tag tag-border'; // Reset
+            recEl.className = 'tag tag-border'; 
             
-            if (recommendation.includes('OSTA')) {
-                recEl.classList.add('tag-success');
-            } else if (recommendation.includes('MYY')) {
-                recEl.classList.add('tag-danger');
-            } else {
-                recEl.classList.add('tag-secondary');
-            }
+            if (recommendation.includes('OSTA')) recEl.classList.add('tag-success');
+            else if (recommendation.includes('MYY') || recommendation.includes('VÄLTÄ')) recEl.classList.add('tag-danger');
+            else recEl.classList.add('tag-secondary');
             
             document.getElementById('modalRiskLevel').textContent = `Riski: ${item.risk_level || 'Tuntematon'}`;
             document.getElementById('modalConfidence').textContent = `Luottamus: ${item.confidence || '?'}%`;
             document.getElementById('modalSector').textContent = item.sector || 'Yleinen';
             
-            // Tarinalliset kentät
-            document.getElementById('modalSummary').textContent = item.summary;
-            document.getElementById('modalGlobalContext').textContent = item.global_context || 'Ei lisätietoja maailman tilanteesta.';
-            document.getElementById('modalReasoning').textContent = item.reasoning;
-            document.getElementById('modalMetricsExp').textContent = item.metrics_explanation || 'Numerot selitetään seuraavassa päivityksessä.';
-            document.getElementById('modalTimeHorizon').textContent = item.time_horizon || 'Horisontti puuttuu.';
-            document.getElementById('modalCompanyHistory').textContent = item.company_history || 'Yhtiön historiaa ei saatavilla.';
+            document.getElementById('modalSummary').textContent = item.summary || 'Yhteenveto valmistuu...';
+            document.getElementById('modalGlobalContext').textContent = item.global_context || 'Maailmanmarkkinoiden tilanne analysoitavana.';
+            document.getElementById('modalReasoning').textContent = item.reasoning || 'Analyysi nousuajureista valmistuu.';
+            document.getElementById('modalMetricsExp').textContent = item.metrics_explanation || 'Tunnuslukujen tarkempi analyysi päivittyy pian.';
+            document.getElementById('modalTimeHorizon').textContent = item.time_horizon || 'Ostohorisontti tarkentuu pian.';
+            document.getElementById('modalCompanyHistory').textContent = item.company_history || 'Yhtiön tarina päivittyy pian.';
+
+            // Dynaamiset otsikot
+            document.getElementById('headerSummary').textContent = item.summary_title || 'Pikakuvaus yhtiöstä';
+            document.getElementById('headerGlobalContext').textContent = item.global_title || 'Mitä maailmalla tapahtuu?';
+            document.getElementById('headerReasoning').textContent = item.reasoning_title || 'Analyysi ja perustelut';
+            document.getElementById('headerMetricsExp').textContent = item.metrics_title || 'Yhtiön numerot sanallistettuna';
+            document.getElementById('headerTimeHorizon').textContent = item.horizon_title || 'Ostohorisontti ja seuranta';
+            document.getElementById('headerCompanyHistory').textContent = item.history_title || 'Yhtiön tarina ja tausta';
             
-            // Clear and reset live data fields
             resetStockDetailsFields();
 
-            // Populate Supporting News
-            const newsContainer = document.getElementById('modalNewsContainer');
-            if (newsContainer) {
-                newsContainer.innerHTML = '<p class="text-muted small">Ladataan uutisia...</p>';
-                // (Optional: Load news if needed, but the worker now puts story parts in separate fields)
-            }
-
-            // Load extra stock info from YFinance via our API
             if (primaryTickerRaw && primaryTickerRaw !== 'N/A') {
                 document.getElementById('liveDataLoading').style.display = 'inline';
                 try {
@@ -298,24 +372,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     const res = await req.json();
                     if(res.success && res.data) {
                         const d = res.data;
+                        const fmt = (el, val) => {
+                            const e = document.getElementById(el);
+                            if (!e) return;
+                            if (val === 'N/A' || val === null || val === undefined) e.textContent = '—';
+                            else e.textContent = val;
+                        };
                         document.getElementById('stockPrice').textContent = `$${d.price}`;
                         const sign = d.changePercent >= 0 ? '+' : '';
                         document.getElementById('stockChange').textContent = `${sign}${d.changePercent}%`;
                         document.getElementById('stockChange').className = `stat-value ${d.changePercent >= 0 ? 'val-pos' : 'val-neg'}`;
-                        document.getElementById('stockPE').textContent = d.pe;
-                        document.getElementById('stockPB').textContent = d.pb;
-                        document.getElementById('stockEV').textContent = d.ev_ebitda;
-                        document.getElementById('stockEPSG').textContent = d.eps_growth;
-                        document.getElementById('stockRevG').textContent = d.rev_growth;
-                        document.getElementById('stockMargin').textContent = d.net_margin;
-                        document.getElementById('stockROE').textContent = d.roe;
-                        document.getElementById('stockFCF').textContent = d.fcf;
-                        document.getElementById('stockDE').textContent = d.debt_equity;
-                        document.getElementById('stockDiv').textContent = d.div_yield;
+                        fmt('stockPE', d.pe);
+                        fmt('stockPB', d.pb);
+                        fmt('stockEV', d.ev_ebitda);
+                        fmt('stockEPSG', d.eps_growth);
+                        fmt('stockRevG', d.rev_growth);
+                        fmt('stockMargin', d.net_margin);
+                        fmt('stockROE', d.roe);
+                        fmt('stockFCF', d.fcf);
+                        fmt('stockDE', d.debt_equity);
+                        fmt('stockDiv', d.div_yield);
                         document.getElementById('stockHigh').textContent = `$${d.high52}`;
                         document.getElementById('stockLow').textContent = `$${d.low52}`;
-                        document.getElementById('stockRSI').textContent = d.rsi;
-                        document.getElementById('stockBeta').textContent = d.beta;
+                        fmt('stockRSI', d.rsi);
+                        fmt('stockBeta', d.beta);
                         document.getElementById('stockCap').textContent = d.marketCap;
                     }
                 } catch (err) {
@@ -326,29 +406,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Modal Error:", error);
-            alert("Virhe avattaessa tietoja. Yritä uudelleen.");
         }
     }
 
     function resetStockDetailsFields() {
-        const fields = ['stockPrice', 'stockChange', 'stockPE', 'stockPB', 'stockEV', 'stockEPSG', 'stockRevG', 'stockMargin', 'stockROE', 'stockFCF', 'stockDE', 'stockDiv', 'stockHigh', 'stockLow', 'stockRSI', 'stockBeta', 'stockCap'];
-        fields.forEach(f => {
+        ['stockPrice', 'stockChange', 'stockPE', 'stockPB', 'stockEV', 'stockEPSG', 'stockRevG', 'stockMargin', 'stockROE', 'stockFCF', 'stockDE', 'stockDiv', 'stockHigh', 'stockLow', 'stockRSI', 'stockBeta', 'stockCap'].forEach(f => {
             const el = document.getElementById(f);
             if (el) el.textContent = '--';
         });
-    }
-
-    function extractPrimaryTicker(tickersStr) {
-        if (!tickersStr) return 'N/A';
-        const parts = tickersStr.split(',').map(s => s.trim());
-        return parts[0] || 'N/A';
-    }
-
-    function extractRawTickerSymbol(fullTicker) {
-        if (!fullTicker || fullTicker === 'N/A') return 'N/A';
-        const match = fullTicker.match(/\$([A-Z.0-9]+)/);
-        if (match) return match[1];
-        return fullTicker.replace(/[^A-Z]/g, ''); // Fallback to uppercase letters only
     }
 
     closeBtn.addEventListener('click', () => {
@@ -366,12 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
     modalFavBtn.addEventListener('click', async () => {
         if (!currentModalScenarioId) return;
         modalFavBtn.classList.toggle('active');
-        modalFavBtn.textContent = modalFavBtn.classList.contains('active') ? 'Poista Seurannasta' : 'Lisää Seurantaan';
-        try {
-            const resp = await fetch(`/api/favorite/${currentModalScenarioId}`, { method: 'POST' });
-            if (resp.ok) fetchScenarios();
-        } catch (err) {
-            console.error("Favorite toggle error:", err);
-        }
+        const isActive = modalFavBtn.classList.contains('active');
+        modalFavBtn.textContent = isActive ? 'Poista Suosikeista' : 'Lisää Suosikkeihin';
+        await fetch(`/api/favorite/${currentModalScenarioId}`, { method: 'POST' });
+        fetchScenarios();
     });
 });

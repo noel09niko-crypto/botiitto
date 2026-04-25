@@ -1,5 +1,10 @@
 .env
-*.txt
 __pycache__/
 *.pyc
 .DS_Store
+data/bot_database.db
+data/cron.log
+server.log
+scratch/
+output/
+*.db

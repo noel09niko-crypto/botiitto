@@ -7,34 +7,47 @@ from datetime import datetime
 WATCHLIST = [
     # US – Mega cap tech
     "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA", "AVGO", "AMD",
-    # US – Semiconductors
-    "QCOM", "INTC", "MU", "AMAT", "LRCX", "KLAC", "MRVL", "ON",
+    # US – Semiconductors & Hardware
+    "QCOM", "INTC", "MU", "AMAT", "LRCX", "KLAC", "MRVL", "ON", "TER", "ASML",
     # US – Cloud & SaaS
-    "CRM", "SNOW", "DDOG", "NET", "ZS", "CRWD", "OKTA", "MDB", "PLTR", "SHOP",
-    # US – AI / Infrastructure
-    "ARM", "SMCI", "DELL", "HPE",
+    "CRM", "SNOW", "DDOG", "NET", "ZS", "CRWD", "OKTA", "MDB", "PLTR", "SHOP", 
+    "TEAM", "HUBS", "ZM", "DOCU", "NOW", "WDAY", "ADBE",
+    # US – AI / Infrastructure / Edge
+    "ARM", "SMCI", "DELL", "HPE", "AI", "SOUN", "DOCN",
     # US – Cybersecurity
-    "PANW", "FTNT",
-    # US – Fintech & Payments (tech angle)
-    "PYPL", "SQ", "COIN",
+    "PANW", "FTNT", "S", "TMUS",
+    # US – Fintech & E-commerce
+    "PYPL", "SQ", "COIN", "AFRM", "UPST", "MELI", "SE",
+    # US – Social & Digital Ads
+    "PINS", "SNAP", "TTD", "U", "RBLX",
     # European / Nordic Tech
-    "ASML", "SAP", "ERICB.ST", "NOKIA.HE",
+    "SAP", "ERICB.ST", "NOKIA.HE", "ADYEN.AS", "LOGN.SW",
+    # High Growth / Speculative Tech
+    "IONQ", "RGTI", "QUBT", "TSM"
 ]
 
 
 def get_stock_data(ticker: str) -> Optional[Dict]:
     try:
         stock = yf.Ticker(ticker)
-        hist = stock.history(period="5d")
+        # Haetaan 60 päivää jotta saadaan RSI(14) laskettua luotettavasti
+        hist = stock.history(period="60d")
 
-        if hist.empty or len(hist) < 2:
+        if hist.empty or len(hist) < 15:
             return None
 
         current_price = float(hist["Close"].iloc[-1])
         prev_close = float(hist["Close"].iloc[-2])
         change_pct = ((current_price - prev_close) / prev_close) * 100
 
-        week_ago_price = float(hist["Close"].iloc[0])
+        # RSI(14) laskenta
+        delta = hist["Close"].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs.iloc[-1])) if loss.iloc[-1] != 0 else 100
+
+        week_ago_price = float(hist["Close"].iloc[-5]) if len(hist) >= 5 else float(hist["Close"].iloc[0])
         week_change_pct = ((current_price - week_ago_price) / week_ago_price) * 100
 
         volume = float(hist["Volume"].iloc[-1])
@@ -43,8 +56,12 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
 
         info = stock.fast_info
         market_cap = getattr(info, "market_cap", None)
-        fifty_two_week_high = getattr(info, "year_high", None)
-        fifty_two_week_low = getattr(info, "year_low", None)
+        h52 = getattr(info, "year_high", current_price)
+        l52 = getattr(info, "year_low", current_price)
+        
+        # Etäisyys tuesta/vastuksesta (%)
+        dist_from_low = ((current_price - l52) / l52) * 100 if l52 > 0 else 0
+        dist_from_high = ((current_price - h52) / h52) * 100 if h52 > 0 else 0
 
         return {
             "ticker": ticker,
@@ -54,8 +71,11 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
             "volume": int(volume),
             "volume_ratio": round(volume_ratio, 2),
             "market_cap": market_cap,
-            "52w_high": fifty_two_week_high,
-            "52w_low": fifty_two_week_low,
+            "rsi": round(rsi, 2),
+            "dist_from_low": round(dist_from_low, 2),
+            "dist_from_high": round(dist_from_high, 2),
+            "52w_high": h52,
+            "52w_low": l52,
         }
     except Exception as e:
         return None
@@ -95,9 +115,9 @@ def format_movers_for_prompt(movers: Dict) -> str:
         return (
             f"  {s['ticker']}: ${s['current_price']} | "
             f"1d: {s['change_pct_1d']:+.2f}% | "
-            f"5d: {s['change_pct_5d']:+.2f}% | "
-            f"Vol: {s['volume_ratio']:.1f}x avg | "
-            f"MCap: {cap}"
+            f"RSI: {s['rsi']} | "
+            f"Dist from Low: {s['dist_from_low']}% | "
+            f"Vol: {s['volume_ratio']:.1f}x avg"
         )
 
     lines = ["=== TOP GAINERS (1 day) ==="]

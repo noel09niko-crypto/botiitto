@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 
-from src.database import init_db, get_active_scenarios, get_favorite_scenarios, toggle_favorite
+from src.database import init_db, get_active_scenarios, get_favorite_scenarios, toggle_favorite, get_db_connection
 from src.background_worker import start_background_worker
 
 load_dotenv()
@@ -40,6 +40,62 @@ def favorite_scenario(scenario_id):
         toggle_favorite(scenario_id)
         return jsonify({"success": True})
     except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# MANUAALINEN HAKU JA ANALYYSI
+@app.route('/api/search_and_analyze', methods=['POST'])
+def search_and_analyze():
+    data = request.json
+    query = data.get('query', '').strip()
+    
+    if not query:
+        return jsonify({"success": False, "error": "Hakusana puuttuu"}), 400
+        
+    try:
+        from src.ai_analyzer import resolve_ticker, generate_scenarios, get_client
+        from src.stock_analyzer import get_stock_data, format_movers_for_prompt
+        from src.database import add_scenario
+        
+        client = get_client()
+        print(f"[DEBUG] Search request for: '{query}'")
+        
+        # 1. Selvitä ticker nimen perusteella
+        ticker = resolve_ticker(query, client)
+        print(f"[DEBUG] Resolved ticker: {ticker}")
+        if not ticker:
+            return jsonify({"success": False, "error": f"Yhtiötä '{query}' ei löytynyt."}), 404
+            
+        # 2. Hae osakkeen data
+        stock_data = get_stock_data(ticker)
+        if not stock_data:
+            return jsonify({"success": False, "error": f"Dataa tickerille {ticker} ei saatavilla."}), 404
+            
+        # 3. Luo mini-movers teksti tekoälylle (vain tämä yksi osake)
+        movers_text = f"ANALYYSIKOHDE: {stock_data['ticker']}\n"
+        movers_text += f"- Hinta: {stock_data['current_price']}$\n"
+        movers_text += f"- Muutos: {stock_data['change_pct_1d']}%\n"
+        movers_text += f"- Volyymi: {stock_data['volume']}\n"
+        
+        # 4. Pyydä AI-analyysi (ilman uutisia, tai hae uutisia jos halutaan)
+        from src.news_fetcher import fetch_all_news, format_news_for_prompt
+        news_articles = fetch_all_news(max_age_hours=48) # Hieman laajempi haku manuaaliselle
+        news_text = format_news_for_prompt(news_articles, max_articles=40)
+        
+        scenarios = generate_scenarios(news_text, movers_text, client)
+        
+        if not scenarios:
+             return jsonify({"success": False, "error": "AI-analyysin luonti epäonnistui."}), 500
+             
+        # 5. Tallenna kantaan manuaalisena hakuna (is_manual=True)
+        add_scenario(scenarios[0], is_manual=True)
+        
+        return jsonify({"success": True, "ticker": ticker})
+        
+        return jsonify({"success": True, "ticker": ticker})
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
 
 def calculate_rsi(data, window=14):
@@ -79,8 +135,8 @@ def get_stock_details(ticker):
             
         current_price = info.get("currentPrice", info.get("regularMarketPrice", 0))
         
-        # Historiadata RSI:tä ja muutosta varten
-        hist_1mo = stock.history(period="1mo")
+        # Historiadata RSI:tä ja muutosta varten — 3kk takaa >= 15 datapistettä
+        hist_1mo = stock.history(period="3mo")
         
         # 2. Päivän muutos
         change_pct = 0
@@ -145,6 +201,7 @@ if __name__ == '__main__':
     # Mutta Flaskin dev serverin "reloader" ajaa skriptin kahdesti. 
     # Vältetään tupla-Worker tarkistamalla ympäristömuuttuja:
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
-        start_background_worker(interval_hours=4) # 4 tunnin välein
+        iv = int(os.environ.get("INTERVAL_HOURS", 2))
+        start_background_worker(interval_hours=iv)
         
     app.run(debug=True, port=8080)
