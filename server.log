@@ -1431,3 +1431,17 @@ Background worker thread started. Interval: 2h
  * Restarting with stat
 /Users/noelkulvik/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
   warnings.warn(
+127.0.0.1 - - [25/Apr/2026 15:24:19] "GET /api/scenarios HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:29] "GET /api/stock_info/ARM HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:39] "GET /api/stock_info/NOW HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:44] "GET /api/stock_info/INTC HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:46] "GET /api/stock_info/CRM HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:49] "GET /api/stock_info/AMD HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:24:56] "GET /api/stock_info/ARM HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:25:19] "GET /api/scenarios HTTP/1.1" 200 -
+$SQ: possibly delisted; no price data found  (period=60d) (Yahoo error = "No data found, symbol may be delisted")
+$ERICB.ST: possibly delisted; no price data found  (period=60d)
+127.0.0.1 - - [25/Apr/2026 15:26:19] "GET /api/scenarios HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:27:21] "GET /api/scenarios HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:28:45] "GET /api/scenarios HTTP/1.1" 200 -
+127.0.0.1 - - [25/Apr/2026 15:30:43] "GET /api/scenarios HTTP/1.1" 200 -
