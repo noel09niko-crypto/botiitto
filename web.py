@@ -58,6 +58,24 @@ def clear_all_scenarios():
     except Exception as e:
         return f"Error: {e}"
 
+# Endpoint manuaaliseen 2h skannauksen herättämiseen
+@app.route('/api/force_scan', methods=['GET'])
+def force_scan():
+    import threading
+    from src.background_worker import quick_scan_market, analyze_and_save_tickers
+    
+    def run_scan():
+        print("[FORCE SCAN] Aloitetaan pakotettu täysi markkinaskannaus...")
+        tickers = quick_scan_market()
+        if tickers:
+            print(f"[FORCE SCAN] Löydettiin {len(tickers)} potentiaalista: {tickers}")
+            analyze_and_save_tickers(tickers)
+            print("[FORCE SCAN] Valmis!")
+            
+    threading.Thread(target=run_scan).start()
+    return "<h1>Skannaus käynnistetty taustalla!</h1><p>Tekoäly haravoi uutisia juuri nyt. Palaa etusivulle ja päivitä sivu n. 2-3 minuutin kuluttua.</p><a href='/'>Palaa etusivulle</a>"
+
+
 # MANUAALINEN HAKU JA ANALYYSI
 @app.route('/api/search_and_analyze', methods=['POST'])
 def search_and_analyze():
