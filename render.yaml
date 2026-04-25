@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: investing-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn web:app --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: investing-bot-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+  - type: cron
+    name: investing-scanner
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    schedule: "0 */2 * * *"
+    command: python scheduled_scan.py
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: investing-bot-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+databases:
+  - name: investing-bot-db
+    plan: free

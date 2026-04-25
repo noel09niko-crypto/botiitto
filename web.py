@@ -10,6 +10,9 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Alusta tietokanta (myös kun gunicorn importtaa)
+init_db()
+
 # Oletusreitti, joka tarjoilee HTML-pääsivun
 @app.route('/')
 def index():
@@ -198,10 +201,9 @@ if __name__ == '__main__':
     init_db()
     
     # Käynnistetään taustamoottori, joka keksii uusia skenaarioita
-    # Mutta Flaskin dev serverin "reloader" ajaa skriptin kahdesti. 
-    # Vältetään tupla-Worker tarkistamalla ympäristömuuttuja:
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
         iv = int(os.environ.get("INTERVAL_HOURS", 2))
         start_background_worker(interval_hours=iv)
-        
-    app.run(debug=True, port=8080)
+    
+    port = int(os.environ.get("PORT", 8080))
+    app.run(debug=False, host="0.0.0.0", port=port)
