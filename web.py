@@ -13,6 +13,13 @@ app = Flask(__name__)
 # Alusta tietokanta (myös kun gunicorn importtaa)
 init_db()
 
+# Käynnistetään taustamoottori, joka keksii uusia skenaarioita
+# Tätä ei suoriteta lokaalissa debugissa vahingossa kahdesti
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    # Varmistetaan Renderin tuotannossa heti käynnistyessä että robotti käy
+    iv = int(os.environ.get("INTERVAL_HOURS", 2))
+    start_background_worker(interval_hours=iv)
+
 # Oletusreitti, joka tarjoilee HTML-pääsivun
 @app.route('/')
 def index():
@@ -240,13 +247,5 @@ def get_stock_details(ticker):
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Alusta tietokanta ennen ku käynnistetään
-    init_db()
-    
-    # Käynnistetään taustamoottori, joka keksii uusia skenaarioita
-    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
-        iv = int(os.environ.get("INTERVAL_HOURS", 2))
-        start_background_worker(interval_hours=iv)
-    
     port = int(os.environ.get("PORT", 8080))
     app.run(debug=False, host="0.0.0.0", port=port)
