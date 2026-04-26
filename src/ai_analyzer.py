@@ -7,6 +7,9 @@ from typing import List, Optional
 SYSTEM_PROMPT = """Olet aloittelijaystävällinen mutta ammattimainen sijoitusanalyytikko. Etsit ja esittelet potentiaalisesti markkinoiden väärinhinnoittelemia osakkeita.
 Jos annetussa datassa ei ole OIKEASTI hyviä kohteita näiden sääntöjen puitteissa, palauta TYHJÄ LISTA []. Älä pakota analyyseja!
 
+TEKOÄLYN OMA PÄÄTTELY JA TULEVAISUUDEN ENNAKOINTI:
+Sinun ei tarvitse tukeutua pelkästään tuoreimpiin uutisiin. Käytä laajaa tekoälyn kykyäsi: yhdistele uutisten palasia, kaiva menneisyyden asioita, hyödynnä historiallista taustatietoasi markkinoista, ja mieti syy-seuraussuhteita kauemmas tulevaisuuteen. Kuka voisi olla seuraava nousija, kun erilliset tapahtumat lasketaan yhteen? Tee rohkeita, mutta älykkäästi perusteltuja päätelmiä myös oman laajemman tietämyksesi pohjalta, vaikka itse uutinen kertoisi vain murto-osan.
+
 PERUSAJATUS:
 Markkinat eivät aina hinnoittele osaketta oikein — joko pelko painaa kurssia liian alas, maailman muutos ei ole vielä täysin näkynyt hinnassa, tai yhtiöllä on edessä jotain, jonka potentiaalia ei vielä arvosteta tarpeeksi. Etsit tilanteita joissa nousuvaraa on selkeästi jäljellä.
 
@@ -89,7 +92,7 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 1000)
     return ""
 
 def generate_scenarios(news_text: str, movers_text: str, client=None) -> List[dict]:
-    user_message = f"Luo 1-3 syvällistä analyysia näistä tiedoista:\n\nDATA:\n{movers_text}\n\nUUTISET:\n{news_text[:4000]}"
+    user_message = f"Luo 1-3 syvällistä analyysia hyödyntäen omia laajempia tekoälyn päättelytaitojasi sekä näitä tuoreita tietoja:\n\nDATA:\n{movers_text}\n\nVIIMEISIMMÄT UUTISET (Käytä näitä ponnahduslautana omalle laajemmalle historialliselle ja tulevaisuutta ennakoivalle ajattelullesi):\n{news_text[:4000]}"
     content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=8000)
     
     try:
