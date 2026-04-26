@@ -25,11 +25,16 @@ def fetch_scenarios():
         active = get_active_scenarios(limit=15)
         favorites = get_favorite_scenarios()
         
+        last_scan = "Ei tietoa (Odottaa)"
+        if os.path.exists("last_scan.txt"):
+            with open("last_scan.txt", "r") as f:
+                last_scan = f.read().strip()
+        
         return jsonify({
             "success": True,
             "active": active,
             "favorites": favorites,
-            "timestamp": datetime.now().strftime("%d.%m.%Y %H:%M")
+            "timestamp": last_scan
         })
     except Exception as e:
         import traceback
@@ -58,7 +63,7 @@ def clear_all_scenarios():
     except Exception as e:
         return f"Error: {e}"
 
-# Endpoint manuaaliseen 2h skannauksen herättämiseen
+# Endpoint manuaaliseen 2h skannauksen herättämiseen (Selainlinkki)
 @app.route('/api/force_scan', methods=['GET'])
 def force_scan():
     import threading
@@ -71,6 +76,16 @@ def force_scan():
             
     threading.Thread(target=run_scan).start()
     return "<h1>Skannaus käynnistetty taustalla!</h1><p>Tekoäly haravoi uutisia juuri nyt. Palaa etusivulle ja päivitä sivu n. 2-3 minuutin kuluttua.</p><a href='/'>Palaa etusivulle</a>"
+
+# Ajax Endpoint taustapainiketta varten
+@app.route('/api/force_scan_ajax', methods=['POST'])
+def force_scan_ajax():
+    import threading
+    from src.background_worker import run_scenario_generation
+    def run_scan():
+        run_scenario_generation(force=True)
+    threading.Thread(target=run_scan).start()
+    return jsonify({"success": True, "message": "Skannaus käynnistetty. Odota pari minuuttia ja päivitä sivu."})
 
 
 # MANUAALINEN HAKU JA ANALYYSI

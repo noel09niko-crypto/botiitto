@@ -80,6 +80,12 @@ def run_scenario_generation(force=False):
         # Automaattinen siivous: pidetään parhaat (nyt limit 15 jotta valinnanvaraa riittää)
         prune_old_scenarios(keep_limit=15)
         
+        try:
+            with open("last_scan.txt", "w") as f:
+                f.write(datetime.now().strftime("%d.%m.%Y %H:%M"))
+        except:
+            pass
+            
         print(f"[{datetime.now()}] Background task completed successfully.")
         
     except Exception as e:
