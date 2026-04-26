@@ -39,18 +39,25 @@ def run_scenario_generation(force=False):
             # 1. Hintamuutos tiedoksi valvontaan
             price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
             
-            # 2. Sisältöpohjainen validointi (Tekoäly päättää onko nousuvara käytetty)
+            # 2. Sisältöpohjainen validointi
             validation = validate_scenario(scen, news_text, client)
             status = validation.get('status', 'VALID')
             
-            # Poistetaan jos tekoäly toteaa että nousuvara loppui tai uutiset ovat huonoja
+            # Ei poisteta suoraan enää yli 6kk tähtäimellä, vaan pakotetaan UPDATE, jossa lukee MYY, jos tilanne muuttui
             if status == 'INVALID':
-                print(f"  [POISTO] {ticker}: {validation.get('reason')}")
-                deactivate_scenario(scen['id'])
+                print(f"  [VAROITUS] {ticker} lipsahti INVALID tilaan: {validation.get('reason')}. Tehdään MYY-päivitys.")
+                update_scens = generate_scenarios(f"PÄIVITYS: Tämä oli aiemmin osto-kohde {ticker}, mutta teit juuri arvion että se on nyt INVALID, syy: {validation.get('reason')}. Kirjoita nyt tästä täysin päivitetty analyysi ja muuta sen suositus muotoon 'MYY' tai 'VÄLTÄ'. Kerro selkeästi mikä muuttui huonoon suuntaan.", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
+                if update_scens:
+                    from src.database import add_scenario, deactivate_scenario
+                    # Nyt kun meillä on päivitetty MYY-fakta uutena korttina, piilotetaan vanha
+                    deactivate_scenario(scen['id'])
+                    add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
             elif status == 'UPDATE':
                 print(f"  [PÄIVITYS] Päivitetään {ticker} uuden tiedon valossa...")
                 update_scens = generate_scenarios(f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
                 if update_scens:
+                    from src.database import add_scenario, deactivate_scenario
+                    deactivate_scenario(scen['id'])
                     add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
         
         print("2/3 Fetching market data...")
@@ -77,8 +84,8 @@ def run_scenario_generation(force=False):
             
             add_scenario(scen, is_pinned=is_huippu, price_change=price_change)
             
-        # Automaattinen siivous: pidetään parhaat (nyt limit 15 jotta valinnanvaraa riittää)
-        prune_old_scenarios(keep_limit=15)
+        # Laitetaan isompi raja, jotta 6kk horisontin kohteet eivät katoa
+        prune_old_scenarios(keep_limit=50)
         
         try:
             with open("last_scan.txt", "w") as f:
