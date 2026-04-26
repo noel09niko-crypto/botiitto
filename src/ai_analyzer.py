@@ -151,15 +151,22 @@ def resolve_ticker(query: str, client=None) -> Optional[str]:
         return None
 
 def validate_scenario(scenario: dict, latest_news: str, client=None) -> dict:
-    prompt = f"""ARVIOI ANALYYSIN JATKO (HODL-STRATEGIA):
-    Analyysi: {scenario.get('title')} ({scenario.get('recommendation')})
+    prompt = f"""ARVIOI ANALYYSIN JATKO (PITKÄN AIKAVÄLIN HODL-STRATEGIA):
+    Analyysin kohde: {scenario.get('title')} ({scenario.get('recommendation')})
     
-    Tärkeä ohje: Sijoitushorisontti on PITKÄ (kuukausia/vuosia). Älä poista analyysia helposti.
+    Tämä investointi tehtiin seuraavalla alkuperäisellä perusteella:
+    Miksi nousuvaraa: {scenario.get('reasoning')}
+    Maailmantilanne: {scenario.get('global_context')}
+    Aikahorisontti: {scenario.get('time_horizon')}
+    
+    KÄYTTÄJÄN TIUKKA EHTO: Sijoitushorisontti on PITKÄ (+6 kk). 
+    JOS ALKUPERÄINEN PERUSTELU PÄTEE YHÄ: Sitä EI SAA poistaa! Vaikka uutisia ei olisi, tai tulisi pientä heilahtelua, äla poista, jos alkuperäinen iso tarina on vielä hengissä.
+    JOS ALKUPERÄINEN PERUSTELU ON MURTUMASSA: Sitten sen saa poistaa (INVALID).
     
     ASETA STATUS:
-    - 'VALID': Jos analyysin perusajatus on yhä kunnossa. Hiljaisuus uutisissa EI ole syy poistolle.
-    - 'UPDATE': Jos on tullut jotain uutta kiinnostavaa, joka tarkentaa kuvaa.
-    - 'INVALID': VAIN jos yhtiön tilanteessa on tapahtunut jotain TODELLA kriittistä ja pahaa, tai jos alkuperäinen noususyy on todistetusti poistunut kokonaan.
+    - 'VALID': Jos alkuperäinen teesi on yhä elossa. Uutishiljaisuus on OK.
+    - 'UPDATE': Jos on tullut jotain uutta olennaista tietoa, joka vahvistaa tai muuttaa hieman lukemia.
+    - 'INVALID': VAIN jos on selkeitä todisteita, että ALKUPERÄINEN PERUSTELU ON ROMAHTANUT tai sijoituscase kuollut.
     
     TUOREIMMAT UUTISET:
     {latest_news[:3000]}

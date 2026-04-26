@@ -43,15 +43,11 @@ def run_scenario_generation(force=False):
             validation = validate_scenario(scen, news_text, client)
             status = validation.get('status', 'VALID')
             
-            # Ei poisteta suoraan enää yli 6kk tähtäimellä, vaan pakotetaan UPDATE, jossa lukee MYY, jos tilanne muuttui
+            # Poistetaan VASTA jos tekoäly on saanut lukea alkuperäisen perustelun ja toteaa ettei se enää päde.
             if status == 'INVALID':
-                print(f"  [VAROITUS] {ticker} lipsahti INVALID tilaan: {validation.get('reason')}. Tehdään MYY-päivitys.")
-                update_scens = generate_scenarios(f"PÄIVITYS: Tämä oli aiemmin osto-kohde {ticker}, mutta teit juuri arvion että se on nyt INVALID, syy: {validation.get('reason')}. Kirjoita nyt tästä täysin päivitetty analyysi ja muuta sen suositus muotoon 'MYY' tai 'VÄLTÄ'. Kerro selkeästi mikä muuttui huonoon suuntaan.", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
-                if update_scens:
-                    from src.database import add_scenario, deactivate_scenario
-                    # Nyt kun meillä on päivitetty MYY-fakta uutena korttina, piilotetaan vanha
-                    deactivate_scenario(scen['id'])
-                    add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
+                print(f"  [POISTO] {ticker}: {validation.get('reason')} - Alkuperäinen perustelu ei enää päde.")
+                from src.database import deactivate_scenario
+                deactivate_scenario(scen['id'])
             elif status == 'UPDATE':
                 print(f"  [PÄIVITYS] Päivitetään {ticker} uuden tiedon valossa...")
                 update_scens = generate_scenarios(f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
