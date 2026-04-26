@@ -439,30 +439,4 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetch(`/api/favorite/${currentModalScenarioId}`, { method: 'POST' });
         fetchScenarios();
     });
-
-    // Floating Scan Button Logic
-    const floatingScanBtn = document.getElementById('floatingScanBtn');
-    if (floatingScanBtn) {
-        floatingScanBtn.addEventListener('click', async () => {
-            floatingScanBtn.disabled = true;
-            const titleEl = floatingScanBtn.querySelector('.scan-title');
-            const originalTitle = titleEl.innerHTML;
-            titleEl.innerHTML = '<span class="loading-spinner"></span> Skannataan...';
-            
-            try {
-                const response = await fetch('/api/force_scan_ajax', { method: 'POST' });
-                const result = await response.json();
-                if(result.success) {
-                    alert(result.message);
-                } else {
-                    alert("Virhe skannauksen käynnistyksessä.");
-                }
-            } catch(e) {
-                alert("Yhteysvirhe. Skannaus ei välttämättä käynnistynyt alusta.");
-            } finally {
-                floatingScanBtn.disabled = false;
-                titleEl.innerHTML = originalTitle;
-            }
-        });
-    }
 });
