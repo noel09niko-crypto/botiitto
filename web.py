@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import os
+import threading
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -13,6 +14,23 @@ app = Flask(__name__)
 # Alusta tietokanta (myös kun gunicorn importtaa)
 init_db()
 
+# Keep-alive: estää Render free tierin nukahtamisen
+def _keep_alive():
+    import urllib.request
+    url = os.environ.get("RENDER_EXTERNAL_URL", "")
+    if not url:
+        return  # Ei Render-ympäristössä, ei tehdä mitään
+    import time as _time
+    _time.sleep(60)  # Odotetaan että palvelin on ylhäällä ennen ensimmäistä pingiä
+    while True:
+        try:
+            urllib.request.urlopen(url + "/health", timeout=10)
+        except Exception:
+            pass
+        _time.sleep(14 * 60)  # 14 minuuttia
+
+threading.Thread(target=_keep_alive, daemon=True).start()
+
 # Käynnistetään taustamoottori, joka keksii uusia skenaarioita
 # Tätä ei suoriteta lokaalissa debugissa vahingossa kahdesti
 if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
@@ -24,6 +42,10 @@ if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
 
 # Hakee kaikki aktiiviset (ja uudet) mahdollisuudet
 @app.route('/api/scenarios', methods=['GET'])
