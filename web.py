@@ -125,7 +125,24 @@ def force_scan_ajax():
     threading.Thread(target=run_scan).start()
     return jsonify({"success": True, "message": "Skannaus käynnistetty. Odota pari minuuttia ja päivitä sivu."})
 
-@app.route('/api/refresh_all_style', methods=['GET'])
+@app.route('/api/nuclear_wipe', methods=['GET'])
+def nuclear_wipe():
+    from src.database import get_db_connection
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM scenarios")
+        conn.commit()
+        conn.close()
+        
+        # Käynnistetään heti uusi skannaus puhtaalta pöydältä
+        import threading
+        from src.background_worker import run_scenario_generation
+        threading.Thread(target=lambda: run_scenario_generation(force=True)).start()
+        
+        return "<h1>Tietokanta tyhjennetty!</h1><p>Kaikki analyysit on poistettu ja uusi skannaus on käynnistetty uusilla säännöillä.</p><a href='/'>Palaa etusivulle</a>"
+    except Exception as e:
+        return f"Virhe: {str(e)}"
 def refresh_all_style():
     import threading
     from src.database import get_active_scenarios, get_db_connection, USE_POSTGRES
