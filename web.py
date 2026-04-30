@@ -143,6 +143,7 @@ def nuclear_wipe():
         return "<h1>Tietokanta tyhjennetty!</h1><p>Kaikki analyysit on poistettu ja uusi skannaus on käynnistetty uusilla säännöillä.</p><a href='/'>Palaa etusivulle</a>"
     except Exception as e:
         return f"Virhe: {str(e)}"
+@app.route('/api/refresh_all_style', methods=['GET'])
 def refresh_all_style():
     import threading
     from src.database import get_active_scenarios, get_db_connection, USE_POSTGRES
@@ -184,7 +185,8 @@ def refresh_all_style():
         print("[REFRESH] Valmis!")
 
     threading.Thread(target=run_refresh).start()
-    return "<h1>Tyylin päivitys käynnistetty!</h1><p>Kaikki nykyiset analyysit kirjoitetaan uusiksi ammattimaiseen ja simppeliin muotoon. Odota 1-2 minuuttia ja päivitä sivu.</p><a href='/'>Palaa etusivulle</a>"
+    return "<h1>Tyylin päivitys aloitettu!</h1><p>Käyn läpi kaikki analyysit ja muutan ne uuteen tyyliin taustalla. Tämä kestää muutaman minuutin.</p><a href='/'>Palaa etusivulle</a>"
+
 
 
 # MANUAALINEN HAKU JA ANALYYSI
