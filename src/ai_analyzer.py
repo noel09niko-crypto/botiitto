@@ -40,7 +40,6 @@ VASTAA JSON-MUODOSSA:
     "invalidation_risks": "Milloin alkuperäinen suunnitelma ei enää päde."
   }
 ]
-"""
 
 KRIITTISET RAJOITUKSET:
 - Vastaa VAIN JSON-muodossa. 
