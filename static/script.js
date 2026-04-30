@@ -270,8 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const companyName = extractCompanyName(item);
         const worldHint = getWorldHint(item);
 
-        const isStrong = (item.confidence || 0) >= 90;
-
         let confClass = 'conf-low';
         const numConf = item.confidence || 0;
         if (numConf >= 90) confClass = 'conf-high-glow';
@@ -279,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (numConf >= 70) confClass = 'conf-med';
 
         div.innerHTML = `
-            ${isStrong ? '<div class="strong-recommendation-badge">✨ Vahva suositus</div>' : ''}
             <div class="card-top-row">
                 <div class="folder-title">${companyName}</div>
                 <button class="track-btn-small ${isFav ? 'active' : ''}" data-id="${item.id}">
