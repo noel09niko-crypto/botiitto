@@ -29,6 +29,7 @@ VASTAA JSON-MUODOSSA:
     "title": "YHTIÖN NIMI: Selkeä ja ammattimainen otsikko",
     "tickers": "TICKER",
     "summary": "KUKA TÄMÄ ON: Selitä yhtiön bisnes ja sen ylivoima 2 lyhyessä kappaleessa.",
+    "competitive_landscape": "KILPAILUASEMA: Selitä lyhyesti, miksi tämä yhtiö on vahvempi tai erilainen kuin sen pääkilpailijat. Jos suosittelet useita alan yhtiöitä, selitä tämän yhtiön erityinen rooli.",
     "global_context": "ISO KUVA: Mikä suuri maailman muutos (esim. sota, politiikka tai pelko) luo tämän mahdollisuuden.",
     "reasoning": "MISTÄ NOUSU SYNTYY: Strateginen perustelu (1-3v). Miksi tämä yhtiö voittaa tässä muuttuvassa maailmassa. Älä mainitse tämän päivän hinnanmuutoksia.",
     "metrics_explanation": "NUMEROT: Valitse tärkeä luku (esim. kasvu tai halpa hinta) ja selitä se yksinkertaisesti.",
@@ -247,6 +248,7 @@ def rewrite_scenario(scen: dict, client) -> Optional[dict]:
     Otsikko: {scen.get('title')}
     Ticker: {scen.get('tickers')}
     Yhteenveto: {scen.get('summary')}
+    Kilpailutilanne: {scen.get('competitive_landscape')}
     Konteksti: {scen.get('global_context')}
     Perustelu: {scen.get('reasoning')}
     Numerot: {scen.get('metrics_explanation')}

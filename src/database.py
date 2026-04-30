@@ -37,6 +37,7 @@ def init_db():
                 global_context TEXT,
                 metrics_explanation TEXT,
                 company_history TEXT,
+                competitive_landscape TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 is_active BOOLEAN DEFAULT TRUE,
                 is_favorite BOOLEAN DEFAULT FALSE,
@@ -66,6 +67,7 @@ def init_db():
             ("horizon_title", "TEXT"),
             ("history_title", "TEXT"),
             ("is_updated", "BOOLEAN DEFAULT FALSE"),
+            ("competitive_landscape", "TEXT"),
             ("deactivation_reason", "TEXT"),
             ("deactivated_at", "TIMESTAMP"),
         ]
@@ -100,6 +102,7 @@ def init_db():
                 metrics_explanation TEXT,
                 company_history TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                competitive_landscape TEXT,
                 is_active BOOLEAN DEFAULT 1,
                 is_favorite BOOLEAN DEFAULT 0,
                 is_manual BOOLEAN DEFAULT 0,
@@ -123,6 +126,7 @@ def init_db():
             ("horizon_title", "TEXT"),
             ("history_title", "TEXT"),
             ("is_updated", "BOOLEAN DEFAULT 0"),
+            ("competitive_landscape", "TEXT"),
             # Poistoloki — tallentaa aina MIKSI analyysi poistettiin
             ("deactivation_reason", "TEXT"),
             ("deactivated_at", "TIMESTAMP"),
@@ -201,6 +205,7 @@ def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_up
     global_context = get_field(data, ["global_context", "maailman_tapahtumat", "konteksti", "mitä_maailmalla_tapahtuu"], "Maailmanmarkkinoiden tilanne analysoitavana tämän yhtiön osalta.")
     metrics_exp = get_field(data, ["metrics_explanation", "yhtiön_numerot", "tunnusluvut_selitettynä", "numerot"], "Tunnuslukujen tarkempi analyysi päivittyy pian.")
     company_hist = get_field(data, ["company_history", "yhtiön_historia", "tarina", "yhtiön_tarina"], "Yhtiön tausta ja historia tarkentuu seuraavassa päivityksessä.")
+    competitive_edge = get_field(data, ["competitive_landscape", "kilpailuasetelma", "kilpailutilanne", "kilpailu", "competitive_edge"], "Kilpailutilanteen analyysi valmistuu.")
 
     # Dynaamiset otsikot
     sum_title = get_field(data, ["pikakuvaus_otsikko", "summary_title"], "Pikakuvaus yhtiöstä")
@@ -215,16 +220,16 @@ def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_up
             title, tickers, summary, reasoning, time_horizon, 
             recommendation, risk_level, confidence, historical_comparison, 
             invalidation_risks, sector, supporting_news,
-            global_context, metrics_explanation, company_history, is_pinned, is_manual, is_favorite, price_change_24h,
+            global_context, metrics_explanation, company_history, competitive_landscape, is_pinned, is_manual, is_favorite, price_change_24h,
             summary_title, global_title, reasoning_title, metrics_title, horizon_title, history_title, is_updated
         )
-        VALUES ({', '.join([p]*26)})
+        VALUES ({', '.join([p]*27)})
     ''', (
         ensure_str(title), ensure_str(tickers), ensure_str(summary), ensure_str(reasoning), ensure_str(horizon),
         ensure_str(get_field(data, ["recommendation", "suositus"], "Tarkkaile")), 
         ensure_str(get_field(data, ["risk_level", "riskitaso", "riski"], "Keskisuuri")), 
         conf, ensure_str(history), ensure_str(risks), ensure_str(sector), ensure_str(news),
-        ensure_str(global_context), ensure_str(metrics_exp), ensure_str(company_hist), 
+        ensure_str(global_context), ensure_str(metrics_exp), ensure_str(company_hist), ensure_str(competitive_edge),
         True if is_pinned else False, True if is_manual else False, False, price_change,
         ensure_str(sum_title), ensure_str(glob_title), ensure_str(reasons_title), 
         ensure_str(met_title), ensure_str(hor_title), ensure_str(hist_title),

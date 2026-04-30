@@ -352,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('modalSector').textContent = item.sector || 'Yleinen';
             
             document.getElementById('modalSummary').textContent = item.summary || 'Yhteenveto valmistuu...';
+            document.getElementById('modalCompetitiveEdge').textContent = item.competitive_landscape || 'Kilpailuasetelman analyysi valmistuu...';
             document.getElementById('modalGlobalContext').textContent = item.global_context || 'Maailmanmarkkinoiden tilanne analysoitavana.';
             document.getElementById('modalReasoning').textContent = item.reasoning || 'Analyysi nousuajureista valmistuu.';
             document.getElementById('modalMetricsExp').textContent = item.metrics_explanation || 'Tunnuslukujen tarkempi analyysi päivittyy pian.';

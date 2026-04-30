@@ -162,6 +162,7 @@ def refresh_all_style():
                     UPDATE scenarios 
                     SET title = %s, summary = %s, global_context = %s, reasoning = %s, 
                         metrics_explanation = %s, time_horizon = %s, company_history = %s,
+                        competitive_landscape = %s,
                         confidence = %s, risk_level = %s, sector = %s, invalidation_risks = %s,
                         is_updated = TRUE
                     WHERE id = %s
@@ -173,6 +174,7 @@ def refresh_all_style():
                     new_data.get('title'), new_data.get('summary'), new_data.get('global_context'),
                     new_data.get('reasoning'), new_data.get('metrics_explanation'),
                     new_data.get('time_horizon'), new_data.get('company_history'),
+                    new_data.get('competitive_landscape'),
                     new_data.get('confidence'), new_data.get('risk_level'),
                     new_data.get('sector'), new_data.get('invalidation_risks'),
                     scen['id']
