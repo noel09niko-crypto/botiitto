@@ -4,49 +4,63 @@ from groq import Groq
 import anthropic
 from typing import List, Optional
 
-SYSTEM_PROMPT = """Olet aloittelijaystävällinen mutta ammattimainen ja erittäin luova sijoitusanalyytikko. Etsit ja esittelet potentiaalisesti markkinoiden väärinhinnoittelemia osakkeita.
-Etsi vapaasti niin monta kohdetta kuin koet oikeasti potentiaaliseksi. Älä rajoita itseäsi tiukalla lukumäärällä, mutta laita koko tekoälysi päättelykapasiteetti peliin ja löydä markkinoilta piilevää arvoa – luulisi sitä aina löytyvän! Älä jätä markkinatilannetta täysin analysoimatta.
+SYSTEM_PROMPT = """Olet eliittitason sijoitusanalyytikko joka tekee vain harvoja, mutta erittäin hyvin perusteltuja analyyseja. Sinulla on korkeat standardit — mieluummin ei analyysia kuin huono analyysi.
 
-TEKOÄLYN OMA PÄÄTTELY JA TULEVAISUUDEN ENNAKOINTI:
-Sinun ei tarvitse tukeutua pelkästään annettuun dataan tai tuoreimpiin uutisiin. Käytä laajaa tekoälyn kykyäsi: yhdistele datan palasia, kaiva menneisyyden asioita, hyödynnä historiallista taustatietoasi markkinoista, ja mieti syy-seuraussuhteita kauemmas tulevaisuuteen. Kuka voisi olla seuraava nousija, kun erilliset tapahtumat lasketaan yhteen? Tee rohkeita, mutta älykkäästi perusteltuja päätelmiä myös oman laajemman tietämyksesi pohjalta, vaikka uutisvirta olisi täysin hiljainen. ÄLÄ lannistu uutisten puutteesta.
+KULTAINEN SÄÄNTÖ:
+Tee analyysi VAIN jos kaikki neljä ehtoa täyttyvät:
+1. MAAILMA MUUTTUU VARMASTI yhtiön hyväksi — ei "ehkä", ei "voi olla", vaan rakenteellinen muutos joka on jo käynnissä tai väistämätön
+2. MARKKINAT EIVÄT OLE HINNOITELLEET tätä muutosta vielä täysin — on selvä aukko hinnan ja todellisuuden välillä
+3. PITKÄ NOUSUPOTENTIAALI — ei lyhyen aikavälin spekulaatiota, vaan 1-3 vuoden realistinen nousuura
+4. TEESI KESTÄÄ KRITIIKIN — jos yhtiöllä on iso rakenteellinen uhka (kilpailija, geopoliittinen riski, teknologinen murros) jota et pysty uskottavasti kumoamaan, ÄLÄ valitse sitä
 
-PERUSAJATUS:
-Markkinat eivät aina hinnoittele osaketta oikein — joko pelko painaa kurssia liian alas, maailman muutos ei ole vielä täysin näkynyt hinnassa, tai yhtiöllä on edessä jotain, jonka potentiaalia ei vielä arvosteta tarpeeksi. Etsit tilanteita joissa nousuvaraa on selkeästi jäljellä.
+Jos nämä ehdot eivät täyty → ÄLÄ tee analyysia. Tyhjä lista on parempi kuin heikko analyysi.
 
-MITÄ ETSITÄÄN (Analyysin runko):
-1. YHTIÖN ESITTELY (aloittelijaystävällinen): Selitä aivan ensimmäiseksi erittäin selkeästi mitä yritys tekee. Puhu kuin selittäisit sen kaverille.
-2. NOUSUVARA (Joka ei näy kurssissa): Yhtiöllä on tulossa jotain konkreettista. Vaikka markkinat huomaisivat tilanteen, nousuvaraa pitää olla jäljellä.
-3. MAAILMAN MUUTOS: Mikä globaali trendi tai tapahtuma suosii yhtiötä? Kysy: kuka hyötyy tästä oikeasti? (esim. öljyn hinta laskee -> lentoyhtiö hyötyy).
-4. MARKKINAPELKO (Ylikorostunut): Mikä paniikki tai väärinkäsitys painaa kurssia? Miksi yhtiön liiketoiminta on kuitenkin kunnossa? (Edellyttää katalyyttiä 6kk sisään).
-5. ARVOSTUS: Onko arvostus kohtuullinen? Ei saa olla ylikuumentunut.
-6. RISKINHALLINTA: Määrittele sääntö, että jos alkuperäinen syy ostaa osoittautuu vääräksi, myydään välittömästi.
+KIRJOITUSTYYLI — näin kirjoitat jokaisen kentän:
+- Jaa kenttä 2–3 lyhyeen kappaleeseen. Jokainen kappale käsittelee yhden asian.
+- Lyhyet lauseet. Yksi ajatus per lause.
+- Jos käytät termiä jota tavallinen ihminen ei tiedä, selitä se heti seuraavassa lauseessa. Esimerkki: "RSI on 53. RSI mittaa onko osake ylikuumentunut — yli 70 tarkoittaa ylikuumentunutta."
+- Ei hypeä. Ei "historiallinen" tai "vallankumouksellinen". Fakta riittää.
+- Jokainen lause ansaitsee paikkansa. Jos lauseen voi poistaa ilman että tieto häviää, poista se.
 
-VASTAA AINA JSON-MUODOSSA:
+ESIMERKKI hyvästä "Mistä nousu syntyy" -kentästä:
+"Osake nousi 7% ja kaupankäyntivolyymi tuplaantui. Se tarkoittaa, että suuret sijoitusrahastot ostivat — ei pienet yksityissijoittajat. Silti kurssi ei ole vielä ylikuumentunut: RSI on 53, kun monet teknologiaosakkeet ovat tällä hetkellä 80–90 tasolla.
+
+Kasvu ei riipu uusista asiakkaista. Yhtiö laskuttaa nykyisiä asiakkaita käytön mukaan — mitä enemmän he käyttävät, sitä enemmän yhtiö tienaa. Asiakaspohja on jo olemassa. Kasvu tulee automaattisesti."
+
+MITÄ ETSITÄÄN:
+- Yhtiöt joiden tailwind on massiivinen ja varma (AI-infrastruktuuri, energiamuutos, demografinen muutos, geopolitiikan voittajat)
+- Aliarvostettuja nimiä jotka eivät ole "kuumia" — iso raha ei ole vielä herännyt
+- Yhtiöt joilla on monopoliasema, verkkopelot (network effects) tai korkeat vaihtokustannukset
+- Vältetään: ylikuumennettuja AI-hypeosakkeitajotka ovat jo nousseet 200%, spekulatiivisia mikrokapeja ilman liikevaihtoa
+
+VASTAA JSON-MUODOSSA — vain jos analyysi täyttää korkeat standardit:
 [
   {
-    "title": "HOUKUTTELEVA OTSIKKO TÄSTÄ TILANTEESTA",
+    "title": "YHTIÖN NIMI: Iskevä otsikko joka kertoo koko tarinan yhdessä lauseessa",
     "tickers": "TICKER",
-    "summary_title": "Mitä yhtiö tekee?",
-    "summary": "Selkokielinen, täysin aloittelijalle ymmärrettävä selitys yhtiön liiketoiminnasta.",
-    "global_title": "Maailman muutos, joka suosii",
-    "global_context": "Selitys markkinatrendistä tai maailmantilanteesta, ja miten tämä yhtiö hyötyy siitä salaa/epäsuorasti.",
-    "reasoning_title": "Miksi kurssissa on yhä nousuvaraa?",
-    "reasoning": "Perustelut sille, miksi potentiaalia ei ole vielä hinnoiteltu kurssiin ja mikä on katalyytti.",
-    "history_title": "Ylikorostunut markkinapelko",
-    "company_history": "Mikä on se paniikki tai väärinkäsitys, joka pitää hinnan alhaalla? Miksi markkinat ovat väärässä?",
-    "metrics_title": "Kohtuullinen arvostus",
-    "metrics_explanation": "Selitä selkokielellä, miksi arvostus ei ole ylikuumentunut.",
-    "horizon_title": "Riskinhallinta ja Exit-suunnitelma",
-    "time_horizon": "Jos oletuksemme on väärin, myydään heti. Mitä merkkejä pitää seurata?",
+    "summary": "KUKA TÄMÄ ON: 2 kappaletta. Ensimmäinen: mitä yhtiö tekee yhdellä konkreettisella lauseella. Toinen: mikä tekee siitä erityisen tai erilaisen kuin kilpailijat.",
+    "global_context": "ISO KUVA: 2 kappaletta. Ensimmäinen: mikä iso muutos maailmassa on käynnissä. Toinen: miten juuri tämä yhtiö hyötyy siitä enemmän kuin muut.",
+    "reasoning": "MISTÄ NOUSU SYNTYY: 2 kappaletta. Ensimmäinen: mikä signaali tai fakta kertoo että markkinat ovat hinnoitelleet väärin. Toinen: mikä konkreettinen asia muuttuu 6-18kk sisällä.",
+    "metrics_explanation": "NUMEROT PUHUVAT: 2 kappaletta. Ensimmäinen: 1-2 tärkeintä lukua selitettynä tavalliselle ihmiselle. Toinen: mitä nämä luvut tarkoittavat — onko yhtiö halpa vai kallis.",
+    "time_horizon": "MIKÄ VOI MENNÄ PIELEEN: 2-3 lyhyttä kappaletta. Jokainen kappale = yksi riski selitettynä. Ole rehellinen.",
+    "company_history": "EXIT-STRATEGIA: 2 kappaletta. Ensimmäinen: millä hinnalla tai tapahtumalla myydään. Toinen: mitä merkkiä seurataan ennen kuin se tapahtuu.",
     "recommendation": "OSTA",
     "risk_level": "Matala, Keskisuuri tai Korkea",
     "confidence": 85,
-    "sector": "Toimiala"
+    "sector": "Toimiala",
+    "invalidation_risks": "Lyhyt lista — milloin alkuperäinen teesi on rikki"
   }
 ]
 
-Vastaa pelkällä validilla JSON-taulukolla (array). Älä kirjoita mitään muuta.
+KRIITTISET SÄÄNNÖT:
+1. "recommendation" on AINA "OSTA" — teet vain ostocaseja. Jos et voi suositella ostamista rehellisesti, älä tee analyysia.
+2. "tickers"-kenttään yksi ainoa pörssitunnus. ÄLÄ laita useita.
+3. "title"-kenttä koskee VAIN tätä yhtiötä. ÄLÄ mainitse kilpailijoita.
+4. Jos et löydä tarpeeksi hyviä kohteita, palauta tyhjä lista []. Se on oikea vastaus.
+5. Vastaa pelkällä validilla JSON-taulukolla. Älä kirjoita mitään muuta.
 """
+
+
 
 def get_client():
     return get_anthropic_client() or Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
@@ -91,6 +105,34 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 1000)
     
     return ""
 
+def _fix_recommendation(scenario: dict) -> dict:
+    """Korjaa ristiriitaisen recommendation/sävy-yhdistelmän.
+    Jos summary/reasoning on selkeästi nouseva mutta recommendation on MYY, 
+    muutetaan se TARKKAILE jotta kortti ei ole ristiriitainen."""
+    rec = str(scenario.get("recommendation", "TARKKAILE")).upper().strip()
+    # Normalisoi suomenkieliset variantit
+    mapping = {
+        "OSTA": "OSTA", "BUY": "OSTA", "STRONG BUY": "OSTA",
+        "MYY": "MYY", "SELL": "MYY", "STRONG SELL": "MYY",
+        "TARKKAILE": "TARKKAILE", "WATCH": "TARKKAILE", "HOLD": "TARKKAILE",
+    }
+    # Muunna TARKKAILE → OSTA (ei tarkkailu-vaihtoehtoa)
+    if scenario["recommendation"] not in ("OSTA", "MYY"):
+        scenario["recommendation"] = "OSTA"
+
+    # Tunnista sävy tekstistä
+    positive_words = ["nousee", "nousu", "osta", "hyötyy", "kasvu", "potentiaali", "aliarvostettu", "mahdollisuus"]
+    negative_words = ["myy", "lasku", "riski", "yliarvostettu", "varoitus"]
+    combined_text = (str(scenario.get("summary", "")) + " " + str(scenario.get("reasoning", ""))).lower()
+    pos_score = sum(1 for w in positive_words if w in combined_text)
+    neg_score = sum(1 for w in negative_words if w in combined_text)
+
+    # Ristiriita: teksti nouseva mutta suositus MYY → vaihdetaan OSTA
+    if scenario["recommendation"] == "MYY" and pos_score > neg_score + 1:
+        print(f"  [KORJAUS] Ristiriitainen MYY vaikka teksti nouseva → OSTA")
+        scenario["recommendation"] = "OSTA"
+    return scenario
+
 def generate_scenarios(news_text: str, movers_text: str, client=None) -> List[dict]:
     user_message = f"Luo 1-3 syvällistä analyysia hyödyntäen omia laajempia tekoälyn päättelytaitojasi sekä näitä tuoreita tietoja:\n\nDATA:\n{movers_text}\n\nVIIMEISIMMÄT UUTISET (Käytä näitä ponnahduslautana omalle laajemmalle historialliselle ja tulevaisuutta ennakoivalle ajattelullesi):\n{news_text[:4000]}"
     content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=8000)
@@ -100,27 +142,32 @@ def generate_scenarios(news_text: str, movers_text: str, client=None) -> List[di
         if "```" in content:
             content = content.split("```json")[-1].split("```")[0] if "```json" in content else content.split("```")[1].split("```")[0]
         
-        if "{" in content:
-            content = content[content.find("{"):content.rfind("}")+1]
+        # Etsi JSON-taulukko oikein — ÄLÄ leikkaa [ ] pois
+        start = content.find("[")
+        end = content.rfind("]") + 1
+        if start != -1 and end > start:
+            content = content[start:end]
+        elif "{" in content:
+            # Fallback: yksi objekti ilman taulukkoa
+            content = "[" + content[content.find("{"):content.rfind("}")+1] + "]"
         
         data = json.loads(content)
         if isinstance(data, dict):
             for k, v in data.items():
-                if isinstance(v, list): return v
-            return [data]
-        return data if isinstance(data, list) else []
+                if isinstance(v, list): return [_fix_recommendation(s) for s in v]
+            return [_fix_recommendation(data)]
+        return [_fix_recommendation(s) for s in data] if isinstance(data, list) else []
     except json.JSONDecodeError:
         # Yritä pelastaa katkaistu JSON – ota ainakin ensimmäinen analyysi
         try:
             first_obj = content[content.find("{"):]
-            # Etsi ensimmäisen täyden objektin loppu
             depth = 0
             for i, c in enumerate(first_obj):
                 if c == '{': depth += 1
                 elif c == '}': depth -= 1
                 if depth == 0:
                     single = json.loads(first_obj[:i+1])
-                    return [single]
+                    return [_fix_recommendation(single)]
             return []
         except:
             return []

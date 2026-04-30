@@ -244,26 +244,27 @@ document.addEventListener('DOMContentLoaded', () => {
         let finalRecClass = recClass;
         let finalBorderClass = borderClass;
 
-        if (priceChange < 0) {
+        // Käytä tekoälyn suositusta suoraan \u2014 älä ylikirjoita hintamuutoksen perusteella
+        if (rec.toLowerCase().includes('myy') || rec.toLowerCase().includes('vältä') || rec.toLowerCase().includes('short') || rec.toLowerCase() === 'myy') {
             recLabel = 'MYY';
             finalRecClass = 'rec-valta';
             finalBorderClass = 'rec-sell-border';
-        } else if (rec.toLowerCase().includes('myy') || rec.toLowerCase().includes('vältä') || rec.toLowerCase().includes('short')) {
-            recLabel = 'MYY';
-            finalRecClass = 'rec-valta';
-            finalBorderClass = 'rec-sell-border';
+        } else if (rec.toLowerCase().includes('tarkkaile') || rec.toLowerCase().includes('odota') || rec.toLowerCase() === 'tarkkaile') {
+            recLabel = 'TARKKAILE';
+            finalRecClass = 'rec-tarkkaile';
+            finalBorderClass = 'rec-watch-border';
         } else {
-            // Kaikki muut (osta, tarkkaile, odota jne.) ovat nyt "OSTA" keltaisella pohjalla
             recLabel = 'OSTA';
             finalRecClass = 'rec-osta';
             finalBorderClass = 'rec-buy-border';
         }
 
+
         div.className = `folder-card ${isFav ? 'tracked-style' : finalBorderClass}`;
 
         const dateStr = new Date(item.created_at).toLocaleString('fi-FI', { month: 'short', day: 'numeric' });
         const updateTime = new Date(item.created_at).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
-        const updatedTag = item.is_updated ? `<div class="updated-badge">🔄 PÄIVITETTY ${updateTime}</div>` : '';
+        // PÄIVITETTY-badge poistettu kokonaan
         const primaryTicker = extractPrimaryTicker(item.tickers);
         const conf = item.confidence ? `${item.confidence}%` : '?';
         const companyName = extractCompanyName(item);
@@ -279,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         div.innerHTML = `
             ${isStrong ? '<div class="strong-recommendation-badge">✨ Vahva suositus</div>' : ''}
-            ${updatedTag}
             <div class="card-top-row">
                 <div class="folder-title">${companyName}</div>
                 <button class="track-btn-small ${isFav ? 'active' : ''}" data-id="${item.id}">
@@ -358,13 +358,17 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('modalTimeHorizon').textContent = item.time_horizon || 'Ostohorisontti tarkentuu pian.';
             document.getElementById('modalCompanyHistory').textContent = item.company_history || 'Yhtiön tarina päivittyy pian.';
 
-            // Dynaamiset otsikot
-            document.getElementById('headerSummary').textContent = item.summary_title || 'Pikakuvaus yhtiöstä';
-            document.getElementById('headerGlobalContext').textContent = item.global_title || 'Mitä maailmalla tapahtuu?';
-            document.getElementById('headerReasoning').textContent = item.reasoning_title || 'Analyysi ja perustelut';
-            document.getElementById('headerMetricsExp').textContent = item.metrics_title || 'Yhtiön numerot sanallistettuna';
-            document.getElementById('headerTimeHorizon').textContent = item.horizon_title || 'Ostohorisontti ja seuranta';
-            document.getElementById('headerCompanyHistory').textContent = item.history_title || 'Yhtiön tarina ja tausta';
+            // Otsikot ovat kiinteitä HTML:ssä — ei dynaamista päivitystä tarvita
+            // Poikkeus: "Miksi nousee/laskee/seurataan?" mukautuu suosituksen mukaan
+            const reasoningHeader = document.getElementById('headerReasoning');
+            if (reasoningHeader) {
+                const recLower = (item.recommendation || '').toLowerCase();
+                if (recLower.includes('myy') || recLower.includes('vältä') || recLower.includes('sell')) {
+                    reasoningHeader.textContent = 'Mikä painaa alas?';
+                } else {
+                    reasoningHeader.textContent = 'Mistä nousu syntyy?';
+                }
+            }
             
             resetStockDetailsFields();
 

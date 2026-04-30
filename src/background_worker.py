@@ -1,10 +1,48 @@
 import time
 import threading
+import os
+import sys
 from datetime import datetime
 from src.database import init_db, add_scenario
 
-# Tila-muuttuja jotta emme aja kahta yhtä aikaa
+# Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
 _WORKER_RUNNING = False
+
+# Lukitustiedosto — estää duplikaatit eri prosessien välillä
+_LOCK_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "worker.lock")
+
+def _acquire_lock() -> bool:
+    """Yrittää hankkia lukituksen. Palauttaa True jos onnistui."""
+    if os.path.exists(_LOCK_FILE):
+        try:
+            with open(_LOCK_FILE, "r") as f:
+                old_pid = int(f.read().strip())
+            # Tarkista onko vanha prosessi vielä käynnissä
+            os.kill(old_pid, 0)  # Ei tapa — vain tarkistaa
+            print(f"[Worker] Lukko on prosessilla {old_pid} — tämä prosessi ({os.getpid()}) ei käynnistä workeria.")
+            return False
+        except (ValueError, ProcessLookupError, PermissionError):
+            # Vanha prosessi on kuollut → lukko on vapaa
+            print(f"[Worker] Vanhentunut lukko poistettu (PID ei enää käynnissä).")
+            os.remove(_LOCK_FILE)
+
+    # Kirjoita oma PID lukitustiedostoon
+    with open(_LOCK_FILE, "w") as f:
+        f.write(str(os.getpid()))
+    print(f"[Worker] Lukko hankittu prosessille {os.getpid()}.")
+    return True
+
+def _release_lock():
+    """Vapauttaa lukituksen jos tämä prosessi omistaa sen."""
+    if os.path.exists(_LOCK_FILE):
+        try:
+            with open(_LOCK_FILE, "r") as f:
+                pid = int(f.read().strip())
+            if pid == os.getpid():
+                os.remove(_LOCK_FILE)
+                print(f"[Worker] Lukko vapautettu.")
+        except Exception:
+            pass
 
 def run_scenario_generation(force=False):
     global _WORKER_RUNNING
@@ -45,15 +83,16 @@ def run_scenario_generation(force=False):
             
             # Poistetaan VASTA jos tekoäly on saanut lukea alkuperäisen perustelun ja toteaa ettei se enää päde.
             if status == 'INVALID':
-                print(f"  [POISTO] {ticker}: {validation.get('reason')} - Alkuperäinen perustelu ei enää päde.")
+                reason = validation.get('reason', 'Tekoäly arvioi perustelun mitätöityneen.')
+                print(f"  [POISTO] {ticker}: {reason}")
                 from src.database import deactivate_scenario
-                deactivate_scenario(scen['id'])
+                deactivate_scenario(scen['id'], reason=reason)
             elif status == 'UPDATE':
                 print(f"  [PÄIVITYS] Päivitetään {ticker} uuden tiedon valossa...")
                 update_scens = generate_scenarios(f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
                 if update_scens:
                     from src.database import add_scenario, deactivate_scenario
-                    deactivate_scenario(scen['id'])
+                    deactivate_scenario(scen['id'], reason=f"Päivitetty uudella analyysilla: {validation.get('reason')}")
                     add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
         
         print("2/3 Fetching market data...")
@@ -102,19 +141,29 @@ def run_scenario_generation(force=False):
 def _worker_loop(interval_hours=2):
     """Loop that forever generates new scenarios periodically"""
     print(f"Background worker thread started. Interval: {interval_hours}h")
-    # Aja kerran heti kun käynnistetään
-    run_scenario_generation()
-    
-    while True:
-        # Nuku haluttu aika
-        time.sleep(interval_hours * 3600)
+    try:
+        # Aja kerran heti kun käynnistetään
         run_scenario_generation()
+        
+        while True:
+            # Nuku haluttu aika
+            time.sleep(interval_hours * 3600)
+            run_scenario_generation()
+    finally:
+        # Vapautetaan lukko aina kun looppi loppuu
+        _release_lock()
 
 def start_background_worker(interval_hours=3):
+    """Käynnistää background workerin — mutta VAIN jos tämä prosessi saa lukon."""
     # Varmista, että tietokanta on luotu
     init_db()
-    
+
+    if not _acquire_lock():
+        print(f"[Worker] Toinen prosessi ajaa jo workeria. Tämä instanssi toimii vain web-palvelimena.")
+        return None
+
     thread = threading.Thread(target=_worker_loop, args=(interval_hours,), daemon=True)
+    thread.daemon = True  # Daemon-säie kuolee kun prosessi kuolee
     thread.start()
     return thread
 

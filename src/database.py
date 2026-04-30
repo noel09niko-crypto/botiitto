@@ -99,7 +99,10 @@ def init_db():
             ("metrics_title", "TEXT"),
             ("horizon_title", "TEXT"),
             ("history_title", "TEXT"),
-            ("is_updated", "BOOLEAN DEFAULT 0")
+            ("is_updated", "BOOLEAN DEFAULT 0"),
+            # Poistoloki — tallentaa aina MIKSI analyysi poistettiin
+            ("deactivation_reason", "TEXT"),
+            ("deactivated_at", "TIMESTAMP"),
         ]
         for col, col_type in cols:
             try:
@@ -254,41 +257,62 @@ def toggle_favorite(scenario_id):
         conn.commit()
     conn.close()
 
-def deactivate_scenario(scenario_id):
-    """Merkitsee analyysin passiiviseksi, jolloin se poistuu dashboardilta."""
+def deactivate_scenario(scenario_id, reason: str = "Ei perustelua kirjattu"):
+    """Merkitsee analyysin passiiviseksi ja tallentaa AINA syyn lokiin."""
+    from datetime import datetime
     conn = get_db_connection()
     cursor = conn.cursor()
     p = _placeholder()
-    cursor.execute(f'UPDATE scenarios SET is_active = FALSE WHERE id = {p}', (scenario_id,))
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute(
+        f'UPDATE scenarios SET is_active = FALSE, deactivation_reason = {p}, deactivated_at = {p} WHERE id = {p}',
+        (reason, now, scenario_id)
+    )
     conn.commit()
     conn.close()
+    print(f"  [POISTO-LOKI] ID {scenario_id}: {reason}")
 
-def prune_old_scenarios(keep_limit=15):
+def prune_old_scenarios(keep_limit=50):
+    """Piilottaa ylimääräiset heikkolaatuisimmat analyysit dashboardilta.
+    EI KOSKAAN POISTA RIVEJÄ TIETOKANNASTA — historia säilyy aina.
+    Suosikkeja tai pinnattuja ei kosketa.
+    """
+    from datetime import datetime
     conn = get_db_connection()
     cursor = conn.cursor()
     p = _placeholder()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    reason = f"Automaattinen siivous: dashboard täynnä (raja={keep_limit}). Analyysi arkistoitu, ei poistettu."
+
     if USE_POSTGRES:
         cursor.execute(f'''
-            DELETE FROM scenarios 
+            UPDATE scenarios
+            SET is_active = FALSE,
+                deactivation_reason = {p},
+                deactivated_at = {p}
             WHERE id IN (
-                SELECT id FROM scenarios 
+                SELECT id FROM scenarios
                 WHERE is_favorite = FALSE AND is_pinned = FALSE AND is_active = TRUE
                 ORDER BY confidence ASC, created_at ASC
                 OFFSET {p}
             )
-        ''', (keep_limit,))
+        ''', (reason, now, keep_limit))
     else:
         cursor.execute(f'''
-            DELETE FROM scenarios 
+            UPDATE scenarios
+            SET is_active = 0,
+                deactivation_reason = {p},
+                deactivated_at = {p}
             WHERE id IN (
-                SELECT id FROM scenarios 
+                SELECT id FROM scenarios
                 WHERE is_favorite = 0 AND is_pinned = 0 AND is_active = 1
                 ORDER BY confidence ASC, created_at ASC
                 LIMIT -1 OFFSET {p}
             )
-        ''', (keep_limit,))
+        ''', (reason, now, keep_limit))
+
     count = cursor.rowcount
     if count > 0:
-        print(f"  Puhdistettu {count} heikkolaatuisempaa analyysia.")
+        print(f"  [ARKISTO] {count} analyysia arkistoitu dashboardilta (ei poistettu tietokannasta).")
     conn.commit()
     conn.close()

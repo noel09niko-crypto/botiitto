@@ -8,3 +8,5 @@ server.log
 scratch/
 output/
 *.db
+worker.lock
+last_scan.txt
