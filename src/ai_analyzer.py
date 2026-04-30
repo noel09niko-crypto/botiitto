@@ -18,21 +18,21 @@ VALINTAKRITEERIT (Tiukat):
 - KRITIIKIN KESTÄVYYS: Jos teesissä on aukko tai suuri uhka, jota et pysty kumoamaan, hylkää osake.
 
 KIRJOITUSTYYLI:
-- AMMATTIMAINEN & SIMPPELI: Selitä "miksi maailma muuttuu" niin, että se tuntuu ilmiselvältä.
-- ÄLÄ MAINITSE ANALYYTIKOITA: Älä koskaan sano tekstissä "analyytikot suosittelevat" tai "tavoitehinta on...". Käytä näitä tietoja vain sisäisesti varmistamaan yhtiön laatu, mutta kirjoita perustelu itse strategian kautta.
-- LUVUT OVAT OK: Voit käyttää tärkeitä lukuja (kuten tulos tai kasvu), mutta selitä ne aina helposti. Älä mainitse teknisiä lukuja kuten RSI tai liukuvat keskiarvot.
-- LYHYET LAUSEET: Yksi asia kerrallaan. Max 2 lyhyttä kappaletta per osio.
+- AMMATTIMAINEN & TÖKKIVÄ: Älä kirjoita tarinaa. Käytä lyhyitä, tylyjä ja selkeitä lauseita. Fakta kerrallaan.
+- SIMPPELI: Selitä vaikeat asiat niin, että kuka tahansa ymmärtää.
+- ÄLÄ MAINITSE ANALYYTIKOITA: Älä koskaan sano tekstissä "analyytikot suosittelevat". Käytä tietoa vain sisäisesti.
+- EI TURHAA PUHETTA: Mene suoraan asiaan.
 
-VASTAA JSON-MUODOSSA:
+JSON-RAKENNE (Noudata tätä):
 [
   {
-    "title": "YHTIÖN NIMI: Selkeä ja ammattimainen otsikko",
+    "title": "YHTIÖN NIMI",
     "tickers": "TICKER",
-    "summary": "KUKA TÄMÄ ON: Selitä yhtiön bisnes ja sen ylivoima 2 lyhyessä kappaleessa.",
-    "competitive_landscape": "KILPAILUASEMA: Selitä lyhyesti, miksi tämä yhtiö on vahvempi tai erilainen kuin sen pääkilpailijat. Jos suosittelet useita alan yhtiöitä, selitä tämän yhtiön erityinen rooli.",
-    "global_context": "ISO KUVA: Mikä suuri maailman muutos (esim. sota, politiikka tai pelko) luo tämän mahdollisuuden.",
-    "reasoning": "MISTÄ NOUSU SYNTYY: Strateginen perustelu (1-3v). Miksi tämä yhtiö voittaa tässä muuttuvassa maailmassa. Älä mainitse tämän päivän hinnanmuutoksia.",
-    "metrics_explanation": "NUMEROT: Valitse tärkeä luku (esim. kasvu tai halpa hinta) ja selitä se yksinkertaisesti.",
+    "summary": "KUKA TÄMÄ ON: Lyhyt ja ytimekäs kuvaus bisneksestä.",
+    "global_context": "ISO KUVA: Mikä maailmassa muuttuu juuri nyt.",
+    "competitive_landscape": "KILPAILUASEMA: Lisää VAIN jos yhtiöllä on selkeä etu kilpailijoihin tai jos ala on kilpailtu. Jos ei tarvetta, jätä tyhjäksi.",
+    "reasoning": "MISTÄ NOUSU SYNTYY: Strateginen perustelu (1-3v). Lyhyesti.",
+    "metrics_explanation": "NUMEROT: Yksi tärkeä luku ja sen selitys.",
     "time_horizon": "RISKIT: Mitä on syytä varoa. Selitä rehellisesti mutta ammattimaisesti.",
     "company_history": "MILLOIN MYYDÄÄN: Millainen tilanne maailmassa tarkoittaa, että teesi on valmis.",
     "recommendation": "OSTA",
