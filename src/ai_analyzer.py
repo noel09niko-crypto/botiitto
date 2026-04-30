@@ -19,6 +19,7 @@ VALINTAKRITEERIT (Tiukat):
 
 KIRJOITUSTYYLI:
 - AMMATTIMAINEN & SIMPPELI: Selitä "miksi maailma muuttuu" niin, että se tuntuu ilmiselvältä.
+- ÄLÄ MAINITSE ANALYYTIKOITA: Älä koskaan sano tekstissä "analyytikot suosittelevat" tai "tavoitehinta on...". Käytä näitä tietoja vain sisäisesti varmistamaan yhtiön laatu, mutta kirjoita perustelu itse strategian kautta.
 - LUVUT OVAT OK: Voit käyttää tärkeitä lukuja (kuten tulos tai kasvu), mutta selitä ne aina helposti. Älä mainitse teknisiä lukuja kuten RSI tai liukuvat keskiarvot.
 - LYHYET LAUSEET: Yksi asia kerrallaan. Max 2 lyhyttä kappaletta per osio.
 
