@@ -54,7 +54,7 @@ def run_scenario_generation(force=False):
     print(f"[{datetime.now()}] Starting autonomous scenario generation...")
     
     try:
-        from src.database import prune_old_scenarios, get_favorite_tickers, get_active_scenarios, deactivate_scenario
+        from src.database import prune_old_scenarios, get_favorite_tickers, get_active_scenarios, deactivate_scenario, add_scenario
         from src.ai_analyzer import generate_scenarios, quick_news_scan, get_client, validate_scenario
         from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
         from src.news_fetcher import fetch_all_news, format_news_for_prompt
