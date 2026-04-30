@@ -125,6 +125,48 @@ def force_scan_ajax():
     threading.Thread(target=run_scan).start()
     return jsonify({"success": True, "message": "Skannaus käynnistetty. Odota pari minuuttia ja päivitä sivu."})
 
+@app.route('/api/refresh_all_style', methods=['GET'])
+def refresh_all_style():
+    import threading
+    from src.database import get_active_scenarios, get_db_connection, USE_POSTGRES
+    from src.ai_analyzer import rewrite_scenario, get_client
+
+    def run_refresh():
+        print("[REFRESH] Aloitetaan tyylin päivitys...")
+        client = get_client()
+        scenarios = get_active_scenarios(limit=50)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        for scen in scenarios:
+            new_data = rewrite_scenario(scen, client)
+            if new_data:
+                query = """
+                    UPDATE scenarios 
+                    SET title = %s, summary = %s, global_context = %s, reasoning = %s, 
+                        metrics_explanation = %s, time_horizon = %s, company_history = %s,
+                        confidence = %s, risk_level = %s, sector = %s, invalidation_risks = %s,
+                        is_updated = TRUE
+                    WHERE id = %s
+                """
+                if not USE_POSTGRES:
+                    query = query.replace("%s", "?")
+                
+                cursor.execute(query, (
+                    new_data.get('title'), new_data.get('summary'), new_data.get('global_context'),
+                    new_data.get('reasoning'), new_data.get('metrics_explanation'),
+                    new_data.get('time_horizon'), new_data.get('company_history'),
+                    new_data.get('confidence'), new_data.get('risk_level'),
+                    new_data.get('sector'), new_data.get('invalidation_risks'),
+                    scen['id']
+                ))
+                conn.commit()
+        conn.close()
+        print("[REFRESH] Valmis!")
+
+    threading.Thread(target=run_refresh).start()
+    return "<h1>Tyylin päivitys käynnistetty!</h1><p>Kaikki nykyiset analyysit kirjoitetaan uusiksi ammattimaiseen ja simppeliin muotoon. Odota 1-2 minuuttia ja päivitä sivu.</p><a href='/'>Palaa etusivulle</a>"
+
 
 # MANUAALINEN HAKU JA ANALYYSI
 @app.route('/api/search_and_analyze', methods=['POST'])

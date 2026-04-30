@@ -209,3 +209,35 @@ def validate_scenario(scenario: dict, latest_news: str, client=None) -> dict:
         return json.loads(content)
     except:
         return {"status": "VALID", "reason": "Check failed"}
+
+def rewrite_scenario(scen: dict, client) -> Optional[dict]:
+    """Uudelleenkirjoittaa olemassa olevan analyysin uuden promptin mukaisesti."""
+    from src.ai_analyzer import SYSTEM_PROMPT
+    prompt = f"""UUDELLEENKIRJOITA TÄMÄ ANALYYSI. 
+    Käytä uusimpia sääntöjä: ammattimainen mutta erittäin simppeli kieli (ELI5), ei vaikeita termejä, ei päivittäistä hintamelua.
+    
+    ALKUPERÄINEN ANALYYSI:
+    Otsikko: {scen.get('title')}
+    Ticker: {scen.get('tickers')}
+    Yhteenveto: {scen.get('summary')}
+    Konteksti: {scen.get('global_context')}
+    Perustelu: {scen.get('reasoning')}
+    Numerot: {scen.get('metrics_explanation')}
+    
+    Palauta täsmälleen samassa JSON-muodossa kuin SYSTEM_PROMPT ohjeistaa.
+    """
+    
+    try:
+        resp = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
+        if "```json" in resp:
+            resp = resp.split("```json")[1].split("```")[0].strip()
+        elif "```" in resp:
+            resp = resp.split("```")[1].split("```")[0].strip()
+            
+        data = json.loads(resp)
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return data if isinstance(data, dict) else None
+    except Exception as e:
+        print(f"Error rewriting scenario: {e}")
+        return None
