@@ -54,11 +54,14 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
         avg_volume = float(hist["Volume"].mean())
         volume_ratio = volume / avg_volume if avg_volume > 0 else 1.0
 
-        info = stock.fast_info
-        market_cap = getattr(info, "market_cap", None)
-        h52 = getattr(info, "year_high", current_price)
-        l52 = getattr(info, "year_low", current_price)
-        
+        # Haetaan analyytikkosuositukset ja perustiedot
+        full_info = stock.info
+        market_cap = full_info.get("marketCap", None)
+        h52 = full_info.get("fiftyTwoWeekHigh", current_price)
+        l52 = full_info.get("fiftyTwoWeekLow", current_price)
+        analyst_rec = full_info.get("recommendationKey", "N/A")
+        target_price = full_info.get("targetMeanPrice", 0.0)
+
         # Etäisyys tuesta/vastuksesta (%)
         dist_from_low = ((current_price - l52) / l52) * 100 if l52 > 0 else 0
         dist_from_high = ((current_price - h52) / h52) * 100 if h52 > 0 else 0
@@ -76,6 +79,8 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
             "dist_from_high": round(dist_from_high, 2),
             "52w_high": h52,
             "52w_low": l52,
+            "analyst_rec": analyst_rec,
+            "target_price": target_price
         }
     except Exception as e:
         return None
@@ -114,9 +119,10 @@ def format_movers_for_prompt(movers: Dict) -> str:
         cap = f"${s['market_cap']/1e9:.1f}B" if s.get("market_cap") else "N/A"
         return (
             f"  {s['ticker']}: ${s['current_price']} | "
+            f"Consensus: {s['analyst_rec']} | "
+            f"Target: ${s['target_price']} | "
             f"1d: {s['change_pct_1d']:+.2f}% | "
             f"RSI: {s['rsi']} | "
-            f"Dist from Low: {s['dist_from_low']}% | "
             f"Vol: {s['volume_ratio']:.1f}x avg"
         )
 

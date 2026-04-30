@@ -123,8 +123,14 @@ def _fix_recommendation(scenario: dict) -> dict:
 def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_hint: str = "") -> List[dict]:
     """Pyytää tekoälyä arvioimaan koko seurantalistan ja poimimaan parhaat pitkän aikavälin keissit."""
     
-    user_message = f"""TEHTÄVÄ: Käy läpi seurantalistalla olevat yhtiöt ja etsi niistä ne, joilla on vahvin sijoitusperustelu juuri nyt. 
-    Käytä hyväksesi uutisia, kurssitietoja ja erityisesti omaa syvällistä osaamistasi maailman muutoksista (geopolitiikka, sota, politiikka).
+    user_message = f"""TEHTÄVÄ:
+    Käy läpi seurantalista, analyytikoiden suositukset (Consensus) ja uutiset. 
+    
+    POIMI ERITYISESTI:
+    1. Osakkeet, joilla on vahva analyytikoiden suositus ("Strong Buy" tai "Buy") ja selkeä nousupotentiaali tavoitehintaan (Target).
+    2. Yhtiöt, joilla on vahva sijoitusperustelu perustuen maailman muuttumiseen (geopolitiikka, sota, politiikka) tai markkinoiden pelkoon.
+    
+    Valitse vain ne, jotka ovat "Eliitti-tasoa" ja kestävät kovaa kritiikkiä.
 
     SEURANTALISTA (Käy nämä läpi):
     {watchlist_hint}
