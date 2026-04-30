@@ -217,14 +217,16 @@ def validate_scenario(scenario: dict, latest_news: str, client=None) -> dict:
     Maailmantilanne: {scenario.get('global_context')}
     Aikahorisontti: {scenario.get('time_horizon')}
     
-    KÄYTTÄJÄN TIUKKA EHTO: Sijoitushorisontti on PITKÄ (+6 kk). 
-    JOS ALKUPERÄINEN PERUSTELU PÄTEE YHÄ: Sitä EI SAA poistaa! Vaikka uutisia ei olisi, tai tulisi pientä heilahtelua, äla poista, jos alkuperäinen iso tarina on vielä hengissä.
-    JOS ALKUPERÄINEN PERUSTELU ON MURTUMASSA: Sitten sen saa poistaa (INVALID).
+    KÄYTTÄJÄN TIUKKA EHTO: Sijoitushorisontti on PITKÄ (1-3 vuotta). 
+    - Analyysit EIVÄT SAA vaihtua päivittäin tai viikoittain. 
+    - Jos alkuperäinen "Iso kuva" (esim. tekoälyinfra, sota, geopolitiikka) on yhä voimassa, analyysi on VALID.
+    - Jos on tullut uutta tietoa, joka muuttaa tilannetta hieman, valitse UPDATE (tämä päivittää perustelun, muttei poista osaketta).
+    - Valitse INVALID vain ja ainoastaan, jos alkuperäinen peruste on romuttunut täysin ja osakkeen lasku on varmaa. Pieni hinnan heilahtelu EI ole syy poistolle.
     
     ASETA STATUS:
-    - 'VALID': Jos alkuperäinen teesi on yhä elossa. Uutishiljaisuus on OK.
-    - 'UPDATE': Jos on tullut jotain uutta olennaista tietoa, joka vahvistaa tai muuttaa hieman lukemia.
-    - 'INVALID': VAIN jos on selkeitä todisteita, että ALKUPERÄINEN PERUSTELU ON ROMAHTANUT tai sijoituscase kuollut.
+    - 'VALID': Alkuperäinen teesi on elossa. Uutishiljaisuus tai normaali hinnanvaihtelu on täysin OK.
+    - 'UPDATE': Uutta tietoa on tullut. Perustelua pitää päivittää, mutta osake pysyy listalla.
+    - 'INVALID': VAIN jos sijoituscase on kuollut ja fundamentit murtuneet.
     
     TUOREIMMAT UUTISET:
     {latest_news[:3000]}
