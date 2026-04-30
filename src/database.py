@@ -49,11 +49,34 @@ def init_db():
                 metrics_title TEXT,
                 horizon_title TEXT,
                 history_title TEXT,
-                is_updated BOOLEAN DEFAULT FALSE
+                is_updated BOOLEAN DEFAULT FALSE,
+                deactivation_reason TEXT,
+                deactivated_at TIMESTAMP
             )
         ''')
+        # PostgreSQL-migraatiot: lisää puuttuvat sarakkeet jos ei ole
+        pg_migrations = [
+            ("is_pinned", "BOOLEAN DEFAULT FALSE"),
+            ("is_manual", "BOOLEAN DEFAULT FALSE"),
+            ("price_change_24h", "REAL DEFAULT 0.0"),
+            ("summary_title", "TEXT"),
+            ("global_title", "TEXT"),
+            ("reasoning_title", "TEXT"),
+            ("metrics_title", "TEXT"),
+            ("horizon_title", "TEXT"),
+            ("history_title", "TEXT"),
+            ("is_updated", "BOOLEAN DEFAULT FALSE"),
+            ("deactivation_reason", "TEXT"),
+            ("deactivated_at", "TIMESTAMP"),
+        ]
+        for col, col_type in pg_migrations:
+            try:
+                cursor.execute(f"ALTER TABLE scenarios ADD COLUMN IF NOT EXISTS {col} {col_type}")
+            except Exception:
+                pass
         conn.commit()
         conn.close()
+
     else:
         os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
         conn = sqlite3.connect(DB_PATH)
