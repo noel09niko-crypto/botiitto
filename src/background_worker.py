@@ -100,8 +100,10 @@ def run_scenario_generation(force=False):
         movers = get_top_movers(snapshot, top_n=15)
         movers_text = format_movers_for_prompt(movers)
         
-        print("3/3 Asking AI to brainstorm long-term scenarios. This might take 30s...")
-        scenarios = generate_scenarios(news_text, movers_text, client)
+        print(f"3/3 Asking AI to evaluate all {len(WATCHLIST)} stocks. This might take 30s...")
+        # Lisätään kehotus käydä koko lista läpi
+        watchlist_str = ", ".join(WATCHLIST)
+        scenarios = generate_scenarios(news_text, movers_text, client, watchlist_hint=watchlist_str)
         
         print(f"-> Generated {len(scenarios)} scenarios. Saving to DB.")
         for scen in scenarios:

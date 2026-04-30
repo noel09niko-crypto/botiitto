@@ -120,8 +120,24 @@ def _fix_recommendation(scenario: dict) -> dict:
         scenario["recommendation"] = "OSTA"
     return scenario
 
-def generate_scenarios(news_text: str, movers_text: str, client=None) -> List[dict]:
-    user_message = f"Luo 1-3 syvällistä analyysia hyödyntäen omia laajempia tekoälyn päättelytaitojasi sekä näitä tuoreita tietoja:\n\nDATA:\n{movers_text}\n\nVIIMEISIMMÄT UUTISET (Käytä näitä ponnahduslautana omalle laajemmalle historialliselle ja tulevaisuutta ennakoivalle ajattelullesi):\n{news_text[:4000]}"
+def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_hint: str = "") -> List[dict]:
+    """Pyytää tekoälyä arvioimaan koko seurantalistan ja poimimaan parhaat pitkän aikavälin keissit."""
+    
+    user_message = f"""TEHTÄVÄ: Käy läpi seurantalistalla olevat yhtiöt ja etsi niistä ne, joilla on vahvin sijoitusperustelu juuri nyt. 
+    Käytä hyväksesi uutisia, kurssitietoja ja erityisesti omaa syvällistä osaamistasi maailman muutoksista (geopolitiikka, sota, politiikka).
+
+    SEURANTALISTA (Käy nämä läpi):
+    {watchlist_hint}
+
+    MARKKINADATA (LUVUT):
+    {movers_text}
+
+    TUOREET UUTISET:
+    {news_text[:4000]}
+
+    VALINTAKRITEERI:
+    Valitse vain ne seurantalistan osakkeet, jotka ovat "Eliitti-tasoa" ja täyttävät tiukat ammattimaiset kriteerit.
+    """
     content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=8000)
     
     try:
