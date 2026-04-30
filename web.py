@@ -12,7 +12,12 @@ load_dotenv()
 app = Flask(__name__)
 
 # Alusta tietokanta (myös kun gunicorn importtaa)
-init_db()
+try:
+    init_db()
+    print("[Startup] Tietokanta alustettu.")
+except Exception as e:
+    print(f"[Startup] VAROITUS: Tietokanta-alustus epäonnistui: {e}")
+    import traceback; traceback.print_exc()
 
 # Keep-alive: estää Render free tierin nukahtamisen
 def _keep_alive():
@@ -34,9 +39,13 @@ threading.Thread(target=_keep_alive, daemon=True).start()
 # Käynnistetään taustamoottori, joka keksii uusia skenaarioita
 # Tätä ei suoriteta lokaalissa debugissa vahingossa kahdesti
 if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-    # Varmistetaan Renderin tuotannossa heti käynnistyessä että robotti käy
-    iv = int(os.environ.get("INTERVAL_HOURS", 2))
-    start_background_worker(interval_hours=iv)
+    try:
+        iv = int(os.environ.get("INTERVAL_HOURS", 2))
+        start_background_worker(interval_hours=iv)
+        print("[Startup] Background worker käynnistetty.")
+    except Exception as e:
+        print(f"[Startup] VAROITUS: Background worker epäonnistui: {e}")
+        import traceback; traceback.print_exc()
 
 # Oletusreitti, joka tarjoilee HTML-pääsivun
 @app.route('/')
@@ -175,6 +184,7 @@ def search_and_analyze():
 
 def calculate_rsi(data, window=14):
     try:
+        import pandas as pd
         if len(data) < window + 1:
             return "N/A"
         delta = data['Close'].diff()
