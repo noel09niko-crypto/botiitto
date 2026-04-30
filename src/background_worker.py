@@ -3,7 +3,13 @@ import threading
 import os
 import sys
 from datetime import datetime
-from src.database import init_db, add_scenario
+from src.database import (
+    init_db, add_scenario, prune_old_scenarios, get_favorite_tickers, 
+    get_active_scenarios, deactivate_scenario
+)
+from src.ai_analyzer import generate_scenarios, quick_news_scan, get_client, validate_scenario
+from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
+from src.news_fetcher import fetch_all_news, format_news_for_prompt
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
 _WORKER_RUNNING = False
@@ -54,11 +60,6 @@ def run_scenario_generation(force=False):
     print(f"[{datetime.now()}] Starting autonomous scenario generation...")
     
     try:
-        from src.database import prune_old_scenarios, get_favorite_tickers, get_active_scenarios, deactivate_scenario, add_scenario
-        from src.ai_analyzer import generate_scenarios, quick_news_scan, get_client, validate_scenario
-        from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
-        from src.news_fetcher import fetch_all_news, format_news_for_prompt
-
         client = get_client()
         fav_tickers = get_favorite_tickers()
 
@@ -85,13 +86,11 @@ def run_scenario_generation(force=False):
             if status == 'INVALID':
                 reason = validation.get('reason', 'Tekoäly arvioi perustelun mitätöityneen.')
                 print(f"  [POISTO] {ticker}: {reason}")
-                from src.database import deactivate_scenario
                 deactivate_scenario(scen['id'], reason=reason)
             elif status == 'UPDATE':
                 print(f"  [PÄIVITYS] Päivitetään {ticker} uuden tiedon valossa...")
                 update_scens = generate_scenarios(f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
                 if update_scens:
-                    from src.database import add_scenario, deactivate_scenario
                     deactivate_scenario(scen['id'], reason=f"Päivitetty uudella analyysilla: {validation.get('reason')}")
                     add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
         
