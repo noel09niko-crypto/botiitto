@@ -29,19 +29,19 @@ JSON-RAKENNE:
   {
     "title": "YHTIÖN NIMI",
     "tickers": "TICKER",
-    "summary": "KUKA TÄMÄ ON: Mitä yritys tekee ja miksi tuote on testiä läpäisevän hyvä (Vaihe 3).",
-    "global_context": "ISO KUVA: Mikä on muutossignaali ja onko hinta painunut turhaan (Vaiheet 1 & 2).",
-    "competitive_landscape": "KILPAILUASEMA: Markkinaosuus ja hinnoitteluvoima (Vaiheet 4 & 5).",
-    "reasoning": "MISTÄ NOUSU SYNTYY: Strateginen perustelu perustuen johtoon, arvostukseen ja ajoitukseen (Vaiheet 6, 10 & 11).",
-    "metrics_explanation": "NUMEROT: Keskeiset luvut ja mitä ne kertovat kannattavuudesta ja arvosta (Vaiheet 7 & 9).",
-    "risk_score": "RISKIMITTARI (1-10): Arvioi kokonaisriski, huomioiden erityisesti regulaatio (Vaihe 8).",
-    "confidence": "LUOTTAMUSPROSENTTI (0-100): Perustuu Risk/Reward-suhteeseen ja siihen, kuinka monta vaihetta yhtiö läpäisi täydellisesti.",
-    "time_horizon": "RISKIT: Mitä on syytä varoa. Rehellisesti.",
-    "company_history": "MILLOIN MYYDÄÄN: Millainen tilanne tarkoittaa, että teesi on valmis.",
+    "summary": "PIKAKUVAUS: Mitä yritys tekee lyhyesti.",
+    "global_context": "ISO KUVA: Markkinatilanne ja maailman tapahtumat (Vaiheet 1 & 2 tiivistettynä).",
+    "competitive_landscape": "KILPAILUASEMA JA TUOTE: (Vaiheet 3, 4 & 5 tiivistettynä).",
+    "reasoning": "SYVÄ ANALYYSI: Kirjoita tähän KAIKKI 11 VAIHETTA (VAIHE 1 - VAIHE 11) otsikoittain. Käytä tökkivää ja ammattimaista tyyliä kunkin vaiheen alla. Lopeta 'YHTEENVETO' osioon, jossa annat suosituksen.",
+    "metrics_explanation": "NUMEROT: Keskeiset luvut ja niiden merkitys (Vaiheet 7 & 9).",
+    "risk_score": "RISKIMITTARI (1-10): Kokonaisriski (Vaihe 8).",
+    "confidence": "LUOTTAMUSPROSENTTI (0-100): Perustuu siihen, kuinka moni vaihe läpäistiin arvosanalla 10/10.",
+    "time_horizon": "RISKIT: Mitä on syytä varoa.",
+    "company_history": "MILLOIN MYYDÄÄN: Milloin teesi on valmis.",
     "recommendation": "OSTA",
     "risk_level": "Matala, Keskisuuri tai Korkea",
     "sector": "Toimiala",
-    "invalidation_risks": "Milloin alkuperäinen suunnitelma ei enää päde."
+    "invalidation_risks": "Milloin suunnitelma ei enää päde."
   }
 ]
 
