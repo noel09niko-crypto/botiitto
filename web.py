@@ -11,6 +11,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
+LAST_ERROR = "Ei virheitä"
+
 # Alusta tietokanta (myös kun gunicorn importtaa)
 try:
     init_db()
@@ -137,10 +139,20 @@ def nuclear_wipe():
         # Käynnistetään heti uusi skannaus puhtaalta pöydältä
         import threading
         from src.background_worker import run_scenario_generation
-        threading.Thread(target=lambda: run_scenario_generation(force=True)).start()
+        def run_with_error_capture():
+            global LAST_ERROR
+            try:
+                run_scenario_generation(force=True)
+            except Exception as e:
+                import traceback
+                LAST_ERROR = traceback.format_exc()
+                print(f"[CRITICAL ERROR] {LAST_ERROR}")
+                
+        threading.Thread(target=run_with_error_capture).start()
         
         return "<h1>Tietokanta tyhjennetty!</h1><p>Kaikki analyysit on poistettu ja uusi skannaus on käynnistetty uusilla säännöillä.</p><a href='/'>Palaa etusivulle</a>"
     except Exception as e:
+        LAST_ERROR = str(e)
         return f"Virhe: {str(e)}"
 @app.route('/api/refresh_all_style', methods=['GET'])
 def refresh_all_style():
@@ -208,6 +220,7 @@ def view_logs():
         return jsonify({
             "worker_status": status,
             "last_scan_timestamp": last_scan,
+            "last_error": LAST_ERROR,
             "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."
         })
     except Exception as e:
