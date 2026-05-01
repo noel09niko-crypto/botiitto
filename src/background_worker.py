@@ -64,18 +64,25 @@ def run_scenario_generation(force=False):
         client = get_client()
         fav_tickers = get_favorite_tickers()
 
+        global CURRENT_TICKER
+        CURRENT_TICKER = "Haetaan uutisia..."
         print("1/3 Fetching news data...")
         articles = fetch_all_news(max_age_hours=168)
         news_text = format_news_for_prompt(articles, max_articles=60)
+        
+        CURRENT_TICKER = "Tunnistetaan yhtiöitä uutisista..."
         mentioned = quick_news_scan(news_text, client) if articles else []
 
+        CURRENT_TICKER = "Validoidaan vanhoja analyyseja..."
         print("1.5/3 Validating existing scenarios against new info & price...")
         active_scens = get_active_scenarios(limit=50)
         snapshot_list = get_market_snapshot([s.get('tickers', 'YLEINEN') for s in active_scens])
         snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
         
+        # ... (validation loop) ...
         for scen in active_scens:
             ticker = scen.get('tickers', 'YLEINEN')
+            CURRENT_TICKER = f"Validoidaan: {ticker}"
             # 1. Hintamuutos tiedoksi valvontaan
             price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
             
@@ -95,10 +102,12 @@ def run_scenario_generation(force=False):
                     deactivate_scenario(scen['id'], reason=f"Päivitetty uudella analyysilla: {validation.get('reason')}")
                     add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
         
+        CURRENT_TICKER = "Haetaan markkinadataa (75+ osaketta)..."
         print("2/3 Fetching market data...")
         all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
-        snapshot = get_market_snapshot(all_tickers)
-        movers = get_top_movers(snapshot, top_n=15)
+        snapshot_list = get_market_snapshot(all_tickers)
+        snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
+        movers = get_top_movers(snapshot_list, top_n=15)
         movers_text = format_movers_for_prompt(movers)
         
         print(f"3/3 Starting individual deep analysis for {len(WATCHLIST)} stocks...")
