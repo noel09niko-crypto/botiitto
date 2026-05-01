@@ -243,7 +243,6 @@ def validate_scenario(scenario: dict, latest_news: str, client=None) -> dict:
 
 def rewrite_scenario(scen: dict, client) -> Optional[dict]:
     """Uudelleenkirjoittaa olemassa olevan analyysin uuden promptin mukaisesti."""
-    from src.ai_analyzer import SYSTEM_PROMPT
     prompt = f"""UUDELLEENKIRJOITA TÄMÄ ANALYYSI. 
     Käytä uusimpia sääntöjä: ammattimainen mutta erittäin simppeli kieli (ELI5), ei vaikeita termejä, ei päivittäistä hintamelua.
     
