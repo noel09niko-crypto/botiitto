@@ -61,7 +61,7 @@ def get_anthropic_client():
     if not key: return None
     return anthropic.Anthropic(api_key=key)
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 1000) -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 2500) -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille usealla fallbackilla"""
     # 1. Kokeillaan Anthropicia (Claude) useilla malleilla
     anth_client = get_anthropic_client()
