@@ -65,7 +65,7 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 2500)
     # 1. Kokeillaan Anthropicia (Claude) useilla malleilla
     anth_client = get_anthropic_client()
     if anth_client:
-        for model in ["claude-sonnet-4-6", "claude-3-5-sonnet-20240620", "claude-3-sonnet-20240229"]:
+        for model in ["claude-sonnet-4-6", "claude-haiku-4-5-20251001"]:
             try:
                 resp = anth_client.messages.create(
                     model=model,
