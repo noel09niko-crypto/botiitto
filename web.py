@@ -163,7 +163,7 @@ def refresh_all_style():
                     UPDATE scenarios 
                     SET title = %s, summary = %s, global_context = %s, reasoning = %s, 
                         metrics_explanation = %s, time_horizon = %s, company_history = %s,
-                        competitive_landscape = %s,
+                        competitive_landscape = %s, risk_score = %s,
                         confidence = %s, risk_level = %s, sector = %s, invalidation_risks = %s,
                         is_updated = TRUE
                     WHERE id = %s
@@ -176,6 +176,7 @@ def refresh_all_style():
                     new_data.get('reasoning'), new_data.get('metrics_explanation'),
                     new_data.get('time_horizon'), new_data.get('company_history'),
                     new_data.get('competitive_landscape'),
+                    new_data.get('risk_score', 5),
                     new_data.get('confidence'), new_data.get('risk_level'),
                     new_data.get('sector'), new_data.get('invalidation_risks'),
                     scen['id']
@@ -313,27 +314,65 @@ def get_stock_details(ticker):
         def fmt_num(val, dec=2):
             return round(val, dec) if isinstance(val, (int, float)) else "N/A"
 
-        # Ladataan kootusti kaikki 15
+        # 16. Analyytikko-targetit
+        targets = {
+            "low": fmt_num(info.get("targetLowPrice")),
+            "mean": fmt_num(info.get("targetMeanPrice")),
+            "high": fmt_num(info.get("targetHighPrice")),
+            "current": fmt_num(current_price)
+        }
+
+        # 17. Tuloshistoria (EPS)
+        earnings_history = []
+        try:
+            dates = stock.earnings_dates
+            if dates is not None and not dates.empty:
+                reported = dates.dropna(subset=['Reported EPS']).head(4)
+                for date, row in reported.iterrows():
+                    earnings_history.append({
+                        "period": date.strftime("%b %y"),
+                        "actual": float(row['Reported EPS']) if not pd.isna(row['Reported EPS']) else 0,
+                        "estimate": float(row['EPS Estimate']) if not pd.isna(row['EPS Estimate']) else 0
+                    })
+        except: pass
+
+        # 18. Uutiset (3 kpl)
+        news_list = []
+        try:
+            raw_news = stock.news[:3]
+            for n in raw_news:
+                news_list.append({
+                    "title": n.get("title"),
+                    "link": n.get("link"),
+                    "publisher": n.get("publisher"),
+                    "provider": n.get("providerPublishTime")
+                })
+        except: pass
+
+        # Ladataan kootusti kaikki
         data = {
             "name": info.get("longName", ticker),
             "summary": info.get("longBusinessSummary", "Ei kuvausta.")[:400] + "...",
             "price": fmt_num(current_price),
             "changePercent": round(change_pct, 2),
-            "pe": fmt_num(info.get("trailingPE")),               # 1
-            "pb": fmt_num(info.get("priceToBook")),               # 2
-            "ev_ebitda": fmt_num(info.get("enterpriseToEbitda")), # 3
-            "eps_growth": fmt_pct(info.get("earningsQuarterlyGrowth")), # 4
-            "rev_growth": fmt_pct(info.get("revenueGrowth")),     # 5
-            "net_margin": fmt_pct(info.get("profitMargins")),     # 6
-            "roe": fmt_pct(info.get("returnOnEquity")),           # 7
-            "fcf": fcf_str,                                       # 8
-            "debt_equity": fmt_num(info.get("debtToEquity")),     # 9
-            "div_yield": fmt_pct(info.get("dividendYield")),      # 10
-            "high52": fmt_num(info.get("fiftyTwoWeekHigh")),      # 11
-            "low52": fmt_num(info.get("fiftyTwoWeekLow")),        # 12
-            "rsi": rsi_val,                                       # 13
-            "beta": fmt_num(info.get("beta")),                    # 14
-            "marketCap": mcap_str                                 # 15
+            "pe": fmt_num(info.get("trailingPE")),               
+            "pb": fmt_num(info.get("priceToBook")),               
+            "ev_ebitda": fmt_num(info.get("enterpriseToEbitda")), 
+            "eps_growth": fmt_pct(info.get("earningsQuarterlyGrowth")), 
+            "rev_growth": fmt_pct(info.get("revenueGrowth")),     
+            "net_margin": fmt_pct(info.get("profitMargins")),     
+            "roe": fmt_pct(info.get("returnOnEquity")),           
+            "fcf": fcf_str,                                       
+            "debt_equity": fmt_num(info.get("debtToEquity")),     
+            "div_yield": fmt_pct(info.get("dividendYield")),      
+            "high52": fmt_num(info.get("fiftyTwoWeekHigh")),      
+            "low52": fmt_num(info.get("fiftyTwoWeekLow")),        
+            "rsi": rsi_val,                                       
+            "beta": fmt_num(info.get("beta")),                    
+            "marketCap": mcap_str,
+            "targets": targets,
+            "earnings_history": earnings_history,
+            "news": news_list
         }
 
         return jsonify({"success": True, "data": data})
