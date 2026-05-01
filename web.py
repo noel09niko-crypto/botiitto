@@ -189,14 +189,29 @@ def refresh_all_style():
 
 
 
-# MANUAALINEN HAKU JA ANALYYSI
-@app.route('/api/search_and_analyze', methods=['POST'])
-def search_and_analyze():
-    data = request.json
-    query = data.get('query', '').strip()
-    
-    if not query:
-        return jsonify({"success": False, "error": "Hakusana puuttuu"}), 400
+@app.route('/api/logs', methods=['GET'])
+def view_logs():
+    """Näyttää viimeisimmät lokimerkinnät helpottamaan debuggausta."""
+    try:
+        # Tässä vaiheessa luetaan vain stdout/stderr jos mahdollista,
+        # mutta Renderissä helpompaa lukea omaa lokitiedostoa jos sellainen on.
+        # Käytetään tässä yksinkertaista tila-ilmoitusta.
+        from src.background_worker import _WORKER_RUNNING
+        status = "KÄYNNISSÄ" if _WORKER_RUNNING else "EI KÄYNNISSÄ"
+        
+        # Luetaan last_scan.txt jos olemassa
+        last_scan = "Ei vielä suoritettu"
+        if os.path.exists("last_scan.txt"):
+            with open("last_scan.txt", "r") as f:
+                last_scan = f.read().strip()
+                
+        return jsonify({
+            "worker_status": status,
+            "last_scan_timestamp": last_scan,
+            "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."
+        })
+    except Exception as e:
+        return str(e)
         
     try:
         from src.ai_analyzer import resolve_ticker, generate_scenarios, get_client
