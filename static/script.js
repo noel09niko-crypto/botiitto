@@ -402,6 +402,77 @@ document.addEventListener('DOMContentLoaded', () => {
                         fmt('stockRSI', d.rsi);
                         fmt('stockBeta', d.beta);
                         document.getElementById('stockCap').textContent = d.marketCap;
+
+                        // 1. Risk Meter (1-10)
+                        const riskVal = item.risk_score || 5;
+                        const riskContainer = document.getElementById('riskMeterContainer');
+                        if (riskContainer) {
+                            riskContainer.innerHTML = '';
+                            for (let i = 1; i <= 10; i++) {
+                                const dot = document.createElement('div');
+                                dot.className = `risk-dot ${i <= riskVal ? `active risk-${riskVal}` : ''}`;
+                                riskContainer.appendChild(dot);
+                            }
+                        }
+
+                        // 2. Analyst Targets Gauge
+                        const targetContainer = document.getElementById('targetGauge');
+                        if (targetContainer && d.targets) {
+                            const { low, mean, high, current } = d.targets;
+                            if (low && high && low !== 'N/A') {
+                                const range = high - low;
+                                const currentPos = ((current - low) / range) * 100;
+                                const meanPos = ((mean - low) / range) * 100;
+                                targetContainer.innerHTML = `
+                                    <div class="gauge-line">
+                                        <div class="gauge-marker" style="left: 0%"><span class="marker-label">$${low}</span></div>
+                                        <div class="gauge-marker" style="left: ${meanPos}%"><span class="marker-label">Keskiarvo: $${mean}</span></div>
+                                        <div class="gauge-marker" style="left: 100%"><span class="marker-label">$${high}</span></div>
+                                        <div class="gauge-marker current-marker" style="left: ${currentPos}%"><span class="marker-label" style="top: -20px; color: var(--accent-color); font-weight: bold;">NYT: $${current}</span></div>
+                                    </div>
+                                `;
+                            } else {
+                                targetContainer.innerHTML = '<p style="color: #64748b; font-size: 0.8rem;">Analyytikkotietoja ei saatavilla.</p>';
+                            }
+                        }
+
+                        // 3. Earnings Chart
+                        const earnContainer = document.getElementById('earningsChart');
+                        if (earnContainer && d.earnings_history) {
+                            earnContainer.innerHTML = '';
+                            const maxEPS = Math.max(...d.earnings_history.map(e => Math.abs(e.actual), ...d.earnings_history.map(e => Math.abs(e.estimate)), 0.1));
+                            d.earnings_history.reverse().forEach(q => {
+                                const group = document.createElement('div');
+                                group.className = 'earnings-bar-group';
+                                const actH = (Math.abs(q.actual) / maxEPS) * 80;
+                                const estH = (Math.abs(q.estimate) / maxEPS) * 80;
+                                group.innerHTML = `
+                                    <div class="bar-pair">
+                                        <div class="bar estimate" style="height: ${estH}px" title="Ennuste: ${q.estimate}"></div>
+                                        <div class="bar actual" style="height: ${actH}px" title="Toteutunut: ${q.actual}"></div>
+                                    </div>
+                                    <div class="bar-label">${q.period}</div>
+                                `;
+                                earnContainer.appendChild(group);
+                            });
+                        }
+
+                        // 4. News List
+                        const newsContainer = document.getElementById('modalNewsList');
+                        if (newsContainer && d.news) {
+                            newsContainer.innerHTML = '';
+                            d.news.forEach(n => {
+                                const a = document.createElement('a');
+                                a.className = 'news-item';
+                                a.href = n.link;
+                                a.target = '_blank';
+                                a.innerHTML = `
+                                    <div class="news-title">${n.title}</div>
+                                    <div class="news-meta">${n.publisher}</div>
+                                `;
+                                newsContainer.appendChild(a);
+                            });
+                        }
                     }
                 } catch (err) {
                     console.error("Live data error:", err);
@@ -418,6 +489,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ['stockPrice', 'stockChange', 'stockPE', 'stockPB', 'stockEV', 'stockEPSG', 'stockRevG', 'stockMargin', 'stockROE', 'stockFCF', 'stockDE', 'stockDiv', 'stockHigh', 'stockLow', 'stockRSI', 'stockBeta', 'stockCap'].forEach(f => {
             const el = document.getElementById(f);
             if (el) el.textContent = '--';
+        });
+        const containers = ['riskMeterContainer', 'targetGauge', 'earningsChart', 'modalNewsList'];
+        containers.forEach(c => {
+            const el = document.getElementById(c);
+            if (el) el.innerHTML = '';
         });
     }
 

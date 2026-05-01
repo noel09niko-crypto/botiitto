@@ -61,6 +61,36 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
         l52 = full_info.get("fiftyTwoWeekLow", current_price)
         analyst_rec = full_info.get("recommendationKey", "N/A")
         target_price = full_info.get("targetMeanPrice", 0.0)
+        target_high = full_info.get("targetHighPrice", 0.0)
+        target_low = full_info.get("targetLowPrice", 0.0)
+
+        # 1. Tuloshistoria (EPS Actual vs Estimate)
+        earnings_history = []
+        try:
+            dates = stock.earnings_dates
+            if dates is not None and not dates.empty:
+                # Otetaan 4 viimeisintä joilla on Reported EPS
+                reported = dates.dropna(subset=['Reported EPS']).head(4)
+                for date, row in reported.iterrows():
+                    earnings_history.append({
+                        "date": date.strftime("%b %y"),
+                        "actual": row['Reported EPS'],
+                        "estimate": row['EPS Estimate']
+                    })
+        except: pass
+
+        # 2. Uusimmat uutiset (3 kpl)
+        news_list = []
+        try:
+            raw_news = stock.news[:3]
+            for n in raw_news:
+                news_list.append({
+                    "title": n.get("title"),
+                    "link": n.get("link"),
+                    "publisher": n.get("publisher"),
+                    "provider": n.get("providerPublishTime")
+                })
+        except: pass
 
         # Etäisyys tuesta/vastuksesta (%)
         dist_from_low = ((current_price - l52) / l52) * 100 if l52 > 0 else 0
@@ -80,7 +110,11 @@ def get_stock_data(ticker: str) -> Optional[Dict]:
             "52w_high": h52,
             "52w_low": l52,
             "analyst_rec": analyst_rec,
-            "target_price": target_price
+            "target_price": target_price,
+            "target_high": target_high,
+            "target_low": target_low,
+            "earnings_history": earnings_history,
+            "news": news_list
         }
     except Exception as e:
         return None

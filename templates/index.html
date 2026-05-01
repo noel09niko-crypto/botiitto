@@ -219,16 +219,43 @@
                 </div>
 
                 <div class="divider"></div>
-                
-                <!-- 6. Riskit -->
+
+                <!-- 5. Riskiarvio -->
                 <div class="report-section">
-                    <h3>Mikä voi mennä pieleen?</h3>
-                    <p id="modalTimeHorizon" class="history-text"></p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Riskimittari</h3>
+                        <div id="riskMeterContainer" class="risk-meter"></div>
+                    </div>
+                    <p id="modalRisks" class="reasoning-text"></p>
                 </div>
-                
+
+                <div class="divider"></div>
+
+                <!-- 6. Analyytikko-targetit -->
+                <div class="report-section">
+                    <h3>Analyytikkojen kurssitavoitteet</h3>
+                    <div id="targetGauge" class="target-gauge-container"></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 7. Tuloshistoria -->
+                <div class="report-section">
+                    <h3>Tuloshistoria (EPS)</h3>
+                    <div id="earningsChart" class="earnings-chart-container"></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 8. Uusimmat uutiset -->
+                <div class="report-section">
+                    <h3>Uusimmat uutiset</h3>
+                    <div id="modalNewsList" class="news-list-container"></div>
+                </div>
+
                 <div class="divider"></div>
                 
-                <!-- 7. Milloin myydään -->
+                <!-- 9. Milloin myydään -->
                 <div class="report-section">
                     <h3>Exit-strategia</h3>
                     <p id="modalCompanyHistory" class="reasoning-text"></p>

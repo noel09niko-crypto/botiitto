@@ -33,6 +33,7 @@ JSON-RAKENNE (Noudata tätä):
     "competitive_landscape": "KILPAILUASEMA: Lisää VAIN jos yhtiöllä on selkeä etu kilpailijoihin tai jos ala on kilpailtu. Jos ei tarvetta, jätä tyhjäksi.",
     "reasoning": "MISTÄ NOUSU SYNTYY: Strateginen perustelu (1-3v). Lyhyesti.",
     "metrics_explanation": "NUMEROT: Yksi tärkeä luku ja sen selitys.",
+    "risk_score": "RISKIMITTARI (1-10): Arvioi sijoituksen kokonaisriski asteikolla 1-10 (1=turvallinen, 10=erittäin riskinen).",
     "confidence": "LUOTTAMUSPROSENTTI (0-100): Arvioi tämä riskin ja tuoton suhteen (Risk/Reward) perusteella. Anna korkein luku (90-100) kohteille, joilla on PARAS suhde: suuri nousupotentiaali suhteessa hallittuun riskiin. Älä suosi yhtiötä vain sen koon takia, vaan sen mukaan, kuinka todennäköisesti se nousee eniten tässä markkinatilanteessa.",
     "time_horizon": "RISKIT: Mitä on syytä varoa. Selitä rehellisesti mutta ammattimaisesti.",
     "company_history": "MILLOIN MYYDÄÄN: Millainen tilanne maailmassa tarkoittaa, että teesi on valmis.",
