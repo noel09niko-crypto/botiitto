@@ -214,13 +214,22 @@ def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[d
     content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=2500)
     
     try:
-        if "[" in content:
-            content = content[content.find("["):content.rfind("]")+1]
-        data = json.loads(content)
-        if isinstance(data, list) and len(data) > 0:
-            import time
-            time.sleep(2) # Estetään rate limitit
-            return data[0]
+        # Puhdistetaan vastauksesta kaikki paitsi JSON
+        start_idx_list = content.find("[")
+        start_idx_obj = content.find("{")
+        
+        # Jos löytyy lista
+        if start_idx_list != -1 and (start_idx_obj == -1 or start_idx_list < start_idx_obj):
+            content_clean = content[start_idx_list:content.rfind("]")+1]
+            data = json.loads(content_clean)
+            if isinstance(data, list) and len(data) > 0:
+                return data[0]
+        # Jos löytyy vain objekti
+        elif start_idx_obj != -1:
+            content_clean = content[start_idx_obj:content.rfind("}")+1]
+            data = json.loads(content_clean)
+            return data
+            
         return None
     except Exception as e:
         print(f"  [JSON ERROR] {ticker}: {e}")

@@ -123,6 +123,8 @@ def run_scenario_generation(force=False):
                     add_scenario(scen, is_pinned=is_huippu, price_change=price_change)
                     processed_count += 1
                     print(f"  [TALLENNETTU] {ticker} ({processed_count} valmiina)")
+                    import time
+                    time.sleep(1) # Pieni tauko rate limitien välttämiseksi
             except Exception as e:
                 print(f"  [VIRHE] {ticker}: {e}")
                 continue
