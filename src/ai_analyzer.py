@@ -49,7 +49,6 @@ KRIITTISET RAJOITUKSET:
 - Vastaa VAIN JSON-muodossa. 
 - Jos et löydä standardit täyttävää yhtiötä, palauta [].
 """
-"""
 
 
 
