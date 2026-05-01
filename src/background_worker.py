@@ -139,17 +139,29 @@ def run_scenario_generation(force=False):
         _WORKER_RUNNING = False
 
 
-def _worker_loop(interval_hours=2):
-    """Loop that forever generates new scenarios periodically"""
-    print(f"Background worker thread started. Interval: {interval_hours}h")
+def _worker_loop(interval_hours=None):
+    """Loop that runs once a day at 21:00 Helsinki time"""
+    print(f"Background worker thread started. Target time: 21:00 (Helsinki)")
+    
     try:
-        # Aja kerran heti kun käynnistetään
-        run_scenario_generation()
-        
         while True:
-            # Nuku haluttu aika
-            time.sleep(interval_hours * 3600)
-            run_scenario_generation()
+            # Lasketaan aika seuraavaan klo 21:00 (Helsinki = UTC+3 kesällä)
+            # Render on yleensä UTC, joten 21:00 Helsinki = 18:00 UTC
+            import datetime
+            now = datetime.datetime.now(datetime.timezone.utc)
+            
+            # Tavoite: 18:00 UTC (21:00 Helsinki kesäaika)
+            target_hour_utc = 18
+            target = now.replace(hour=target_hour_utc, minute=0, second=0, microsecond=0)
+            
+            if now >= target:
+                target += datetime.timedelta(days=1)
+            
+            sleep_seconds = (target - now).total_seconds()
+            print(f"[Worker] Seuraava skannaus klo 21:00 Helsinki ({sleep_seconds/3600:.1f} tunnin kuluttua).")
+            
+            time.sleep(sleep_seconds)
+            run_scenario_generation(force=True)
     finally:
         # Vapautetaan lukko aina kun looppi loppuu
         _release_lock()

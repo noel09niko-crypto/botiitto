@@ -40,9 +40,8 @@ threading.Thread(target=_keep_alive, daemon=True).start()
 # Tätä ei suoriteta lokaalissa debugissa vahingossa kahdesti
 if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     try:
-        iv = int(os.environ.get("INTERVAL_HOURS", 2))
-        start_background_worker(interval_hours=iv)
-        print("[Startup] Background worker käynnistetty.")
+        start_background_worker()
+        print("[Startup] Background worker käynnistetty (21:00 aikataululla).")
     except Exception as e:
         print(f"[Startup] VAROITUS: Background worker epäonnistui: {e}")
         import traceback; traceback.print_exc()
