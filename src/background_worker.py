@@ -100,25 +100,32 @@ def run_scenario_generation(force=False):
         movers = get_top_movers(snapshot, top_n=15)
         movers_text = format_movers_for_prompt(movers)
         
-        print(f"3/3 Asking AI to evaluate all {len(WATCHLIST)} stocks. This might take 30s...")
-        # Lisätään kehotus käydä koko lista läpi
-        watchlist_str = ", ".join(WATCHLIST)
-        scenarios = generate_scenarios(news_text, movers_text, client, watchlist_hint=watchlist_str)
+        print(f"3/3 Starting individual deep analysis for {len(WATCHLIST)} stocks...")
         
-        print(f"-> Generated {len(scenarios)} scenarios. Saving to DB.")
-        for scen in scenarios:
-            # Mark as 'Huippu' if confidence is very high
-            is_huippu = scen.get('luottamus', 0) >= 95 or scen.get('confidence', 0) >= 95
-            if is_huippu:
-                print(f"  [Huippu] Löydetty huippuanalyysi: {scen.get('otsikko', 'Tuntematon')}")
-            
-            # Hae osakkeen hintamuutos snapshotista (jos saatavilla)
-            ticker = scen.get('tickers', scen.get('ticker', 'YLEINEN'))
-            price_change = 0.0
-            if ticker in snapshot:
-                price_change = snapshot[ticker].get('change_pct_1d', 0.0)
-            
-            add_scenario(scen, is_pinned=is_huippu, price_change=price_change)
+        from src.ai_analyzer import analyze_single_stock
+        
+        processed_count = 0
+        for ticker in WATCHLIST:
+            try:
+                # Etsitään uutisia tälle osakkeelle (jos mahdollista) tai käytetään yleisiä
+                # Tässä vaiheessa käytetään olemassa olevaa uutisdataa
+                scen = analyze_single_stock(ticker, news_text, client)
+                
+                if scen:
+                    # Mark as 'Huippu' if confidence is very high
+                    is_huippu = scen.get('confidence', 0) >= 95
+                    
+                    ticker_key = scen.get('tickers', ticker)
+                    price_change = 0.0
+                    if ticker_key in snapshot:
+                        price_change = snapshot[ticker_key].get('change_pct_1d', 0.0)
+                    
+                    add_scenario(scen, is_pinned=is_huippu, price_change=price_change)
+                    processed_count += 1
+                    print(f"  [TALLENNETTU] {ticker} ({processed_count} valmiina)")
+            except Exception as e:
+                print(f"  [VIRHE] {ticker}: {e}")
+                continue
             
         # Laitetaan isompi raja, jotta 6kk horisontin kohteet eivät katoa
         prune_old_scenarios(keep_limit=50)

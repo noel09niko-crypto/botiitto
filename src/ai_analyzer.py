@@ -197,6 +197,35 @@ def quick_news_scan(news_text: str, client=None) -> List[str]:
     except:
         return []
 
+def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[dict]:
+    """Suorittaa syvän 11-vaiheen analyysin yhdelle osakkeelle."""
+    print(f"  [ANALYYSI] {ticker}...")
+    
+    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN 11 VAIHEEN MASTER-STRATEGIAA:
+    Yritys: {ticker}
+    
+    MAAILMANTILANNE JA UUTISET:
+    {news_text[:4000]}
+    
+    Noudata SYSTEM_PROMPT:n 11 vaiheen ohjeistusta ja JSON-rakennetta täsmälleen. 
+    Jos yritys ei läpäise testiä (esim. liikaa riskejä tai heikko kilpailuasema), palauta tyhjä lista [].
+    """
+    
+    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=2500)
+    
+    try:
+        if "[" in content:
+            content = content[content.find("["):content.rfind("]")+1]
+        data = json.loads(content)
+        if isinstance(data, list) and len(data) > 0:
+            import time
+            time.sleep(2) # Estetään rate limitit
+            return data[0]
+        return None
+    except Exception as e:
+        print(f"  [JSON ERROR] {ticker}: {e}")
+        return None
+
 def resolve_ticker(query: str, client=None) -> Optional[str]:
     if 1 < len(query) <= 5 and query.isalpha() and query.isupper(): return query
     prompt = f"Mikä on '{query}' virallinen pörssitunnus usassa? Vastaa VAIN JSON: {{\"ticker\": \"TUNNUS\"}}"
