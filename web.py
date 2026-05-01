@@ -208,7 +208,7 @@ def view_logs():
         # Tässä vaiheessa luetaan vain stdout/stderr jos mahdollista,
         # mutta Renderissä helpompaa lukea omaa lokitiedostoa jos sellainen on.
         # Käytetään tässä yksinkertaista tila-ilmoitusta.
-        from src.background_worker import _WORKER_RUNNING
+        from src.background_worker import _WORKER_RUNNING, CURRENT_TICKER
         status = "KÄYNNISSÄ" if _WORKER_RUNNING else "EI KÄYNNISSÄ"
         
         # Luetaan last_scan.txt jos olemassa
@@ -219,6 +219,7 @@ def view_logs():
                 
         return jsonify({
             "worker_status": status,
+            "current_ticker": CURRENT_TICKER,
             "last_scan_timestamp": last_scan,
             "last_error": LAST_ERROR,
             "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."

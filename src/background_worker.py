@@ -13,6 +13,7 @@ from src.news_fetcher import fetch_all_news, format_news_for_prompt
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
 _WORKER_RUNNING = False
+CURRENT_TICKER = "Odottaa..."
 
 # Lukitustiedosto — estää duplikaatit eri prosessien välillä
 _LOCK_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "worker.lock")
@@ -106,6 +107,8 @@ def run_scenario_generation(force=False):
         
         processed_count = 0
         for ticker in WATCHLIST:
+            global CURRENT_TICKER
+            CURRENT_TICKER = ticker
             try:
                 # Etsitään uutisia tälle osakkeelle (jos mahdollista) tai käytetään yleisiä
                 # Tässä vaiheessa käytetään olemassa olevaa uutisdataa
