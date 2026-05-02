@@ -225,10 +225,16 @@ def view_logs():
         })
     except Exception as e:
         return str(e)
+
+@app.route('/api/search_and_analyze', methods=['GET'])
+def search_and_analyze():
+    query = request.args.get('q', '').strip().upper()
+    if not query:
+        return jsonify({"success": False, "error": "Query missing"}), 400
         
     try:
         from src.ai_analyzer import resolve_ticker, generate_scenarios, get_client
-        from src.stock_analyzer import get_stock_data, format_movers_for_prompt
+        from src.stock_analyzer import get_stock_data
         from src.database import add_scenario
         
         client = get_client()
@@ -251,20 +257,18 @@ def view_logs():
         movers_text += f"- Muutos: {stock_data['change_pct_1d']}%\n"
         movers_text += f"- Volyymi: {stock_data['volume']}\n"
         
-        # 4. Pyydä AI-analyysi (ilman uutisia, tai hae uutisia jos halutaan)
+        # 4. Pyydä AI-analyysi
         from src.news_fetcher import fetch_all_news, format_news_for_prompt
-        news_articles = fetch_all_news(max_age_hours=168) # Laajempi haku manuaaliselle (7 päivää)
+        news_articles = fetch_all_news(max_age_hours=168)
         news_text = format_news_for_prompt(news_articles, max_articles=40)
         
-        scenarios = generate_scenarios(news_text, movers_text, client)
+        scenarios = generate_scenarios(news_text, movers_text, client, watchlist_hint=ticker)
         
         if not scenarios:
              return jsonify({"success": False, "error": "AI-analyysin luonti epäonnistui."}), 500
              
         # 5. Tallenna kantaan manuaalisena hakuna (is_manual=True)
         add_scenario(scenarios[0], is_manual=True)
-        
-        return jsonify({"success": True, "ticker": ticker})
         
         return jsonify({"success": True, "ticker": ticker})
         

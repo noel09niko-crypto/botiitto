@@ -55,21 +55,23 @@ def _release_lock():
             pass
 
 def run_scenario_generation(force=False):
-    global _WORKER_RUNNING
+    global _WORKER_RUNNING, WORKER_STATE
     if _WORKER_RUNNING:
-        print("Worker is already running. Skipping...")
+        print("[Worker] Already running – skipping new run.")
         return
-        
+
     _WORKER_RUNNING = True
-    global WORKER_STATE
-    WORKER_STATE["status"] = "Käynnistetään..."
-    print(f"[{datetime.now()}] Starting autonomous scenario generation...")
-    
+    WORKER_STATE["status"] = "KÄYNNISSÄ"
+    WORKER_STATE["current_ticker"] = "Alustetaan..."
+    print(f"[{datetime.now()}] Starting autonomous scenario generation (force={force})")
+
     try:
         client = get_client()
         fav_tickers = get_favorite_tickers()
 
+        # 1/3 – News fetching
         WORKER_STATE["status"] = "Haetaan uutisia..."
+        WORKER_STATE["current_ticker"] = "Uutiset"
         print("1/3 Fetching news data...")
         try:
             articles = fetch_all_news(max_age_hours=168)
@@ -78,42 +80,38 @@ def run_scenario_generation(force=False):
             print(f"News fetch error: {e}")
             news_text = "Ei uutisdataa saatavilla."
             articles = []
-        
-        CURRENT_TICKER = "Tunnistetaan yhtiöitä uutisista..."
-        mentioned = quick_news_scan(news_text, client) if articles else []
 
-        CURRENT_TICKER = "Validoidaan vanhoja analyyseja..."
-        print("1.5/3 Validating existing scenarios against new info & price...")
-        active_scens = get_active_scenarios(limit=50)
-        snapshot_list = get_market_snapshot([s.get('tickers', 'YLEINEN') for s in active_scens])
-        snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
-        
-        # ... (validation loop) ...
-        for scen in active_scens:
-            ticker = scen.get('tickers', 'YLEINEN')
-            CURRENT_TICKER = f"Validoidaan: {ticker}"
-            # 1. Hintamuutos tiedoksi valvontaan
-            price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
-            
-            # 2. Sisältöpohjainen validointi
-            validation = validate_scenario(scen, news_text, client)
-            status = validation.get('status', 'VALID')
-            
-            # Poistetaan VASTA jos tekoäly on saanut lukea alkuperäisen perustelun ja toteaa ettei se enää päde.
-            if status == 'INVALID':
-                reason = validation.get('reason', 'Tekoäly arvioi perustelun mitätöityneen.')
-                print(f"  [POISTO] {ticker}: {reason}")
-                deactivate_scenario(scen['id'], reason=reason)
-            elif status == 'UPDATE':
-                print(f"  [PÄIVITYS] Päivitetään {ticker} uuden tiedon valossa...")
-                update_scens = generate_scenarios(f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}", f"TICKER: {ticker}, CHANGE: {price_change}%", client)
-                if update_scens:
-                    deactivate_scenario(scen['id'], reason=f"Päivitetty uudella analyysilla: {validation.get('reason')}")
-                    add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
-        
-        CURRENT_TICKER = "Haetaan markkinadataa (75+ osaketta)..."
+        # 1.5/3 – Validate old scenarios
+        WORKER_STATE["status"] = "Validointi vanhoille analyyseille..."
+        print("1.5/3 Validating existing scenarios...")
+        try:
+            active_scens = get_active_scenarios(limit=50)
+            snapshot_list = get_market_snapshot([s.get('tickers', 'YLEINEN') for s in active_scens])
+            snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
+            for scen in active_scens:
+                ticker = scen.get('tickers', 'YLEINEN')
+                WORKER_STATE["current_ticker"] = ticker
+                price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
+                validation = validate_scenario(scen, news_text, client)
+                status = validation.get('status', 'VALID')
+                if status == 'INVALID':
+                    deactivate_scenario(scen['id'], reason=validation.get('reason'))
+                elif status == 'UPDATE':
+                    update_scens = generate_scenarios(
+                        f"UPDATE ANALYSIS FOR {ticker} due to: {validation.get('reason')}",
+                        f"TICKER: {ticker}, CHANGE: {price_change}%", client)
+                    if update_scens:
+                        deactivate_scenario(scen['id'], reason=f"Päivitetty: {validation.get('reason')}")
+                        add_scenario(update_scens[0], is_manual=True, price_change=price_change, is_updated=True)
+        except Exception as e:
+            print(f"Validation error: {e}")
+
+        # 2/3 – Market snapshot
+        WORKER_STATE["status"] = "Haetaan markkinadata..."
         print("2/3 Fetching market data...")
         try:
+            # Merge watchlist, favorites and mentioned tickers
+            mentioned = []  # will be filled later when news scanning is added
             all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
             snapshot_list = get_market_snapshot(all_tickers)
             snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
@@ -121,52 +119,72 @@ def run_scenario_generation(force=False):
             movers_text = format_movers_for_prompt(movers)
         except Exception as e:
             print(f"Market snapshot error: {e}")
-            movers_text = "Markkinadata ei saatavilla."
             snapshot = {}
-            snapshot_list = []
+            movers_text = "Markkinadata ei saatavilla."
+
+        # 3/3 – KAKSIVAIHEINEN ANALYYSI (SONNET SCORECARD -> SONNET DEEP)
+        WORKER_STATE["status"] = "Vaihe 1: Sonnet-pisteytys..."
+        print(f"3/3 Vaihe 1: Sonnet skannaa {len(WATCHLIST)} osaketta...")
         
-        print(f"3/3 Starting individual deep analysis for {len(WATCHLIST)} stocks...")
-        print(f"DEBUG: Watchlist tickers: {WATCHLIST[:5]}...")
-        from src.ai_analyzer import analyze_single_stock
-        
-        processed_count = 0
-        for ticker in WATCHLIST:
-            WORKER_STATE["current_ticker"] = ticker
-            WORKER_STATE["status"] = f"Analysoidaan {processed_count+1}/{len(WATCHLIST)}"
-            try:
-                # Etsitään uutisia tälle osakkeelle (jos mahdollista) tai käytetään yleisiä
-                # Tässä vaiheessa käytetään olemassa olevaa uutisdataa
+        try:
+            from src.ai_analyzer import filter_watchlist_with_sonnet, analyze_single_stock
+            
+            # 1. SONNET SCORECARD: Poimitaan parhaat 15 ehdokasta koko listalta
+            candidates = filter_watchlist_with_sonnet(news_text, movers_text, WATCHLIST)
+            print(f"[WORKER] Sonnet valitsi {len(candidates)} ehdokasta jatkoon.")
+            
+            # 2. SONNET: Syväanalyysi valituille ehdokkaille
+            WORKER_STATE["status"] = "Vaihe 2: Sonnet-syväanalyysi..."
+            final_scenarios = []
+            
+            for ticker in candidates:
+                WORKER_STATE["current_ticker"] = ticker
+                # Sonnet tekee täyden 11-vaiheen analyysin
                 scen = analyze_single_stock(ticker, news_text, client)
                 
                 if scen:
-                    # Mark as 'Huippu' if confidence is very high
-                    is_huippu = scen.get('confidence', 0) >= 95
+                    rec = str(scen.get('recommendation', '')).upper()
+                    # Puhdistetaan confidence (voi olla esim. "14/19 - perustelut...")
+                    raw_conf = str(scen.get('confidence', '0'))
+                    import re
+                    conf_match = re.search(r'(\d+)', raw_conf)
+                    points = int(conf_match.group(1)) if conf_match else 0
                     
-                    ticker_key = scen.get('tickers', ticker)
-                    price_change = 0.0
-                    if ticker_key in snapshot:
-                        price_change = snapshot[ticker_key].get('change_pct_1d', 0.0)
-                    
-                    add_scenario(scen, is_pinned=is_huippu, price_change=price_change)
-                    processed_count += 1
-                    print(f"  [TALLENNETTU] {ticker} ({processed_count} valmiina)")
-                    import time
-                    time.sleep(1) # Pieni tauko rate limitien välttämiseksi
-            except Exception as e:
-                print(f"  [VIRHE] {ticker}: {e}")
-                continue
-            
-        # Laitetaan isompi raja, jotta 6kk horisontin kohteet eivät katoa
+                    if rec == 'OSTA' and points >= 11:
+                        final_scenarios.append(scen)
+                        print(f"  [VALITTU] {ticker} läpäisi TRATEGO-seulan (Pisteet: {points}/19)")
+                    else:
+                        print(f"  [HYLÄTTY] {ticker} ei täyttänyt TRATEGO-kriteereitä ({rec}, {points}/19)")
+                
+                time.sleep(1) # Rate limit
+
+            # Tallennetaan parhaat (MAX 5-7 kerrallaan)
+            if final_scenarios:
+                print(f"[WORKER] Julkaistaan {len(final_scenarios[:7])} parasta analyysia.")
+                for scen in final_scenarios[:7]:
+                    ticker = scen.get('tickers', 'YLEINEN')
+                    price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
+                    is_pinned = float(scen.get('confidence', 0)) > 92
+                    add_scenario(scen, is_pinned=is_pinned, price_change=price_change)
+            else:
+                print("[WORKER] Yksikään ehdokas ei läpäissyt lopullista Sonnet-seulaa.")
+                
+        except Exception as e:
+            print(f"[VIRHE] Kolmivaiheisessa analyysissä: {e}")
+            import traceback
+            traceback.print_exc()
+
+        # Prune old scenarios after full run
         prune_old_scenarios(keep_limit=50)
-        
+
+        # Write last scan timestamp
         try:
             with open("last_scan.txt", "w") as f:
                 f.write(datetime.now().strftime("%d.%m.%Y %H:%M"))
-        except:
-            pass
-            
+        except Exception as e:
+            print(f"Failed to write last_scan.txt: {e}")
+
         print(f"[{datetime.now()}] Background task completed successfully.")
-        
     except Exception as e:
         import traceback
         print(f"Global Worker Error: {traceback.format_exc()}")
@@ -221,8 +239,11 @@ def start_background_worker(interval_hours=3):
     thread.start()
     return thread
 
-if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
-    init_db()
-    run_scenario_generation()
+# Initialise worker on module import for Render deployments
+# Only start if not under a test environment (e.g., when FLASK_ENV is production)
+if os.getenv("FLASK_ENV") == "production" or os.getenv("RUN_WORKER") == "1":
+    try:
+        # Start the background worker with immediate execution (interval_hours=None runs loop once)
+        start_background_worker(interval_hours=None)
+    except Exception as e:
+        print(f"Failed to start background worker on import: {e}")
