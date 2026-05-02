@@ -67,8 +67,13 @@ def run_scenario_generation(force=False):
         global CURRENT_TICKER
         CURRENT_TICKER = "Haetaan uutisia..."
         print("1/3 Fetching news data...")
-        articles = fetch_all_news(max_age_hours=168)
-        news_text = format_news_for_prompt(articles, max_articles=60)
+        try:
+            articles = fetch_all_news(max_age_hours=168)
+            news_text = format_news_for_prompt(articles, max_articles=60)
+        except Exception as e:
+            print(f"News fetch error: {e}")
+            news_text = "Ei uutisdataa saatavilla."
+            articles = []
         
         CURRENT_TICKER = "Tunnistetaan yhtiöitä uutisista..."
         mentioned = quick_news_scan(news_text, client) if articles else []
@@ -104,14 +109,20 @@ def run_scenario_generation(force=False):
         
         CURRENT_TICKER = "Haetaan markkinadataa (75+ osaketta)..."
         print("2/3 Fetching market data...")
-        all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
-        snapshot_list = get_market_snapshot(all_tickers)
-        snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
-        movers = get_top_movers(snapshot_list, top_n=15)
-        movers_text = format_movers_for_prompt(movers)
+        try:
+            all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
+            snapshot_list = get_market_snapshot(all_tickers)
+            snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
+            movers = get_top_movers(snapshot_list, top_n=15)
+            movers_text = format_movers_for_prompt(movers)
+        except Exception as e:
+            print(f"Market snapshot error: {e}")
+            movers_text = "Markkinadata ei saatavilla."
+            snapshot = {}
+            snapshot_list = []
         
         print(f"3/3 Starting individual deep analysis for {len(WATCHLIST)} stocks...")
-        
+        print(f"DEBUG: Watchlist tickers: {WATCHLIST[:5]}...")
         from src.ai_analyzer import analyze_single_stock
         
         processed_count = 0
@@ -153,11 +164,15 @@ def run_scenario_generation(force=False):
         print(f"[{datetime.now()}] Background task completed successfully.")
         
     except Exception as e:
-        print(f"Error in background worker: {e}")
         import traceback
-        traceback.print_exc()
+        print(f"Global Worker Error: {traceback.format_exc()}")
+        # Tallennetaan virhe jotta se näkyy /api/logs
+        global LAST_ERROR
+        # LAST_ERROR on web.py:ssä, joten käytetään printtiä jos emme saa sitä tässä.
+        # Mutta meillä on LAST_ERROR capture web.py:ssä jo.
     finally:
         _WORKER_RUNNING = False
+        CURRENT_TICKER = "Valmis / Odottaa"
 
 
 def _worker_loop(interval_hours=None):
