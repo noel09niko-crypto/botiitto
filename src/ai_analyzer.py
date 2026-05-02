@@ -22,8 +22,8 @@ VAIHE 11 — HINTA VS. ARVO (GARP-ajattelu): Käytä "Growth at Reasonable Price
 
 KIRJOITUSTYYLI:
 - AMMATTIMAINEN & TÖKKIVÄ: Älä kirjoita tarinaa. Käytä lyhyitä, tylyjä ja selkeitä lauseita. Fakta kerrallaan.
+- YTIMEKÄS: Pidä jokainen vaihe tiiviinä (max 3-5 lausetta per vaihe). Älä toista itseäsi.
 - SIMPPELI: Selitä vaikeat asiat niin, että kuka tahansa ymmärtää.
-- EI TURHAA PUHETTA: Mene suoraan asiaan. Käytä yllä olevaa 11 vaiheen analyysia perusteluissasi, mutta tiivistä se äärimmäisen ytimekkääksi.
 
 JSON-RAKENNE:
 [
@@ -61,7 +61,7 @@ def get_anthropic_client():
     if not key: return None
     return anthropic.Anthropic(api_key=key)
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 2500) -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 4000) -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille usealla fallbackilla"""
     # 1. Kokeillaan Anthropicia (Claude) useilla malleilla
     anth_client = get_anthropic_client()
@@ -212,7 +212,7 @@ def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[d
     Jos yritys ei läpäise testiä (esim. liikaa riskejä tai heikko kilpailuasema), palauta tyhjä lista [].
     """
     
-    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=2500)
+    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=4000)
     
     try:
         # Puhdistetaan vastauksesta kaikki paitsi JSON
