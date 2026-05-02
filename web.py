@@ -205,11 +205,9 @@ def refresh_all_style():
 def view_logs():
     """Näyttää viimeisimmät lokimerkinnät helpottamaan debuggausta."""
     try:
-        # Tässä vaiheessa luetaan vain stdout/stderr jos mahdollista,
-        # mutta Renderissä helpompaa lukea omaa lokitiedostoa jos sellainen on.
-        # Käytetään tässä yksinkertaista tila-ilmoitusta.
-        from src.background_worker import _WORKER_RUNNING, CURRENT_TICKER
-        status = "KÄYNNISSÄ" if _WORKER_RUNNING else "EI KÄYNNISSÄ"
+        from src import background_worker
+        status = "KÄYNNISSÄ" if background_worker._WORKER_RUNNING else "EI KÄYNNISSÄ"
+        w_state = background_worker.WORKER_STATE
         
         # Luetaan last_scan.txt jos olemassa
         last_scan = "Ei vielä suoritettu"
@@ -219,7 +217,8 @@ def view_logs():
                 
         return jsonify({
             "worker_status": status,
-            "current_ticker": CURRENT_TICKER,
+            "current_status": w_state.get("status"),
+            "current_ticker": w_state.get("current_ticker"),
             "last_scan_timestamp": last_scan,
             "last_error": LAST_ERROR,
             "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."

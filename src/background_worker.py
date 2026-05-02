@@ -13,7 +13,10 @@ from src.news_fetcher import fetch_all_news, format_news_for_prompt
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
 _WORKER_RUNNING = False
-CURRENT_TICKER = "Odottaa..."
+WORKER_STATE = {
+    "status": "Odottaa...",
+    "current_ticker": "N/A"
+}
 
 # Lukitustiedosto — estää duplikaatit eri prosessien välillä
 _LOCK_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "worker.lock")
@@ -58,14 +61,15 @@ def run_scenario_generation(force=False):
         return
         
     _WORKER_RUNNING = True
+    global WORKER_STATE
+    WORKER_STATE["status"] = "Käynnistetään..."
     print(f"[{datetime.now()}] Starting autonomous scenario generation...")
     
     try:
         client = get_client()
         fav_tickers = get_favorite_tickers()
 
-        global CURRENT_TICKER
-        CURRENT_TICKER = "Haetaan uutisia..."
+        WORKER_STATE["status"] = "Haetaan uutisia..."
         print("1/3 Fetching news data...")
         try:
             articles = fetch_all_news(max_age_hours=168)
@@ -127,8 +131,8 @@ def run_scenario_generation(force=False):
         
         processed_count = 0
         for ticker in WATCHLIST:
-            global CURRENT_TICKER
-            CURRENT_TICKER = ticker
+            WORKER_STATE["current_ticker"] = ticker
+            WORKER_STATE["status"] = f"Analysoidaan {processed_count+1}/{len(WATCHLIST)}"
             try:
                 # Etsitään uutisia tälle osakkeelle (jos mahdollista) tai käytetään yleisiä
                 # Tässä vaiheessa käytetään olemassa olevaa uutisdataa
@@ -172,7 +176,8 @@ def run_scenario_generation(force=False):
         # Mutta meillä on LAST_ERROR capture web.py:ssä jo.
     finally:
         _WORKER_RUNNING = False
-        CURRENT_TICKER = "Valmis / Odottaa"
+        WORKER_STATE["status"] = "Valmis / Odottaa"
+        WORKER_STATE["current_ticker"] = "N/A"
 
 
 def _worker_loop(interval_hours=None):
