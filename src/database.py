@@ -184,7 +184,7 @@ def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_up
     conf = get_field(data, ["confidence", "luottamus", "varmuus"], 75)
 
     if not is_manual:
-        cursor.execute(f'SELECT id, confidence FROM scenarios WHERE tickers = {p} AND is_active = TRUE AND is_favorite = FALSE', (ensure_str(tickers),))
+        cursor.execute(f'SELECT id, confidence FROM scenarios WHERE tickers = {p} AND is_active = 1 AND is_favorite = 0', (ensure_str(tickers),))
         existing = cursor.fetchone()
         if existing:
             ex_id = existing[0] if USE_POSTGRES else existing['id']
@@ -193,9 +193,9 @@ def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_up
                 conn.close()
                 return False
             else:
-                cursor.execute(f'UPDATE scenarios SET is_active = FALSE WHERE id = {p}', (ex_id,))
+                cursor.execute(f'UPDATE scenarios SET is_active = 0 WHERE id = {p}', (ex_id,))
     else:
-        cursor.execute(f'UPDATE scenarios SET is_active = FALSE WHERE tickers = {p}', (ensure_str(tickers),))
+        cursor.execute(f'UPDATE scenarios SET is_active = 0 WHERE tickers = {p}', (ensure_str(tickers),))
 
     summary = get_field(data, ["summary", "johdanto", "yhteenveto", "tiivistelmä", "kuvaus", "pikakuvaus"], "Tarkempi tiivistelmä tulossa.")
     reasoning = get_field(data, ["reasoning", "perustelut", "selite", "analyysi", "miksi_nousee"], "Analyysi osakkeen nousuajureista valmistuu.")
@@ -246,7 +246,7 @@ def get_active_scenarios(limit=25):
     conn = get_db_connection()
     cursor = conn.cursor()
     p = _placeholder()
-    cursor.execute(f'SELECT * FROM scenarios WHERE is_active = TRUE AND is_favorite = FALSE ORDER BY confidence DESC, created_at DESC LIMIT {p}', (limit,))
+    cursor.execute(f'SELECT * FROM scenarios WHERE is_active = 1 AND is_favorite = 0 ORDER BY confidence DESC, created_at DESC LIMIT {p}', (limit,))
     rows = cursor.fetchall()
     result = _fetchall_as_dicts(cursor, rows)
     conn.close()
@@ -255,7 +255,7 @@ def get_active_scenarios(limit=25):
 def get_favorite_scenarios():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM scenarios WHERE is_favorite = TRUE ORDER BY created_at DESC')
+    cursor.execute('SELECT * FROM scenarios WHERE is_favorite = 1 ORDER BY created_at DESC')
     rows = cursor.fetchall()
     result = _fetchall_as_dicts(cursor, rows)
     conn.close()
@@ -264,7 +264,7 @@ def get_favorite_scenarios():
 def get_favorite_tickers():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT DISTINCT tickers FROM scenarios WHERE is_favorite = TRUE')
+    cursor.execute('SELECT DISTINCT tickers FROM scenarios WHERE is_favorite = 1')
     rows = cursor.fetchall()
     conn.close()
     if USE_POSTGRES:
@@ -282,7 +282,7 @@ def toggle_favorite(scenario_id):
         is_man = row[1] if USE_POSTGRES else row['is_manual']
         new_status = not is_fav
         if is_man and not new_status:
-            cursor.execute(f'UPDATE scenarios SET is_favorite = FALSE, is_active = FALSE WHERE id = {p}', (scenario_id,))
+            cursor.execute(f'UPDATE scenarios SET is_favorite = 0, is_active = 0 WHERE id = {p}', (scenario_id,))
         else:
             cursor.execute(f'UPDATE scenarios SET is_favorite = {p} WHERE id = {p}', (new_status, scenario_id))
         conn.commit()
@@ -296,7 +296,7 @@ def deactivate_scenario(scenario_id, reason: str = "Ei perustelua kirjattu"):
     p = _placeholder()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute(
-        f'UPDATE scenarios SET is_active = FALSE, deactivation_reason = {p}, deactivated_at = {p} WHERE id = {p}',
+        f'UPDATE scenarios SET is_active = 0, deactivation_reason = {p}, deactivated_at = {p} WHERE id = {p}',
         (reason, now, scenario_id)
     )
     conn.commit()
@@ -318,12 +318,12 @@ def prune_old_scenarios(keep_limit=50):
     if USE_POSTGRES:
         cursor.execute(f'''
             UPDATE scenarios
-            SET is_active = FALSE,
+            SET is_active = 0,
                 deactivation_reason = {p},
                 deactivated_at = {p}
             WHERE id IN (
                 SELECT id FROM scenarios
-                WHERE is_favorite = FALSE AND is_pinned = FALSE AND is_active = TRUE
+                WHERE is_favorite = 0 AND is_pinned = 0 AND is_active = 1
                 ORDER BY confidence ASC, created_at ASC
                 OFFSET {p}
             )

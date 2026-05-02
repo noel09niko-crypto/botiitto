@@ -110,8 +110,8 @@ def run_scenario_generation(force=False):
         WORKER_STATE["status"] = "Haetaan markkinadata..."
         print("2/3 Fetching market data...")
         try:
-            # Merge watchlist, favorites and mentioned tickers
-            mentioned = []  # will be filled later when news scanning is added
+            # News scanning activation
+            mentioned = quick_news_scan(news_text, client) if news_text else []
             all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
             snapshot_list = get_market_snapshot(all_tickers)
             snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}

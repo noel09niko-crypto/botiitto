@@ -226,9 +226,10 @@ def view_logs():
     except Exception as e:
         return str(e)
 
-@app.route('/api/search_and_analyze', methods=['GET'])
+@app.route('/api/search_and_analyze', methods=['POST'])
 def search_and_analyze():
-    query = request.args.get('q', '').strip().upper()
+    data = request.json
+    query = data.get('query', '').strip().upper()
     if not query:
         return jsonify({"success": False, "error": "Query missing"}), 400
         

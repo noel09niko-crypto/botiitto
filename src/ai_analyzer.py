@@ -90,8 +90,6 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 16000
         print(f"Groq error: {e}")
     
     return ""
-    
-    return ""
 
 def _fix_recommendation(scenario: dict) -> dict:
     """Korjaa ristiriitaisen recommendation/sävy-yhdistelmän.
@@ -145,7 +143,7 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
     VALINTAKRITEERI:
     Valitse vain ne seurantalistan osakkeet, jotka ovat "Eliitti-tasoa" ja täyttävät tiukat ammattimaiset kriteerit.
     """
-    content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=8000)
+    content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=16000)
     
     try:
         # Poista mahdolliset markdown-koodilaatikot
@@ -268,7 +266,6 @@ def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[d
             data = json.loads(content_clean)
             if isinstance(data, list) and len(data) > 0:
                 return data[0]
-        # Jos löytyy vain objekti
         elif start_idx_obj != -1:
             content_clean = content[start_idx_obj:content.rfind("}")+1]
             data = json.loads(content_clean)
