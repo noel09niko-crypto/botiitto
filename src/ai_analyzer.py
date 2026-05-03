@@ -352,9 +352,10 @@ def validate_scenario(scenario: dict, latest_news: str, client=None) -> dict:
     
     KÄYTTÄJÄN TIUKKA EHTO: Sijoitushorisontti on PITKÄ (1-3 vuotta). 
     - Analyysit EIVÄT SAA vaihtua päivittäin tai viikoittain. 
+    - Jos uutisissa EI mainita tätä yhtiötä lainkaan, palauta AINA 'VALID'. Uutishiljaisuus on merkki siitä, että teesi on yhä voimassa.
     - Jos alkuperäinen "Iso kuva" (esim. tekoälyinfra, sota, geopolitiikka) on yhä voimassa, analyysi on VALID.
-    - Jos on tullut uutta tietoa, joka muuttaa tilannetta hieman, valitse UPDATE (tämä päivittää perustelun, muttei poista osaketta).
-    - Valitse INVALID vain ja ainoastaan, jos alkuperäinen peruste on romuttunut täysin ja osakkeen lasku on varmaa. Pieni hinnan heilahtelu EI ole syy poistolle.
+    - Jos on tullut uutta tietoa, joka muuttaa tilannetta hieman, valitse UPDATE.
+    - Valitse INVALID vain ja ainoastaan, jos alkuperäinen peruste on romuttunut täysin (esim. konkurssi, massiivinen petos, liiketoiminnan loppuminen). Pieni hinnan heilahtelu tai uutisten puute EI ole syy poistolle.
     
     ASETA STATUS:
     - 'VALID': Alkuperäinen teesi on elossa. Uutishiljaisuus tai normaali hinnanvaihtelu on täysin OK.
