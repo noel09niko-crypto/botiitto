@@ -101,17 +101,35 @@ def run_analysis():
     console.print("\n[cyan]Claude analysoi markkinatilannetta...[/cyan]")
     console.print("[dim](Tämä voi kestää 20-40 sekuntia)[/dim]")
 
-    analysis = analyze_market(
-        news_text=news_text,
-        movers_text=movers_text,
-        detailed_stocks=top_tickers,
-        client=client,
-    )
+    # Haetaan kertyneet analyysit sanakirjoina
+    from src.ai_analyzer import analyze_single_stock
+    from src.database import add_scenario
+    
+    results_as_dicts = []
+    for ticker in top_tickers[:5]:
+        res_dict = analyze_single_stock(ticker, news_text, client)
+        if res_dict:
+            results_as_dicts.append(res_dict)
+            # Tallennetaan suoraan tietokantaan!
+            add_scenario(res_dict)
+            console.print(f"[green]✓ {ticker} analysoitu ja tallennettu tietokantaan.[/green]")
+
+    if not results_as_dicts:
+        console.print("[red]Analyysi epäonnistui: ei saatu tuloksia AI:lta.[/red]")
+        return
+
+    # Luodaan teksti-yhteenveto raporttia varten
+    analysis_text = ""
+    for r in results_as_dicts:
+        analysis_text += f"--- {r.get('title', 'Tuntematon')} ({r.get('tickers', 'N/A')}) ---\n"
+        analysis_text += f"SUOSITUS: {r.get('recommendation', 'TARKKAILE')} | PISTEET: {r.get('confidence', '0/19')}\n"
+        analysis_text += f"YHTEENVETO: {r.get('summary', '')}\n"
+        analysis_text += f"PERUSTELU:\n{r.get('reasoning', '')}\n\n"
 
     # 5. Tulosta analyysi
     console.print("\n")
     console.print(Panel(
-        analysis,
+        analysis_text,
         title="[bold green]5 SIJOITUSSUOSITUSTA[/bold green]",
         border_style="green",
         padding=(1, 2),
@@ -126,7 +144,7 @@ def run_analysis():
         f.write(movers_text + "\n\n")
         f.write("=" * 60 + "\n\n")
         f.write("SIJOITUSSUOSITUKSET:\n\n")
-        f.write(analysis)
+        f.write(analysis_text)
 
     console.print(f"\n[dim]Analyysi tallennettu: {output_file}[/dim]")
     console.print("\n[bold]Seuraava analyysi: " + _next_run_time() + "[/bold]")
