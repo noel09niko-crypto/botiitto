@@ -209,8 +209,13 @@ def run_scenario_generation(force=False):
         print(f"[{datetime.now()}] Background task completed successfully.")
     except Exception as e:
         import traceback
-        print(f"Global Worker Error: {traceback.format_exc()}")
-        # Virhe käsitellään web.py:n tasolla tai tulostetaan vain lokiin tässä.
+        err_msg = traceback.format_exc()
+        print(f"Global Worker Error: {err_msg}")
+        try:
+            with open("last_error.txt", "w") as f:
+                f.write(err_msg)
+        except:
+            pass
     finally:
         _WORKER_RUNNING = False
         WORKER_STATE["status"] = "Valmis / Odottaa"

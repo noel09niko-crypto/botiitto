@@ -215,12 +215,17 @@ def view_logs():
             with open("last_scan.txt", "r") as f:
                 last_scan = f.read().strip()
                 
+        err_text = LAST_ERROR
+        if os.path.exists("last_error.txt"):
+            with open("last_error.txt", "r") as f:
+                err_text = f.read().strip() or LAST_ERROR
+
         return jsonify({
             "worker_status": status,
             "current_status": w_state.get("status"),
             "current_ticker": w_state.get("current_ticker"),
             "last_scan_timestamp": last_scan,
-            "last_error": LAST_ERROR,
+            "last_error": err_text,
             "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."
         })
     except Exception as e:
