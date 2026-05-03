@@ -67,7 +67,7 @@ def get_anthropic_client():
     return anthropic.Anthropic(api_key=key)
 
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 16000, model: str = "claude-sonnet-4-6") -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-sonnet-4-6") -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille tietyllä mallilla."""
     anth_client = get_anthropic_client()
     if anth_client:
@@ -154,7 +154,7 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
     VALINTAKRITEERI:
     Valitse vain ne seurantalistan osakkeet, jotka ovat "Eliitti-tasoa" ja täyttävät tiukat ammattimaiset kriteerit.
     """
-    content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=16000)
+    content = _get_completion(user_message, system_msg=SYSTEM_PROMPT, max_tokens=8192)
     
     try:
         # Poista mahdolliset markdown-koodilaatikot
@@ -262,9 +262,11 @@ def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[d
     Noudata SYSTEM_PROMPT:n TRATEGO-ohjeistusta ja JSON-rakennetta täsmälleen. 
     Varmista, että käyt läpi jokaisen vaiheen (V1-V12) ja annat niistä pisteet.
     Laske lopulliset TRATEGO-pisteet (X/19) confidence-kenttään.
+    TÄRKEÄÄ: Pidä analyysi ytimekkäänä, jotta JSON-vastaus ei katkea kesken.
     """
     
-    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=16000)
+    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=8192)
+
     
     try:
         # Puhdistetaan vastauksesta kaikki paitsi JSON
