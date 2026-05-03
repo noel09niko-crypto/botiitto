@@ -3,19 +3,6 @@ import threading
 import os
 import sys
 from datetime import datetime
-from src.database import (
-    init_db, add_scenario, prune_old_scenarios, get_favorite_tickers, 
-    get_active_scenarios, deactivate_scenario
-)
-from src.ai_analyzer import (
-    generate_scenarios, quick_news_scan, get_client, validate_scenario,
-    filter_watchlist_with_sonnet, analyze_single_stock, verify_analysis_quality
-)
-from src.stock_analyzer import (
-    get_market_snapshot, get_top_movers, format_movers_for_prompt, 
-    WATCHLIST, get_research_bundle
-)
-from src.news_fetcher import fetch_all_news, format_news_for_prompt
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
 _WORKER_RUNNING = False

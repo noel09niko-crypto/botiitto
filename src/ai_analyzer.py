@@ -1,6 +1,5 @@
 import os
 import json
-from groq import Groq
 import anthropic
 from typing import List, Optional
 from dotenv import load_dotenv
@@ -61,7 +60,7 @@ TÄRKEÄÄ: Älä koskaan suosittele 'MYY'. Jos osake ei ole ostopaikka, jätä 
 
 
 def get_client():
-    return get_anthropic_client() or Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
+    return get_anthropic_client()
 
 def get_anthropic_client():
     key = os.environ.get("ANTHROPIC_API_KEY")
@@ -71,7 +70,7 @@ def get_anthropic_client():
     return anthropic.Anthropic(api_key=key)
 
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-opus-4-7") -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-sonnet-4-6") -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille. Vain Claude sallittu laadun takaamiseksi."""
     anth_client = get_anthropic_client()
     if anth_client:
