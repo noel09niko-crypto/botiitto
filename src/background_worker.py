@@ -62,6 +62,11 @@ def _release_lock():
 
 def run_scenario_generation(force=False):
     global _WORKER_RUNNING, WORKER_STATE
+    
+    # Paikallinen import jotta vältetään UnboundLocalError lopullisesti
+    from src.database import add_scenario, deactivate_scenario, get_active_scenarios, get_favorite_tickers
+    from src.ai_analyzer import get_client, validate_scenario, generate_scenarios
+    
     if _WORKER_RUNNING:
         print("[Worker] Already running – skipping new run.")
         return
