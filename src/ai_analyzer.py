@@ -71,7 +71,7 @@ def get_anthropic_client():
     return anthropic.Anthropic(api_key=key)
 
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-3-5-sonnet-20241022") -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-sonnet-4-6") -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille. Vain Claude sallittu laadun takaamiseksi."""
     anth_client = get_anthropic_client()
     if anth_client:
