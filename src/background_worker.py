@@ -210,10 +210,7 @@ def run_scenario_generation(force=False):
     except Exception as e:
         import traceback
         print(f"Global Worker Error: {traceback.format_exc()}")
-        # Tallennetaan virhe jotta se näkyy /api/logs
-        global LAST_ERROR
-        # LAST_ERROR on web.py:ssä, joten käytetään printtiä jos emme saa sitä tässä.
-        # Mutta meillä on LAST_ERROR capture web.py:ssä jo.
+        # Virhe käsitellään web.py:n tasolla tai tulostetaan vain lokiin tässä.
     finally:
         _WORKER_RUNNING = False
         WORKER_STATE["status"] = "Valmis / Odottaa"

@@ -185,7 +185,7 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
     ]
     """
     
-    content = _get_completion(prompt, model="claude-sonnet-4-6", max_tokens=4000)
+    content = _get_completion(prompt, system_msg="Olet ammattimainen Research Agent.", max_tokens=4000)
     try:
         if "[" in content:
             content = content[content.find("["):content.rfind("]")+1]
@@ -237,7 +237,7 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
     Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele jokainen TRATEGO-vaihe (V1-V12) datalla.
     """
     
-    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=8192)
+    content = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
     
     try:
         # Puhdistetaan vastauksesta kaikki paitsi JSON
@@ -248,7 +248,8 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
         if start_idx != -1 and end_idx != -1:
             content_clean = content[start_idx:end_idx+1]
             data = json.loads(content_clean)
-            return data[0] if isinstance(data, list) else data
+            res = data[0] if isinstance(data, list) else data
+            return _fix_recommendation(res)
         return None
     except Exception as e:
         print(f"  [JSON ERROR] {ticker}: {e}")

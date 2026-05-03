@@ -17,11 +17,11 @@ WATCHLIST = [
     # US – Cybersecurity
     "PANW", "FTNT", "S", "TMUS",
     # US – Fintech & E-commerce
-    "PYPL", "SQ", "COIN", "AFRM", "UPST", "MELI", "SE",
+    "PYPL", "COIN", "AFRM", "UPST", "MELI", "SE",
     # US – Social & Digital Ads
     "PINS", "SNAP", "TTD", "U", "RBLX",
     # European / Nordic Tech
-    "SAP", "ERICB.ST", "NOKIA.HE", "ADYEN.AS", "LOGN.SW",
+    "SAP", "NOKIA.HE", "ADYEN.AS", "LOGN.SW",
     # High Growth / Speculative Tech
     "IONQ", "RGTI", "QUBT", "TSM"
 ]

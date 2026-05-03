@@ -181,7 +181,13 @@ def add_scenario(data, is_pinned=False, is_manual=False, price_change=0.0, is_up
 
     title = get_field(data, ["title", "otsikko", "nimi", "company", "yhtiö"], "Tuntematon Yhtiö")
     tickers = get_field(data, ["tickers", "ticker", "tarkkavala", "symboli"], "YLEINEN")
-    conf = get_field(data, ["confidence", "luottamus", "varmuus"], 75)
+    conf = get_field(data, ["confidence", "luottamus", "varmuus"], 0)
+    # Parsitaan mahdolliset "15/19" -muodot kokonaisluvuksi
+    conf_str = str(conf)
+    import re
+    match = re.search(r'(\d+)', conf_str)
+    conf = int(match.group(1)) if match else 0
+
 
     if not is_manual:
         cursor.execute(f'SELECT id, confidence FROM scenarios WHERE tickers = {p} AND is_active = 1 AND is_favorite = 0', (ensure_str(tickers),))
