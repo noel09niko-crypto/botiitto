@@ -201,3 +201,73 @@ def get_detailed_info(ticker: str) -> str:
         )
     except Exception:
         return f"{ticker}: detailed info unavailable"
+
+def get_research_bundle(ticker: str) -> Dict:
+    """Hakee kattavan tutkimuspaketin yhtiöstä (Insider, FCF, Analyst consensus, News)."""
+    try:
+        stock = yf.Ticker(ticker)
+        info = stock.info
+        
+        # 1. Sisäpiiri (Insider Transactions)
+        insider = []
+        try:
+            insider_data = stock.insider_transactions
+            if insider_data is not None and not insider_data.empty:
+                # Otetaan 5 viimeisintä tapahtumaa ja poistetaan turhat sarakkeet
+                raw_insider = insider_data.head(8).to_dict(orient="records")
+                for r in raw_insider:
+                    insider.append({
+                        "Position": r.get("Position"),
+                        "Transaction": r.get("Transaction"),
+                        "Shares": r.get("Shares"),
+                        "Value": r.get("Value"),
+                        "Date": str(r.get("Start Date")) if r.get("Start Date") else "N/A"
+                    })
+        except Exception as e:
+            print(f"  [DEBUG] Insider error for {ticker}: {e}")
+            pass
+
+        # 2. Syvät luvut (FCF, Debt, Margins)
+        financials = {
+            "free_cash_flow": info.get("freeCashflow", "N/A"),
+            "debt_to_equity": info.get("debtToEquity", "N/A"),
+            "operating_margins": info.get("operatingMargins", "N/A"),
+            "revenue_growth": info.get("revenueGrowth", "N/A"),
+            "return_on_equity": info.get("returnOnEquity", "N/A"),
+            "ebitda": info.get("ebitda", "N/A"),
+            "forward_pe": info.get("forwardPE", "N/A"),
+            "trailing_pe": info.get("trailingPE", "N/A")
+        }
+
+        # 3. Analyytikko-konsensus
+        consensus = {
+            "target_mean": info.get("targetMeanPrice", "N/A"),
+            "current_price": info.get("currentPrice", "N/A"),
+            "recommendation": info.get("recommendationKey", "N/A"),
+            "number_of_analysts": info.get("numberOfAnalystOpinions", "N/A")
+        }
+
+        # 4. Täsmäuutiset
+        news = []
+        try:
+            for n in stock.news[:5]:
+                news.append({
+                    "title": n.get("title"),
+                    "publisher": n.get("publisher"),
+                    "link": n.get("link")
+                })
+        except: pass
+
+        return {
+            "ticker": ticker,
+            "long_name": info.get("longName", ticker),
+            "business_summary": info.get("longBusinessSummary", "Ei kuvausta saatavilla."),
+            "insider": insider,
+            "financials": financials,
+            "consensus": consensus,
+            "news": news,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        print(f"Error fetching research bundle for {ticker}: {e}")
+        return {"ticker": ticker, "error": str(e)}

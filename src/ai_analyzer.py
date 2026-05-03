@@ -17,38 +17,41 @@ def _get_masked_key(key_name: str) -> str:
 
 SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät TRATEGO-analyysijärjestelmää (12 vaihetta, Max 19 pistettä).
 
-TRATEGO-VAIHEET (Pisteytys 0-1 tai 0-2 per vaihe, yhteensä max 19p):
+STRATEGIAN YDIN (11-VAIHEINEN TARKASTUS):
+Jokainen analyysi on läpäistävä tiukka seula, jossa faktat (luvut, sisäpiiri, uutiset) painavat enemmän kuin yleinen hypetys.
+
+TRATEGO-VAIHEET (Pisteytys per vaihe):
 V1: Ostopaikka ja houkuttelevuus (0-1p)
 V2: Muutossignaali ja markkina (0-2p)
 V3: Tuotteen laatu ja skaalautuvuus (0-2p)
 V4: Hinnoitteluvoima (0-2p)
 V5: Markkinaosuus ja kilpailutilanne (0-1p)
 V6: Johto ja omistus (0-2p)
-V7: Kannattavuus ja kassavirta (0-2p)
+V7: Kannattavuus ja kassavirta (0-2p) - KÄYTÄ ANNETTUA FCF-DATAA.
 V8: Regulaatioriski (0-1p)
-V9: Avainluvut (0-1p)
+V9: Avainluvut (0-1p) - KÄYTÄ ANNETTUJA P/E JA MARGINAALEJA.
 V10: Ajoitus ja katalyytti (0-1p)
-V11: Hinta vs. Arvo (GARP) (0-2p)
-V12: Sisäpiiri ja instituutiot (0-1p)
+V11: Hinta vs. Arvo (GARP) (0-2p) - VERTAA TAVOITEHINTAA NYKYHINTAAN.
+V12: Sisäpiiri ja instituutiot (0-1p) - KÄYTÄ ANNETTUA INSIDER-DATAA.
 
 KIRJOITUSTYYLI:
 - AMMATTIMAINEN & TÖKKIVÄ: Lyhyitä, tylyjä ja selkeitä lauseita. Fakta kerrallaan.
-- YTIMEKÄS: Pidä jokainen vaihe tiiviinä (max 3-5 lausetta per vaihe).
-- SIMPPELI: Selitä vaikeat asiat helposti.
+- ELI5: Selitä monimutkaiset asiat yksinkertaisesti.
+- DATA-LÄHTÖINEN: Jos data sanoo "Insider Buy", mainitse se. Jos data puuttuu, ole rehellinen.
 
-JSON-RAKENNE:
+JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
 [
   {
     "title": "YHTIÖN NIMI",
     "tickers": "TICKER",
-    "summary": "PIKAKUVAUS: Mitä yritys tekee lyhyesti.",
-    "global_context": "ISO KUVA: Markkinatilanne ja maailman tapahtumat (V1 & V2).",
-    "competitive_landscape": "KILPAILUASEMA JA TUOTE: (V3, V4 & V5).",
-    "reasoning": "TRATEGO-ANALYYSI: Kirjoita tähän KAIKKI 12 VAIHETTA (V1 - V12) otsikoittain. Käytä tökkivää tyyliä. Anna jokaisesta vaiheesta pisteet (esim. V1: 1/1p). Lopeta 'YHTEENVETO' osioon, jossa lasket kokonaispisteet (X/19p) ja annat suosituksen.",
+    "summary": "PIKAKUVAUS: Mitä yritys tekee.",
+    "global_context": "ISO KUVA: Markkina ja maailman tapahtumat (V1 & V2).",
+    "competitive_landscape": "KILPAILUASEMA: (V3, V4 & V5).",
+    "reasoning": "TRATEGO-ANALYYSI: Kaikki 12 vaihetta otsikoittain (V1 - V12). Anna pisteet per vaihe (esim. V1: 1/1p).",
     "metrics_explanation": "NUMEROT: Keskeiset luvut ja niiden merkitys (V7 & V9).",
     "recommendation": "OSTA / PIDÄ / MYY",
     "confidence": "Lopulliset TRATEGO-pisteet (esim. 14/19)",
-    "timeframe": "Sijoitushorisontti (esim. 1-3 vuotta)",
+    "timeframe": "1-3 vuotta",
     "risks": "Keskeisimmät riskit (V8)."
   }
 ]
@@ -193,50 +196,46 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
     except:
         return []
 
-def filter_watchlist_with_sonnet(news_text: str, movers_text: str, watchlist: List[str]) -> List[str]:
-    """Vaihe 1: Sonnet tekee TRATEGO-pisteytyksen (V1-V12, Max 19p) kaikille osakkeille."""
-    print(f"  [TRATEGO SCORECARD] Pisteytetään {len(watchlist)} osaketta...")
+def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> List[str]:
+    """Vaihe 1: Sonnet tekee TRATEGO-pisteytyksen hyödyntäen syvää tutkimusdataa."""
+    print(f"  [TRATEGO SCORECARD] Pisteytetään {len(research_data)} osaketta datan perusteella...")
     
-    prompt = f"""TEHTÄVÄ: Pisteytä jokainen alla oleva osake TRATEGO-järjestelmän (V1-V12) mukaisesti.
+    # Tiivistetään data jotta se mahtuu promptiin
+    data_summary = ""
+    for d in research_data:
+        ticker = d.get('ticker')
+        cons = d.get('consensus', {})
+        fins = d.get('financials', {})
+        insider = "Kyllä" if d.get('insider') else "Ei tietoa"
+        data_summary += f"- {ticker}: Price ${cons.get('current_price')}, Target ${cons.get('target_mean')}, FCF ${fins.get('free_cash_flow')}, Insider: {insider}\n"
+
+    prompt = f"""TEHTÄVÄ: Pisteytä nämä osakkeet TRATEGO-järjestelmän (V1-V12) mukaisesti.
+    Käytä annettua tutkimusdataa ja uutisia. Älä arvaa pisteitä jos data puuttuu, vaan ole tiukka.
     
-    TRATEGO-PISTEYTYS (Max 19p):
-    V1: Ostopaikka (0-1), V2: Muutossignaali (0-2), V3: Laatu (0-2), V4: Hinnoitteluvoima (0-2), 
-    V5: Markkinaosuus (0-1), V6: Johto (0-2), V7: Kannattavuus (0-2), V8: Regulaatio (0-1), 
-    V9: Luvut (0-1), V10: Katalyytti (0-1), V11: GARP (0-2), V12: Sisäpiiri/Instituutiot (0-1).
+    TUTKIMUSDATA:
+    {data_summary}
     
-    VALINTAKRITEERI: 
-    - Analyysi käynnistyy: >= 11/19p
-    - Hylätään suoraan: < 6/19p
-    - Harkinnanvarainen: 6-10/19p
-    
-    OSAKKEET:
-    {", ".join(watchlist)}
-    
-    DATA:
-    {news_text[:3000]}
-    {movers_text[:1500]}
+    UUTISET:
+    {news_text[:2000]}
     
     VASTAA VAIN JSON-TAULUKKONA:
     [
-      {{"ticker": "XYZ", "tratego_score": 14, "recommendation": "OSTA"}},
+      {{"ticker": "XYZ", "tratego_score": 14, "reason": "Miksi sai nämä pisteet?"}},
       ...
     ]
     """
     
-    content = _get_completion(prompt, model="claude-sonnet-4-6", max_tokens=6000)
+    content = _get_completion(prompt, model="claude-sonnet-4-6", max_tokens=4000)
     try:
         if "[" in content:
             content = content[content.find("["):content.rfind("]")+1]
         data = json.loads(content)
-        # Suodatetaan TRATEGO-kriteerin mukaan (>= 11p)
+        # Suodatetaan TRATEGO-kriteerin mukaan (>= 11p) tai jos on poikkeuksellinen syy
         selected_data = [item for item in data if item.get('tratego_score', 0) >= 11]
-        # Järjestetään pisteiden mukaan
-        sorted_data = sorted(selected_data, key=lambda x: x.get('tratego_score', 0), reverse=True)
-        selected = [str(item['ticker']).upper().strip() for item in sorted_data[:15]]
+        selected = [str(item['ticker']).upper().strip() for item in selected_data]
         return selected
     except:
-        print("  [TRATEGO ERROR] Pisteytys epäonnistui JSON-virheen takia.")
-        return watchlist[:10]
+        return []
 
 def quick_news_scan(news_text: str, client=None) -> List[str]:
     prompt = f"Poimi uutisista 1-10 teknologia-tickerit. Vastaa VAIN JSON: {{\"tickers\": [\"AAPL\", ...]}}\n\nUUTISET:\n{news_text[:4000]}"
@@ -249,45 +248,86 @@ def quick_news_scan(news_text: str, client=None) -> List[str]:
     except:
         return []
 
-def analyze_single_stock(ticker: str, news_text: str, client=None) -> Optional[dict]:
-    """Suorittaa syvän TRATEGO 12-vaiheen analyysin yhdelle osakkeelle."""
+def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> Optional[dict]:
+    """Suorittaa syvän TRATEGO 12-vaiheen analyysin käyttäen kerättyä tutkimusdataa."""
     print(f"  [TRATEGO ANALYYSI] {ticker}...")
     
-    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN TRATEGO 12-VAIHEEN MASTER-STRATEGIAA (Max 19p):
+    # Muotoillaan tutkimusdata helposti luettavaksi
+    fins = research_bundle.get('financials', {})
+    cons = research_bundle.get('consensus', {})
+    insider = research_bundle.get('insider', [])
+    biz_summary = research_bundle.get('business_summary', "Ei kuvausta.")
+    
+    research_context = f"""
+    YRITYKSEN KUVAUS: {biz_summary}
+    TUNNUSLUVUT: FCF: {fins.get('free_cash_flow')}, P/E (Fwd): {fins.get('forward_pe')}, Debt/Equity: {fins.get('debt_to_equity')}, Marginaalit: {fins.get('operating_margins')}
+    ANALYYTIKOT: Tavoitehinta: ${cons.get('target_mean')} (Nykyhinta: ${cons.get('current_price')}), Suositus: {cons.get('recommendation')}
+    SISÄPIIRI (Viimeisimmät): {json.dumps(insider, ensure_ascii=False)}
+    """
+    
+    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN TRATEGO-STRATEGIAA:
     Yritys: {ticker}
     
-    MAAILMANTILANNE JA UUTISET:
-    {news_text[:4000]}
+    TUTKIMUSDATA:
+    {research_context}
     
-    Noudata SYSTEM_PROMPT:n TRATEGO-ohjeistusta ja JSON-rakennetta täsmälleen. 
-    Varmista, että käyt läpi jokaisen vaiheen (V1-V12) ja annat niistä pisteet.
-    Laske lopulliset TRATEGO-pisteet (X/19) confidence-kenttään.
-    TÄRKEÄÄ: Pidä analyysi ytimekkäänä, jotta JSON-vastaus ei katkea kesken.
+    UUTISET:
+    {news_text[:3000]}
+    
+    Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele jokainen TRATEGO-vaihe (V1-V12) datalla.
     """
     
     content = _get_completion(prompt, system_msg=SYSTEM_PROMPT, max_tokens=8192)
-
     
     try:
         # Puhdistetaan vastauksesta kaikki paitsi JSON
-        start_idx_list = content.find("[")
-        start_idx_obj = content.find("{")
+        start_idx = content.find("[")
+        if start_idx == -1: start_idx = content.find("{")
+        end_idx = content.rfind("]") if content.rfind("]") != -1 else content.rfind("}")
         
-        # Jos löytyy lista
-        if start_idx_list != -1 and (start_idx_obj == -1 or start_idx_list < start_idx_obj):
-            content_clean = content[start_idx_list:content.rfind("]")+1]
+        if start_idx != -1 and end_idx != -1:
+            content_clean = content[start_idx:end_idx+1]
             data = json.loads(content_clean)
-            if isinstance(data, list) and len(data) > 0:
-                return data[0]
-        elif start_idx_obj != -1:
-            content_clean = content[start_idx_obj:content.rfind("}")+1]
-            data = json.loads(content_clean)
-            return data
-            
+            return data[0] if isinstance(data, list) else data
         return None
     except Exception as e:
         print(f"  [JSON ERROR] {ticker}: {e}")
         return None
+
+def verify_analysis_quality(ticker: str, analysis: dict, research_bundle: dict) -> bool:
+    """Strateginen tarkastus: Varmistaa että analyysi vastaa faktoja ja 11 kriteeriä."""
+    print(f"  [QUALITY GUARD] Tarkistetaan {ticker}...")
+    
+    prompt = f"""Olet laadunvalvoja. Tarkista onko tämä analyysi FAKTAPOHJAINEN ja noudattaako se TRATEGO-sääntöjä.
+    
+    ANALYYSIN TIIVISTELMÄ:
+    Suositus: {analysis.get('recommendation')}
+    Pisteet: {analysis.get('confidence')}
+    Perustelu (ote): {analysis.get('reasoning')[:500]}
+    
+    TODELLISET FAKTAT (Tutkimusdata):
+    {json.dumps(research_bundle, ensure_ascii=False)[:2000]}
+    
+    TARKISTUSLISTA:
+    1. Onko analyysi ristiriidassa numeroiden kanssa? (Esim. sanotaan "halpa" vaikka P/E on 100)
+    2. Onko sisäpiiri-data (V12) huomioitu oikein?
+    3. Onko tavoitehinta (V11) huomioitu?
+    4. Onko kieli ammattimaista (ei hypeä)?
+    
+    VASTAA VAIN JSON: {{"status": "PASS"/"FAIL", "reason": "Miksi?"}}"""
+    
+    resp = _get_completion(prompt, max_tokens=300)
+    try:
+        if "{" in resp:
+            resp = resp[resp.find("{"):resp.rfind("}")+1]
+        data = json.loads(resp)
+        if data.get("status") == "PASS":
+            return True
+        else:
+            print(f"  [REJECTED] {ticker}: {data.get('reason')}")
+            return False
+    except:
+        return True # Jos tarkastus epäonnistuu teknisesti, päästetään läpi varmuuden vuoksi
 
 def resolve_ticker(query: str, client=None) -> Optional[str]:
     if 1 < len(query) <= 5 and query.isalpha() and query.isupper(): return query

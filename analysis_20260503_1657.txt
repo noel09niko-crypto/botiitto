@@ -1,0 +1,268 @@
+Investing Bot Analyysi - 03.05.2026 16:57
+============================================================
+
+TOP LIIKKUJAT:
+=== TOP GAINERS (1 day) ===
+  TEAM: $88.88 | Consensus: buy | Target: $144.28 | 1d: +29.58% | RSI: 74.58 | Vol: 3.5x avg
+  SOUN: $9.56 | Consensus: strong_buy | Target: $14.625 | 1d: +20.10% | RSI: 73.78 | Vol: 2.5x avg
+  FSLY: $28.07 | Consensus: hold | Target: $19.85714 | 1d: +11.15% | RSI: 58.65 | Vol: 0.6x avg
+  HUBS: $239.89 | Consensus: strong_buy | Target: $344.7088 | 1d: +8.18% | RSI: 70.93 | Vol: 0.9x avg
+  ZS: $139.81 | Consensus: buy | Target: $227.67444 | 1d: +6.99% | RSI: 67.15 | Vol: 0.9x avg
+  DOCN: $102.82 | Consensus: buy | Target: $100.08333 | 1d: +6.63% | RSI: 71.77 | Vol: 0.7x avg
+  ZM: $103.44 | Consensus: buy | Target: $97.33333 | 1d: +6.47% | RSI: 81.89 | Vol: 1.3x avg
+  DDOG: $140.53 | Consensus: strong_buy | Target: $176.7981 | 1d: +6.31% | RSI: 83.31 | Vol: 1.1x avg
+  NET: $217.5 | Consensus: buy | Target: $231.85484 | 1d: +6.11% | RSI: 73.48 | Vol: 0.7x avg
+  INTC: $99.62 | Consensus: hold | Target: $78.21071 | 1d: +5.44% | RSI: 87.24 | Vol: 1.5x avg
+
+=== TOP LOSERS (1 day) ===
+  RBLX: $45.13 | Consensus: buy | Target: $80.07176 | 1d: -18.33% | RSI: 25.48 | Vol: 4.9x avg
+  QCOM: $177.01 | Consensus: hold | Target: $168.5 | 1d: -1.43% | RSI: 88.4 | Vol: 1.5x avg
+  KLAC: $1726.26 | Consensus: buy | Target: $1814.2759 | 1d: -1.38% | RSI: 46.14 | Vol: 0.8x avg
+  AMAT: $389.08 | Consensus: buy | Target: $424.375 | 1d: -1.37% | RSI: 46.62 | Vol: 0.7x avg
+  SMCI: $27.09 | Consensus: none | Target: $33.2 | 1d: -1.13% | RSI: 54.35 | Vol: 0.7x avg
+  ASML: $1427.02 | Consensus: strong_buy | Target: $1661.5336 | 1d: -0.83% | RSI: 41.79 | Vol: 0.4x avg
+  HPE: $28.57 | Consensus: buy | Target: $27.07684 | 1d: -0.70% | RSI: 73.98 | Vol: 0.6x avg
+  NVDA: $198.45 | Consensus: strong_buy | Target: $269.16544 | 1d: -0.56% | RSI: 58.08 | Vol: 0.7x avg
+  META: $608.75 | Consensus: strong_buy | Target: $838.62305 | 1d: -0.52% | RSI: 43.01 | Vol: 1.4x avg
+  LRCX: $256.72 | Consensus: buy | Target: $310.80646 | 1d: -0.44% | RSI: 43.77 | Vol: 0.8x avg
+
+=== HIGHEST VOLUME (vs avg) ===
+  RBLX: $45.13 | Consensus: buy | Target: $80.07176 | 1d: -18.33% | RSI: 25.48 | Vol: 4.9x avg
+  TEAM: $88.88 | Consensus: buy | Target: $144.28 | 1d: +29.58% | RSI: 74.58 | Vol: 3.5x avg
+  SOUN: $9.56 | Consensus: strong_buy | Target: $14.625 | 1d: +20.10% | RSI: 73.78 | Vol: 2.5x avg
+  NOKIA.HE: $10.6 | Consensus: hold | Target: $8.72455 | 1d: +2.86% | RSI: 81.95 | Vol: 2.2x avg
+  AAPL: $280.14 | Consensus: buy | Target: $301.35953 | 1d: +3.24% | RSI: 69.31 | Vol: 1.8x avg
+  QCOM: $177.01 | Consensus: hold | Target: $168.5 | 1d: -1.43% | RSI: 88.4 | Vol: 1.5x avg
+  INTC: $99.62 | Consensus: hold | Target: $78.21071 | 1d: +5.44% | RSI: 87.24 | Vol: 1.5x avg
+  META: $608.75 | Consensus: strong_buy | Target: $838.62305 | 1d: -0.52% | RSI: 43.01 | Vol: 1.4x avg
+  SNOW: $141.0 | Consensus: strong_buy | Target: $232.73701 | 1d: +3.32% | RSI: 56.18 | Vol: 1.3x avg
+  ZM: $103.44 | Consensus: buy | Target: $97.33333 | 1d: +6.47% | RSI: 81.89 | Vol: 1.3x avg
+
+============================================================
+
+SIJOITUSSUOSITUKSET:
+
+--- Atlassian Corporation (TEAM) ---
+SUOSITUS: OSTA | PISTEET: 15/19
+YHTEENVETO: PIKAKUVAUS: Atlassian tekee projektihallintatyökaluja: Jira, Confluence, Trello. B2B SaaS. Asiakkaat ovat yritykset ja kehitystiimit maailmanlaajuisesti.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS
+TEAM on laskenut huipuistaan merkittävästi. Arvostus on laskenut SaaS-räjähdyksestä. Tekninen kuva: tuki löytyy historiallisista tasoista. Ei vielä selkeä pohja, mutta lähellä. V1: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA
+AI-integraatio Rovo-tuotteeseen on katalyytti. Pilvimigraatio serveristä pilveen on pakottava ajuri – server-tuki loppui. Markkinasiirtymä DevSecOps-suuntaan tukee kasvua. Kaksi selkeää muutossignaalia. V2: 2/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS
+Jira ja Confluence ovat toimialan standardeja. Rovo AI on lupaava mutta varhainen. Tuote skaalautuu erinomaisesti – SaaS-malli, marginaalit paranevat skaalalla. Atlassian Intelligence integroitu tuotteisiin. V3: 2/2p
+
+V4: HINNOITTELUVOIMA
+Siirtymä käyttöpohjaiseen hinnoitteluun on epävarmuustekijä. Lyhyellä aikavälillä voi painaa ARR:ää. Pitkällä aikavälillä käyttöpohjainen malli skaalautuu paremmin suurilla asiakkailla. Lock-in antaa hinnoitteluvoimaa, mutta kilpailu rajoittaa isoja korotuksia. V4: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE
+DevOps-markkinassa vahva asema. Monday.com ja Asana syövät SMB-segmenttiä. Enterprise-segmentissä ServiceNow kilpailee. Atlassian pitää pintansa mutta ei kasvata osuuttaan aggressiivisesti. V5: 1/1p
+
+V6: JOHTO JA OMISTUS
+Perustajat Mike Cannon-Brookes ja Scott Farquhar omistavat merkittävän osan. Tämä on vahva signaali – skin in the game. Farquhar astui sivuun co-CEO-roolista 2024, mikä aiheutti lyhyen epävarmuuden. Cannon-Brookes jatkaa. Johto on osoittanut pitkän aikavälin ajattelua. V6: 2/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA
+TEAM on vapaan kassavirran positiivinen. FCF-marginaali ~25-30%. GAAP-tulos negatiivinen SBC:n takia – tämä on normaalia SaaS-sektorilla mutta vaatii tarkkailua. Liikevaihto kasvaa ~20% vuositasolla. Operatiivinen vipu paranee. V7: 1/2p
+
+V8: REGULAATIORISKI
+Datasuoja (GDPR, AI-regulaatio) on riski. EU:n AI Act voi asettaa rajoituksia Rovon kaltaisille AI-tuotteille. Ei välitöntä eksistentiaalista uhkaa. Kohtalainen riski. V8: 1/1p
+
+V9: AVAINLUVUT
+P/S ~10x (laskenut merkittävästi). EV/FCF ~40x – korkea mutta perusteltavissa kasvulla. Liikevaihto ~$4.5B. Bruttokate ~80%. Nettovaihtuvuus (NRR) >120%. Luvut kertovat laadukkaasta liiketoiminnasta. V9: 1/1p
+
+V10: AJOITUS JA KATALYYTTI
+Seuraava tulosraportti on lähikatalyytti. Rovo AI -tuotteen kaupallistuminen Q3/Q4 2026. Server-migraation loppuunsaattaminen nostaa cloud-tuloja. Ajoitus on kohtuullinen – ei kiire ostaa, mutta ikkuna aukeamassa. V10: 1/1p
+
+V11: HINTA VS. ARVO (GARP)
+Korkea kasvuyhtiö, mutta arvostus laskenut järkevälle tasolle. P/S 10x 20% kasvulla on hyväksyttävä. FCF-tuotto ~2.5% – ei halpa, mutta laatu maksaa. GARP-näkökulmasta kohtalainen ostohetki. V11: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT
+Perustajien omistus korkea – positiivinen. Institutionaaliset omistajat (Vanguard, BlackRock) pitävät positioita. Ei merkittäviä sisäpiirin myyntejä viime aikoina. Neutraali–positiivinen signaali. V12: 1/1p
+
+YHTEENVETO:
+Atlassian on laadukas SaaS-yhtiö vahvalla kilpailuedulla ja kassavirralla. AI-katalyytti (Rovo) ja pakollinen pilvimigraatio tukevat kasvua. Hinnoittelumallin muutos on lyhyen aikavälin riski. Arvostus on laskenut järkevämmälle tasolle. Kokonaispisteet: 15/19p. Suositus: OSTA.
+
+--- SoundHound AI (SOUN) ---
+SUOSITUS: MYY | PISTEET: 5/19
+YHTEENVETO: PIKAKUVAUS: SoundHound AI kehittää äänitekoälyratkaisuja ja puheentunnistusteknologiaa. Asiakkaat ovat ravintola-ala, autoteollisuus ja kuluttajaelektroniikka. Yhtiö kilpailee Googlea ja Amazonia vastaan niche-markkinoilla.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS (0-1p)
+Osake on pudonnut huippuistaan yli 60%. Tekninen taso houkutteleva spekulatiiviselle sijoittajalle. Ei kuitenkaan selkeää tukitasoa. Riski/tuotto-suhde epäselvä. V1: 0/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA (0-2p)
+AI-adoptiouutiset tukevat koko sektoria. Äänitekoälyn kysyntä kasvaa autoteollisuudessa ja ravintola-alalla. Markkinatrendi on oikea. Katalyytti puuttuu kuitenkin lähiajalta. V2: 1/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS (0-2p)
+Teknologia on aito ja toimiva. Autoteollisuusintegraatiot ovat monivuotisia sopimuksia – hyvä. Skaalautuminen hidasta, koska myyntisyklit ovat pitkiä. V3: 1/2p
+
+V4: HINNOITTELUVOIMA (0-2p)
+Rajallinen. Google Assistant ja Amazon Alexa painostavat hintoja alas. SoundHound kilpailee räätälöinnillä, ei hinnalla. Marginaalit kertovat tarinan. V4: 0/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE (0-1p)
+Pieni toimija massiivisella areenalla. Niche-positio autossa ja ravintoloissa on toistaiseksi puolustettavissa. Isot pelurit voivat kopioida milloin tahansa. V5: 0/1p
+
+V6: JOHTO JA OMISTUS (0-2p)
+Kayvan Moini on karismaattinen perustaja-toimitusjohtaja. Visio on selkeä. Mutta osakeanti-historia huolestuttaa – johto on laimennut omistajia aggressiivisesti. V6: 1/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA (0-2p)
+Yhtiö polttaa käteistä. Liikevaihto kasvaa mutta tappio syvenee. Kassavirta negatiivinen. Uusia osakkeita lasketaan liikkeelle rahoitukseen. Ei ole lähellä breakevenia. V7: 0/2p
+
+V8: REGULAATIORISKI (0-1p)
+AI-regulaatio tiukentuu globaalisti. EU:n AI Act vaikuttaa. Ei kuitenkaan eksistentiaalinen uhka SoundHoundille tässä vaiheessa. V8: 1/1p
+
+V9: AVAINLUVUT (0-1p)
+Liikevaihto kasvaa ~80% YoY. P/S-kerroin silti korkea suhteessa polttamiseen. EV/Revenue yli 15x – kallis tappiolliselle yhtiölle. V9: 0/1p
+
+V10: AJOITUS JA KATALYYTTI (0-1p)
+Ei selkeää lähiajan katalyyttiä. Seuraavat earnings voivat olla taitekohta. AI-hype voi piristää. Ajoitus on spekulatiivinen. V10: 0/1p
+
+V11: HINTA VS. ARVO GARP (0-2p)
+Ei GARP-keissi. Kasvua on, mutta kannattavuus puuttuu täysin. Arvostus on edelleen korkea tappiolliselle yhtiölle. Ei marginaalia turvallisuudelle. V11: 0/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT (0-1p)
+Nvidia omistaa pienen siivun – positiivinen signaali teknologian laadusta. Sisäpiiri ei ole ostanut merkittävästi viime aikoina. Instituutiot varovaisia. V12: 1/1p
+
+YHTEENVETO:
+SoundHound on teknologialtaan kiinnostava mutta sijoituksena tällä hetkellä heikko. Kassavirta negatiivinen, hinnoitteluvoima rajallinen, kilpailu kovaa. Nvidian omistus ja AI-trendi ovat ainoat selkeät positiiviset. Kokonaispisteet: 5/19p. Suositus: MYY / PIDÄ SIVUSSA.
+
+--- FASTLY INC. (FSLY) ---
+SUOSITUS: PIDÄ / SPEKULATIIVINEN OSTO | PISTEET: 9/19
+YHTEENVETO: PIKAKUVAUS: Fastly on edge cloud -alusta. Toimittaa CDN-palveluja, turvallisuusratkaisuja ja kehittäjätyökaluja. Asiakkaat ovat mediayhtiöitä, e-commerce-yrityksiä ja teknologiafirmoja. Liiketoiminta perustuu liikennemääriin – enemmän liikennettä, enemmän tuloja.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS (0-1p)
+FSLY on laskenut merkittävästi huipuistaan. Osake käy historiallisesti alhaisilla tasoilla. Seeking Alpha listaa sen top-rated -nimeksi – positiivinen signaali ajoitukselle. Tekninen pohja voi olla lähellä. Pisteet: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA (0-2p)
+AI-liikenne kasvaa räjähdysmäisesti – edge-laskennan tarve kasvaa. Fastly on paremmin asemoitunut kuin kolme vuotta sitten turvallisuustuotteiden osalta. Catalyst on olemassa, mutta konkreettiset tulossignaalit puuttuvat vielä. Pisteet: 1/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS (0-2p)
+Fastlyn edge-alusta on teknisesti kunnioitettava. Kehittäjät rakastavat sitä. Security-tuotteet (WAF, DDoS) kehittyvät. Ongelma: tuotevalikoima on kapeampi kuin Cloudflaren. Skaalautuvuus on rakenteellisesti hyvä – kustannukset eivät kasva samaa tahtia liikenteen kanssa. Pisteet: 1/2p
+
+V4: HINNOITTELUVOIMA (0-2p)
+Heikko. CDN on pitkälti kommoditisoitunut. Asiakkaat neuvottelevat aggressiivisesti hinnoista. Vaihtokustannukset ovat matalat. Fastly ei pysty nostamaan hintoja merkittävästi ilman asiakaskatoa. Pisteet: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE (0-1p)
+Fastly on haastaja, ei johtaja. Cloudflare nielee markkinaosuutta. Akamai puolustaa enterprise-segmenttiä. Fastlyn osuus on pieni ja kasvaminen vaatii kovaa työtä. Pisteet: 0/1p
+
+V6: JOHTO JA OMISTUS (0-2p)
+Todd Nightingale tuli CEO:ksi 2022 – Ciscolta. Kokemus on relevantti. Johto on stabiloinut yhtiön aiempien turbulenssivaiheiden jälkeen. Sisäpiiriomistus on kohtuullinen. Ei suuria punaisia lippuja, mutta ei myöskään vahvaa 'founder-mentality' -energiaa. Pisteet: 1/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA (0-2p)
+Fastly ei ole vielä GAAP-kannattava. Operatiiviset tappiot jatkuvat. Free cash flow on negatiivinen tai marginaalisesti positiivinen. Liikevaihto kasvaa hitaasti – noin 10-15% vuodessa. Polku kannattavuuteen on olemassa mutta ei nopea. Pisteet: 1/2p
+
+V8: REGULAATIORISKI (0-1p)
+Madala regulaatioriski CDN-bisneksessä. Tietosuoja (GDPR) ja internet-sääntelyt ovat taustariskejä mutta eivät akuutteja. Geopoliittiset riskit (Kiina, Iran-sota) voivat vaikuttaa reititysarkkitehtuuriin. Pisteet: 1/1p
+
+V9: AVAINLUVUT (0-1p)
+Liikevaihto ~$570M (2025e). P/S-kerroin alle 2x – historiallisesti halpa kasvuosakkeelle. Bruttokate ~55-60%. Net Revenue Retention yli 110% – asiakkaat käyttävät enemmän. Velkataso hallittava. Pisteet: 1/1p
+
+V10: AJOITUS JA KATALYYTTI (0-1p)
+Seeking Alpha top-rated -nosto on lyhyen aikavälin katalyytti. AI-liikennebuumi on rakenteellinen katalyytti. Seuraava tulosraportti ratkaisee suunnan. Ei välitöntä kovaa katalyyttia tiedossa. Pisteet: 1/1p
+
+V11: HINTA VS. ARVO / GARP (0-2p)
+P/S alle 2x on houkutteleva jos kasvu kiihtyy. Mutta ilman selkeää kannattavuuspolkua GARP-sijoittaja karsastaa. Arvo on spekulatiivinen. Jos AI-trendi realisoituu Fastlyn liikevaihtokasvussa, upside on merkittävä. Pisteet: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT (0-1p)
+Instituutionaaliset omistajat ovat mukana. Ei merkittäviä sisäpiiriostoja viimeaikoina – johto ei laita omaa rahaa peliin aggressiivisesti. Neutraali signaali. Pisteet: 0/1p
+
+YHTEENVETO:
+Fastly on teknisesti kunnioitettava yritys aliarvostetulla valuaatiolla. Mutta kilpailuasema on heikko, kannattavuus puuttuu ja hinnoitteluvoima on olematon. AI-trendi voi olla pelastus jos Fastly onnistuu monetisoimaan edge-laskentaa. Spekulatiivinen osto pienellä positiolla on perusteltua. Ei core-positio. TRATEGO-pisteet: 9/19p
+
+--- HUB GROUP (HUBS) ---
+SUOSITUS: MYY | PISTEET: 2/19
+YHTEENVETO: PIKAKUVAUS: Hub Group on yhdysvaltalainen intermodaalilogistiikka- ja kuljetusyhtiö. Tarjoaa maantie-, rautatie- ja multimodaalikuljetuksia sekä logistiikkapalveluja.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS
+Tilinpäätöskriisi on aktiivinen. Osake on epävarmuuden tilassa ennen tuloksia. Tekninen tilanne epäselvä – ei houkutteleva ostopaikka kriisin keskellä. V1: 0/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA
+Ei positiivista muutossignaalia. Kirjanpitoongelmat ovat negatiivinen käännepiste. Logistiikkasyklissä ei näy selkeää nousua. V2: 0/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS
+Intermodaali on vakiintunut, toimiva bisnes. Skaalautuu kohtuullisesti mutta ei ole korkean marginaalin tuote. Ei differointia. V3: 1/2p
+
+V4: HINNOITTELUVOIMA
+Rahtimarkkinat ovat commoditybisnestä. Hinnat määrää kysyntä-tarjonta, ei Hub Group. Heikko dollari nostaa kustannuksia. V4: 0/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE
+Hub Group on vakiintunut toimija, mutta ei dominoiva. Kilpailu kovaa isojen pelaajien kanssa. Kirjanpitoepäselvyydet heikentävät neuvotteluasemaa. V5: 0/1p
+
+V6: JOHTO JA OMISTUS
+Kirjanpidollinen kriisi viittaa johtamisongelmiin tai hallintopuutteisiin. Tämä on vakava punainen lippu. Luottamus johtoon kyseenalainen. V6: 0/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA
+Logistiikkamarginaalit ohuet alan normeilla. Kirjanpitokriisi tekee lukuihin luottamisen vaikeaksi. Kassavirta epäselvä kunnes uudet luvut julki. V7: 1/2p
+
+V8: REGULAATIORISKI
+Kirjanpito-ongelmat voivat tuoda SEC-tutkinnan. Liikennesektori normaalisti kohtuullinen regulaatioympäristö, mutta nyt riski koholla. V8: 0/1p
+
+V9: AVAINLUVUT
+P/E ja EV/EBITDA ovat alan normeilla maltilliset, mutta kirjanpitoepäselvyydet tekevät arvostuksesta spekulatiivisen. Ei voi luottaa raportoituihin lukuihin ennen selvitystä. V9: 0/1p
+
+V10: AJOITUS JA KATALYYTTI
+Tulokset tulossa – voivat olla katalyytti suuntaan tai toiseen. Negatiivinen todennäköisyys suurempi kirjanpitokriisin takia. Ajoitus huono sijoittajalle. V10: 0/1p
+
+V11: HINTA VS. ARVO (GARP)
+Ei voi laskea luotettavaa GARP-arvostusta epäluotettavien lukujen pohjalta. Mahdollinen arvoloukku. V11: 0/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT
+Kirjanpitokriisin yhteydessä sisäpiirin ostot olisivat positiivinen signaali – ei viitteitä tästä. Institutionaaliset sijoittajat todennäköisesti varovaisina. V12: 0/1p
+
+YHTEENVETO: Kirjanpidollinen kriisi on dominoiva tekijä. Logistiikkabisneksessä ei muutenkaan ole vahvaa investointikeissiä juuri nyt. Kokonaispisteet: 2/19p. SUOSITUS: MYY / ÄLÄ OSTA.
+
+--- Zscaler (ZS) ---
+SUOSITUS: PIDÄ / OSTA LASKEESSA | PISTEET: 14/19
+YHTEENVETO: PIKAKUVAUS: Zscaler on pilvipohjainen kyberturvallisuusyhtiö. Tarjoaa Zero Trust -arkkitehtuurin yritysasiakkaille. Korvaa perinteiset palomuurit ja VPN:t. Puhtaasti SaaS-malli.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS (0-1p)
+ZS on korjautunut huipuistaan merkittävästi. Arvostus edelleen korkea, mutta ei enää irrationaalinen. Tekninen kuva ei ole puhtaan houkutteleva — ei selvää tukitasoa. V1: 0/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA (0-2p)
+Zero Trust -siirtymä on rakenteellinen, ei syklinen. Geopoliittinen kriisi (Iran-sota, Ukraina) kiihdyttää kyberbudjetteja. AI luo uusia haavoittuvuuksia — tämä on ZS:n myyntiargumentti. Vahva muutossignaali. V2: 2/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS (0-2p)
+Zscaler Internet Access (ZIA) ja Zscaler Private Access (ZPA) ovat markkinajohtajia. Pilvinatiivi arkkitehtuuri skaalautuu erinomaisesti. Platform-laajennus (ZDX, posture control) kasvattaa ARR:ää. V3: 2/2p
+
+V4: HINNOITTELUVOIMA (0-2p)
+Asiakkaan vaihtokustannus on korkea. Pitkät sopimukset (3-5v). NRR (Net Revenue Retention) yli 120% — asiakkaat laajentavat, eivät lähde. Hinnoitteluvoimaa on. V4: 2/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE (0-1p)
+Zero Trust -markkinan johtaja. Palo Alto syö tilaa laajemmalla alustalla. Kilpailu kovaa, mutta ZS pitää asemansa enterprise-segmentissä. V5: 1/1p
+
+V6: JOHTO JA OMISTUS (0-2p)
+Jay Chaudhry on perustaja-CEO — skin in the game. Omistaa merkittävän siivun yhtiöstä. Johto on todistettavasti rakentanut markkinajohtajan. Instituutioiden omistus korkea. V6: 2/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA (0-2p)
+ZS on Rule of 40 -yhtiö. Liikevaihdon kasvu ~20-25% vuodessa. Free cash flow positiivinen ja kasvava. GAAP-tulos tappiollinen osakepalkkioiden takia — huomio. FCF-marginaali ~25%. Kassavirta vakuuttaa. V7: 1/2p
+
+V8: REGULAATIORISKI (0-1p)
+Kyberturvallisuus on regulaation suosikki, ei kohde. NIS2 Euroopassa ja CMMC USA:ssa ajavat kysyntää. Matala regulaatioriski. V8: 1/1p
+
+V9: AVAINLUVUT (0-1p)
+P/S ~10-12x forward. EV/FCF korkea mutta laskeva trendinä. RPO (remaining performance obligations) kasvaa — näkyvyys hyvä. Kasvu hidastumassa suuresta pohjasta. V9: 1/1p
+
+V10: AJOITUS JA KATALYYTTI (0-1p)
+Seuraavat kvartaalitulokset ovat katalyytti. Jos RPO ja billings ylittävät odotukset, kurssi nousee. Geopoliittinen jännitys on jatkuva katalyytti kyberbudjeteille. Ei välitöntä selkeää katalyyttiä tällä hetkellä. V10: 0/1p
+
+V11: HINTA VS. ARVO — GARP (0-2p)
+ZS ei ole halpa. P/S ~10x on korkea, mutta kasvuprofiilin ja FCF:n huomioon ottaen siedettävä. Ei klassinen GARP — enemmän kasvuosake. Marginaali turvallisuuteen on ohut. V11: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT (0-1p)
+Perustaja-CEO omistaa. Suuret instituutiot (Vanguard, BlackRock) merkittävästi mukana. Sisäpiiriostoja ei tuoreesti — ei negatiivinen signaali, muttei positiivinenkaan. V12: 1/1p
+
+YHTEENVETO:
+Zscaler on laadukas yhtiö rakenteellisessa kasvumarkkinassa. Johto on erinomainen, tuote on markkinajohtaja ja kassavirta paranee. Arvostus on korkea ja ajoitus epävarma — korkeat korot painavat. Kokonaisuutena vahva PIDÄ, ja rohkeammalle sijoittajalle OSTA pienissä erissä laskeessa. TRATEGO-pisteet: 14/19p.
+

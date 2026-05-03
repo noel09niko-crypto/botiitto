@@ -1,0 +1,268 @@
+Investing Bot Analyysi - 03.05.2026 19:02
+============================================================
+
+TOP LIIKKUJAT:
+=== TOP GAINERS (1 day) ===
+  TEAM: $88.88 | Consensus: buy | Target: $144.28 | 1d: +29.58% | RSI: 74.58 | Vol: 3.5x avg
+  SOUN: $9.56 | Consensus: strong_buy | Target: $14.625 | 1d: +20.10% | RSI: 73.78 | Vol: 2.5x avg
+  HUBS: $239.89 | Consensus: strong_buy | Target: $344.7088 | 1d: +8.18% | RSI: 70.93 | Vol: 0.9x avg
+  ZS: $139.81 | Consensus: buy | Target: $227.67444 | 1d: +6.99% | RSI: 67.15 | Vol: 0.9x avg
+  DOCN: $102.82 | Consensus: buy | Target: $100.08333 | 1d: +6.63% | RSI: 71.77 | Vol: 0.7x avg
+  ZM: $103.44 | Consensus: buy | Target: $97.33333 | 1d: +6.47% | RSI: 81.89 | Vol: 1.3x avg
+  DDOG: $140.53 | Consensus: strong_buy | Target: $176.7981 | 1d: +6.31% | RSI: 83.31 | Vol: 1.1x avg
+  NET: $217.5 | Consensus: buy | Target: $231.85484 | 1d: +6.11% | RSI: 73.48 | Vol: 0.7x avg
+  INTC: $99.62 | Consensus: hold | Target: $78.21071 | 1d: +5.44% | RSI: 87.24 | Vol: 1.5x avg
+  SHOP: $127.67 | Consensus: buy | Target: $159.48889 | 1d: +5.40% | RSI: 63.65 | Vol: 0.7x avg
+
+=== TOP LOSERS (1 day) ===
+  RBLX: $45.13 | Consensus: buy | Target: $80.07176 | 1d: -18.33% | RSI: 25.48 | Vol: 4.9x avg
+  QCOM: $177.01 | Consensus: hold | Target: $168.5 | 1d: -1.43% | RSI: 88.4 | Vol: 1.5x avg
+  KLAC: $1726.26 | Consensus: buy | Target: $1814.2759 | 1d: -1.38% | RSI: 46.14 | Vol: 0.8x avg
+  AMAT: $389.08 | Consensus: buy | Target: $424.375 | 1d: -1.37% | RSI: 46.62 | Vol: 0.7x avg
+  SMCI: $27.09 | Consensus: none | Target: $33.2 | 1d: -1.13% | RSI: 54.35 | Vol: 0.7x avg
+  ASML: $1427.02 | Consensus: strong_buy | Target: $1661.5336 | 1d: -0.83% | RSI: 41.79 | Vol: 0.4x avg
+  HPE: $28.57 | Consensus: buy | Target: $27.07684 | 1d: -0.70% | RSI: 73.98 | Vol: 0.6x avg
+  NVDA: $198.45 | Consensus: strong_buy | Target: $269.16544 | 1d: -0.56% | RSI: 58.08 | Vol: 0.7x avg
+  META: $608.75 | Consensus: strong_buy | Target: $838.62305 | 1d: -0.52% | RSI: 43.01 | Vol: 1.4x avg
+  LRCX: $256.72 | Consensus: buy | Target: $310.80646 | 1d: -0.44% | RSI: 43.77 | Vol: 0.8x avg
+
+=== HIGHEST VOLUME (vs avg) ===
+  RBLX: $45.13 | Consensus: buy | Target: $80.07176 | 1d: -18.33% | RSI: 25.48 | Vol: 4.9x avg
+  TEAM: $88.88 | Consensus: buy | Target: $144.28 | 1d: +29.58% | RSI: 74.58 | Vol: 3.5x avg
+  SOUN: $9.56 | Consensus: strong_buy | Target: $14.625 | 1d: +20.10% | RSI: 73.78 | Vol: 2.5x avg
+  NOKIA.HE: $10.6 | Consensus: hold | Target: $8.72455 | 1d: +2.86% | RSI: 81.95 | Vol: 2.2x avg
+  AAPL: $280.14 | Consensus: buy | Target: $301.35953 | 1d: +3.24% | RSI: 69.31 | Vol: 1.8x avg
+  QCOM: $177.01 | Consensus: hold | Target: $168.5 | 1d: -1.43% | RSI: 88.4 | Vol: 1.5x avg
+  INTC: $99.62 | Consensus: hold | Target: $78.21071 | 1d: +5.44% | RSI: 87.24 | Vol: 1.5x avg
+  META: $608.75 | Consensus: strong_buy | Target: $838.62305 | 1d: -0.52% | RSI: 43.01 | Vol: 1.4x avg
+  SNOW: $141.0 | Consensus: strong_buy | Target: $232.73701 | 1d: +3.32% | RSI: 56.18 | Vol: 1.3x avg
+  ZM: $103.44 | Consensus: buy | Target: $97.33333 | 1d: +6.47% | RSI: 81.89 | Vol: 1.3x avg
+
+============================================================
+
+SIJOITUSSUOSITUKSET:
+
+--- Atlassian Corporation (TEAM) ---
+SUOSITUS: OSTA | PISTEET: 16/19
+YHTEENVETO: PIKAKUVAUS: Atlassian tekee yhteistyöohjelmistoja – Jira, Confluence, Trello. Kohdeyleisö: kehitystiimit ja yritykset. SaaS-malli, subscription-pohjainen liikevaihto.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS
+TEAM on laskenut ~35% huipuistaan. Arvostus tullut alas. Tekninen taso tukee ostoa pitkäjänteiselle. Ei täydellinen pohja, mutta houkutteleva vyöhyke. V1: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA
+Cloud-migraatio Server-asiakkaista on iso katalyytti. AI-ominaisuudet (Atlassian Intelligence) lisätty tuotteisiin. SaaS-sektori elpyy. Kaksi selkeää muutossignaalia. V2: 2/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS
+Jira ja Confluence ovat kriittisiä työkaluja miljoonille tiimeille. Korkea vaihtokustannus. Marketplace-ekosysteemi laajentaa arvoa. Skaalautuu erinomaisesti. V3: 2/2p
+
+V4: HINNOITTELUVOIMA
+Atlassian on nostanut hintoja useasti ilman merkittävää asiakaskatoa. Enterprise-tier kasvaa nopeasti. Asiakkaat maksavat koska vaihtaminen on tuskaa. V4: 2/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE
+Hallitsee dev-tooling-markkinaa selvästi. Monday.com ja Linear kasvavat, mutta enterprise-segmentissä Atlassian on vahva. Uhkia on, mutta asema pitää. V5: 1/1p
+
+V6: JOHTO JA OMISTUS
+Perustajat Mike Cannon-Brookes ja Scott Farquhar omistavat merkittävästi. Pitkän tähtäimen ajattelu näkyy päätöksissä. Johto on tehnyt oikeita liikkeitä (Server EOL, cloud-first). V6: 2/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA
+Liikevaihto kasvaa ~20% v/v. Free cash flow positiivinen ja kasvava. GAAP-tulos vielä negatiivinen (R&D-investoinnit rasittavat), mutta FCF-marginaali paranee. Trendi oikea. V7: 1/2p
+
+V8: REGULAATIORISKI
+Datasuoja (GDPR, SOC2) hallittu. Ei merkittäviä antitrustiriskejä. Geopoliittinen riski matala. Regulaatioympäristö suotuisa. V8: 1/1p
+
+V9: AVAINLUVUT
+P/S ~10-12x (historiallista alatasoa). FCF yield nousemassa. Net Revenue Retention >120%. Luvut tukevat pitkän aikavälin sijoitusta. V9: 1/1p
+
+V10: AJOITUS JA KATALYYTTI
+Seuraava tulosraportti on lähellä. Cloud ARR kasvunäkymät ja AI-monetisaatio ovat konkreettisia katalyyttejä. Ajoitus kohtalainen. V10: 1/1p
+
+V11: HINTA VS. ARVO (GARP)
+~20% liikevaihdon kasvu + FCF-parannus + arvostuksen lasku = GARP-case kunnossa. Ei halpa, mutta laatu oikeuttaa. Parempi kuin peerinsä hinta/kasvu-suhteessa. V11: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT
+Perustajat pitävät osakkeet. Institutionaalinen omistus vahvaa (Vanguard, BlackRock). Ei merkittäviä sisäpiirin myyntejä. V12: 1/1p
+
+YHTEENVETO:
+TEAM on laadukas SaaS-yritys oikealla hintatasolla. Cloud-migraatio ja AI-ominaisuudet ovat aidot kasvuajurit. GAAP-kannattavuus puuttuu vielä – tämä painaa pisteitä. Kokonaispisteet: 16/19p. Suositus: OSTA pitkällä horisontilla.
+
+--- SoundHound AI (SOUN) ---
+SUOSITUS: PIDÄ / SPEKULATIIVINEN OSTO | PISTEET: 7/19
+YHTEENVETO: PIKAKUVAUS: SoundHound AI kehittää ääni-tekoälyratkaisuja yrityksille. Tuotteet: autojen ääniohjaus, ravintola-alan AI-tilaukset, puhelinbotit. Asiakkaat mm. autovalmistajat, pikaruokaketjut, terveydenhuolto.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS (0-1p)
+Osake on pudonnut merkittävästi 2024 huipuista. Tekninen pohja haetaan $7-9 alueella. Ostoikkuna on kohtuullinen, ei erinomainen. Lyhyen aikavälin trendi epävarma. V1: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA (0-2p)
+Ääni-AI on todellinen muutostrendi. Autoteollisuus siirtyy yhä enemmän puheohjattuihin alustoihin. Ravintola-AI kasvaa nopeasti (Chipotle-uutinen tukee tätä). Iso muutossignaali olemassa, mutta SOUN:n kyky hyödyntää se täysimääräisesti epäselvä. V2: 1/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS (0-2p)
+Polaris-malli on aidosti omistettu teknologia – ei OpenAI-riippuvuutta. Alusta skaalautuu eri toimialoille. Integraatiot autovalmistajiin (Stellantis, Hyundai) ovat konkreettisia. Tuote on hyvä, mutta kilpailijat investoivat massiivisesti. V3: 1/2p
+
+V4: HINNOITTELUVOIMA (0-2p)
+Heikko kohta. SOUN operoi B2B-markkinalla, jossa suuret asiakkaat (autotehtaat, ketjut) puristavat hintoja. Marginaalit ovat matalia. Ei selkeää pricing power -asemaa. V4: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE (0-1p)
+Pieni toimija isossa pelissä. Google, Amazon ja Apple dominoivat kuluttajapuolta. Cerence syö autosegmenttiä. SOUN:lla alle 5% markkinaosuus ääniteknologiassa. V5: 0/1p
+
+V6: JOHTO JA OMISTUS (0-2p)
+Kayvan Morad on pitkäaikainen toimialaosaaja. Johto on kommunikoinut selkeästi kasvustrategiasta. Instituutioiden omistusosuus on kasvanut 2024-2025. Positiivinen signaali. V6: 1/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA (0-2p)
+Yhtiö ei ole kannattava. Liikevaihto kasvaa (~80% YoY), mutta tappiot jatkuvat. Operatiivinen kassavirta negatiivinen. Rahoitustarve todennäköinen lähivuosina – dilutaatioriski olemassa. V7: 0/2p
+
+V8: REGULAATIORISKI (0-1p)
+AI-regulaatio kiristyy EU:ssa ja USA:ssa. SOUN:n datankäsittely autoissa ja julkisilla paikoilla voi kohdata tietosuojarajoituksia. Riski on olemassa mutta ei akuutti. V8: 1/1p
+
+V9: AVAINLUVUT (0-1p)
+Liikevaihto ~100M$ (2025E), kasvu ~80% YoY. P/S ~15-20x. EV/Revenue korkea spekulatiiviselle yhtiölle. Tulos negatiivinen. Luvut eivät tue arvosijoittajaa – puhdas kasvuvedonlyönti. V9: 0/1p
+
+V10: AJOITUS JA KATALYYTTI (0-1p)
+Katalyyttejä: uudet autosopimukset, ravintola-AI:n laajentuminen, mahdollinen M&A-kohde. Palantir-raportti ja AI-optimismi markkinoilla tukevat lähiajan sentimenttiä. V10: 1/1p
+
+V11: HINTA VS. ARVO / GARP (0-2p)
+Osake hinnoiteltu kasvun mukaan – ei arvo. P/S 15-20x tappiolliselle yhtiölle on aggressiivinen. GARP-kriteerit eivät täyty. Spekulatiivinen positio, ei arvosijoitus. V11: 0/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT (0-1p)
+Instituutio-omistus kasvanut. Sisäpiiri ei ole myynyt massiivisesti. Positiivinen signaali pienelle yhtiölle. V12: 1/1p
+
+YHTEENVETO:
+SOUN on korkean riskin AI-kasvuvedonlyönti. Teknologia on aitoa, mutta kannattavuus puuttuu täysin. Kilpailu on kovaa. Positiivista: oikea trendi, kasvava revenue, instituutiot mukana. Negatiivista: tappiot, hinnoitteluvoiman puute, dilutaatioriski. Sopii vain riskinsietokykyiselle spekulantille. YHTEENSÄ: 7/19p
+
+--- HubSpot (HUBS) ---
+SUOSITUS: PIDÄ | PISTEET: 11/19
+YHTEENVETO: PIKAKUVAUS: HubSpot on CRM- ja markkinointiautomaatioalusta. Palvelee pääasiassa pk-yrityksiä. SaaS-liiketoimintamalli, tilaustuotot.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS
+HUBS on laskenut merkittävästi 2024-2025 huipuistaan. Kurssi noin 550-600 USD alueella. Tekninen kuva ei ole vielä täysin kääntynyt. Houkutteleva sisääntuloikkuna hahmottuu, mutta vahvistusta tarvitaan. V1: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA
+AI-integraatio CRM-markkinaan on selkeä muutossignaali. HubSpot julkaisi Breeze AI -alustan – potentiaalinen kasvuajuri. Pk-CRM-markkina kasvaa ~15% vuodessa. Maailmanuutiset eivät suoraan vaikuta, mutta S&P 500 -tuloskausi on vahva – positiivinen tausta. V2: 1/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS
+Tuote on markkinan paras pk-segmentissä. Helppokäyttöisyys on ykkösetu. Breeze AI laajentaa tarjoomaa. Skaalautuvuus ylöspäin enterprise-segmenttiin on rajoittunut. Tuote on vahva, mutta ei ylivoimainen suurilla markkinoilla. V3: 1/2p
+
+V4: HINNOITTELUVOIMA
+HubSpot on nostanut hintoja johdonmukaisesti. Asiakkaan vaihtokustannukset ovat korkeat – CRM vaihtaminen on tuskallista. AI-lisäominaisuuksista voi periä lisämaksuja. Pk-asiakkaiden budjettiherkkyys rajoittaa aggressiivista hinnoittelua. V4: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE
+Pk-CRM-segmentin selkeä ykkönen. Salesforce dominoi enterprise-markkinaa. Uudet AI-natiivit startupit uhkaavat alhaalta päin. Markkina-asema on vakaa mutta ei immuuni. V5: 1/1p
+
+V6: JOHTO JA OMISTUS
+Yamini Rangan on ollut tehokas toimitusjohtaja. Johto on onnistunut kääntämään liiketoimintaa kannattavammaksi. Perustaja Brian Halligan sivussa – riski vai vapautus? Institutionaalinen omistus vahva. V6: 1/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA
+HubSpot on saavuttanut non-GAAP-kannattavuuden. Vapaa kassavirta positiivinen ja kasvaa. GAAP-tulos yhä negatiivinen osakepalkkioiden vuoksi. Liikevaihto kasvaa ~15-17% vuodessa. Marginaalilaajennus käynnissä – hyvä suunta. V7: 1/2p
+
+V8: REGULAATIORISKI
+Datasuoja (GDPR, CCPA) on jatkuva riski markkinointidataa käsitteleville yrityksille. AI-regulaatio tulossa – voi vaikuttaa tuotekehitykseen. Riski olemassa mutta ei akuutti. V8: 1/1p
+
+V9: AVAINLUVUT
+P/S ~8-10x – ei halpaa mutta kohtuullista kasvulle. NRR (Net Revenue Retention) ~105% – tyydyttävä. Asiakaskasvu hidastuu. EV/FCF noin 50-60x – korkea. Luvut heijastavat laadukasta mutta kalliiksi hinnoiteltua liiketoimintaa. V9: 1/1p
+
+V10: AJOITUS JA KATALYYTTI
+Seuraava tulosraportti on lähiviikkoina – potentiaalinen katalyytti. Breeze AI:n kaupallistaminen vuoden 2026 aikana. Markkinoiden elpyminen teknologiasektorissa luo positiivisen taustasäätelyn. V10: 1/1p
+
+V11: HINTA VS. ARVO (GARP)
+HubSpot ei ole halpa. Kasvu ~15-17% oikeuttaa preemiumin, mutta ei mitä tahansa. Nykyinen arvostus on kohtuullinen – ei yliarvostettu, ei aliarvostettu. GARP-sijoittajalle hyväksyttävä. V11: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT
+Institutionaalinen omistus vahva – isot rahastot pitävät. Sisäpiirimyynnit maltilliset, ei hälyttäviä signaaleja. Ei merkittäviä sisäpiiriostoja – johto ei laita omaa rahaa peliin aggressiivisesti. V12: 1/1p
+
+YHTEENVETO: HubSpot on laadukas yritys kohtuullisella arvostuksella. Ei halpa, ei huono. AI-siirtymä on todellinen katalyytti. Kasvu hidastuu mutta pysyy kaksinkertaisena. Riskejä on kilpailun ja arvostuksen puolella. KOKONAISPISTEET: 11/19p. SUOSITUS: PIDÄ – lisää pienissä erissä jos kurssi heikkenee tai AI-kaupallistaminen kiihtyy.
+
+--- Zscaler Inc. (ZS) ---
+SUOSITUS: OSTA | PISTEET: 15/19
+YHTEENVETO: PIKAKUVAUS: Zscaler on pilvinatiivi kyberturvallisuusyhtiö. Se tarjoaa Zero Trust -arkkitehtuuriin perustuvaa tietoturva-alustaa (ZIA, ZPA, ZDX). Asiakkaina suuria yrityksiä ja julkishallintoa maailmanlaajuisesti.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS
+ZS on korjautunut 52 viikon huipuistaan ~30-40 %. Arvostus laskenut mutta ei halpa. Tekninen taso tukee osittain. V1: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA
+Zero Trust -siirtymä on rakenteellinen, ei syklinen trendi. AI lisää hyökkäyspintaa → turvabudjetteja ei leikata. Selkeä positiivinen muutossignaali. V2: 2/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS
+Pilvinatiivi SaaS-alusta. Ei laitteistoriippuvuutta. Uudet tuotteet (ZDX, AIML-integraatiot) laajentavat kokonaismarkkinaa. Bruttomarginaali ~80 % – erinomainen. V3: 2/2p
+
+V4: HINNOITTELUVOIMA
+Vaihtokustannukset korkeat. Asiakkaat integroivat syvälle infraan. Hinnankorotukset mahdollisia mutta makropaine rajoittaa aggressiivisuutta. Kohtalainen hinnoitteluvoima. V4: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE
+Zero Trust SASE -markkinalla selvä ykkösasema. Palo Alto haastaa, mutta ZS:n fokusointi on etu. Kilpailu kovaa, mutta markkina kasvaa riittävän nopeasti. V5: 1/1p
+
+V6: JOHTO JA OMISTUS
+Jay Chaudhry on perustaja-CEO. Omistaa merkittävän osuuden. Pitkäaikainen visio, operatiivinen kokemus. Johtoryhmä vahva. V6: 2/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA
+Ei GAAP-tasolla vielä johdonmukaisesti voitollinen. Mutta vapaa kassavirta (FCF) positiivinen ja kasvava – FY2025 FCF-marginaali ~20-22 %. Liikevaihto kasvaa ~20-25 % vuodessa. Kannattavuuspolku näkyvissä. V7: 1/2p
+
+V8: REGULAATIORISKI
+Kyberturvallisuus on regulatorisesti suotuisa ala – NIS2, DORA, FedRAMP ohjaavat kysyntää. Ei merkittävää regulaatioriskiä. V8: 1/1p
+
+V9: AVAINLUVUT
+EV/Sales ~10-12x (FY2026e). FCF-tuotto ~2-3 %. ARR-kasvu ~20 %+. RPO (jäljellä oleva suoritevelvoite) kasvussa – hyvä näkyvyys tuleviin tuloihin. V9: 1/1p
+
+V10: AJOITUS JA KATALYYTTI
+Seuraava tulosraportti on lähellä. Lisäksi suuret julkishallinnon Zero Trust -hankinnat (US Federal, EU) voivat toimia katalyyttinä. AI-kyberturvallisuus-narratiivi nousee. V10: 1/1p
+
+V11: HINTA VS. ARVO (GARP)
+Korkea kasvunopeus (~20-25 %) osittain hinnoiteltu sisään. EV/FCF korkea mutta perusteltu laadulla. Ei halvalla saa – mutta kasvun laatu on ainutlaatuinen. GARP-sijoittajalle hyväksyttävä. V11: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT
+Chaudhry pitää omistuksensa. Institutionaalinen omistus korkea (Vanguard, BlackRock). Ei merkittäviä sisäpiirin myyntejä viime aikoina. V12: 1/1p
+
+YHTEENVETO:
+Zscaler on korkealaatuinen kasvuyhtiö rakenteellisesti kasvavalla markkinalla. Arvostus on korkea mutta perusteltu. Suurin riski on makroympäristön aiheuttama budjettipaineilu ja kova kilpailu Palo Altolta. Sijoittajalle, joka etsii laadukasta 3-5 vuoden kasvusijoitusta kyberturvallisuuteen – ZS on top-tier valinta. TRATEGO-PISTEET: 15/19p → OSTA.
+
+--- DigitalOcean Holdings (DOCN) ---
+SUOSITUS: PIDÄ / HARKITSE OSTOA | PISTEET: 11/19
+YHTEENVETO: PIKAKUVAUS: DigitalOcean on pilvialusta, joka palvelee pk-yrityksiä ja kehittäjiä. Tarjoaa yksinkertaistettua infrastruktuuria (VPS, Kubernetes, hallitut tietokannat, AI/ML-alustat). Kilpailee AWS:ää ja Azurea vastaan eri segmentissä – helppokäyttöisyys ja hinta ovat valtteja.
+PERUSTELU:
+TRATEGO-ANALYYSI:
+
+V1: OSTOPAIKKA JA HOUKUTTELEVUUS (0-1p)
+DOCN on laskenut huipuistaan yli 70%. Kurssi pyörii n. 30–35 USD tasolla. Arvostus on tullut alas merkittävästi. Teknisesti ei ole selvää pohjamuodostumaa, mutta arvostustasot ovat historiallisesti matalat. Riski/tuotto alkaa olla kohtuullinen. Pisteet: 1/1p
+
+V2: MUUTOSSIGNAALI JA MARKKINA (0-2p)
+AI-infrastruktuurikysyntä on DOCN:n selkein kasvukatalyytti. GPU Droplets ja Paperspace-integraatio ovat konkreettisia muutossignaaleja. SMB-segmentti on vakaa, mutta kasvu hidastunut ~12–15% tasolle. Ei räjähtävää muutossignaalia, mutta suunta on oikea. Pisteet: 1/2p
+
+V3: TUOTTEEN LAATU JA SKAALAUTUVUUS (0-2p)
+Tuote on erinomainen segmentissään. Kehittäjäkokemus on markkinan parhaita. Ongelma: skaalautuvuuden katto on matala – enterprise ei tule. AI-tuotteet laajentavat TAM:ia, mutta kilpailu on brutaali. Paperspace tuo ML-työkaluja, mikä on positiivista. Pisteet: 1/2p
+
+V4: HINNOITTELUVOIMA (0-2p)
+Hinnoitteluvoima on kohtalainen. DOCN voi hinnoitella premium-lisäpalvelut (hallitut tietokannat, Kubernetes), mutta perustason VPS-markkinassa hintapaine on kova. Asiakkaat ovat hintaherkkiä pk-yrityksiä. Ei merkittävää hinnoitteluvoimaa. Pisteet: 1/2p
+
+V5: MARKKINAOSUUS JA KILPAILUTILANNE (0-1p)
+DOCN on selkeä ykkönen kehittäjäystävällisessä SMB-pilvessä. Vultr ja Linode (Akamai) ovat pienempiä kilpailijoita. Hyperscaalerit eivät suoraan kilpaile samassa segmentissä. Markkinaosuus on vakaa, ei kasvava. Pisteet: 1/1p
+
+V6: JOHTO JA OMISTUS (0-2p)
+Padmanabhan (Pam) Kumar on ollut CEO vuodesta 2022. Hän on osoittanut kurinalaisuutta: takaisinostot, kannattavuusfokus. Johto on pivotoinut kasvusta kannattavuuteen onnistuneesti. Sisäpiirin omistus kohtuullinen. Aktivistisijoittajien paine on ajanut positiivisia muutoksia. Pisteet: 1/2p
+
+V7: KANNATTAVUUS JA KASSAVIRTA (0-2p)
+DOCN on Free Cash Flow -positiivinen – tärkeä signaali. FCF-marginaali ~20%+ tasolla. Bruttomarginaali ~60%. Nettotulos painuu GAAP-mielessä osittain SBC:n takia. Aggressiiviset takaisinostot pienentävät osakemäärää. Kassavirta on yhtiön vahvin kortti tällä hetkellä. Pisteet: 2/2p
+
+V8: REGULAATIORISKI (0-1p)
+Pilvialalla regulaatioriski on matala. Dataprivacy-säädökset (GDPR) tuovat jonkin verran compliance-kustannuksia, mutta eivät ole eksistentiaalinen uhka. DOCN ei ole kriittinen infrastruktuuri suurvaltapolitiikan näkökulmasta. Pisteet: 1/1p
+
+V9: AVAINLUVUT (0-1p)
+Liikevaihto ~750M USD (2025e). Kasvu ~12–15% YoY. FCF-marginaali ~20%. EV/FCF n. 15–18x. P/S alle 3x. Luvut ovat kohtuulliset kasvuyhtiölle. Ei yliarvostettu, ei huutava osto. Pisteet: 1/1p
+
+V10: AJOITUS JA KATALYYTTI (0-1p)
+Lähiajan katalyyttejä: Q-tulokset, GPU-kapasiteetin kasvu, mahdolliset partneruudet AI-startupien kanssa. Ei selvää välitöntä katalyyttiä. Pitkällä tähtäimellä AI-infrastruktuurikasvu on katalyytti. Ajoitus epävarma. Pisteet: 0/1p
+
+V11: HINTA VS. ARVO / GARP (0-2p)
+DOCN on selvästi halvempi kuin huippuaikoinaan. EV/FCF ~15–18x 20%+ FCF-marginaalilla on kohtuullinen. Kasvu hidastuu, mikä rajoittaa multippelin laajenemista. GARP-näkökulmasta: kohtuullisesti hinnoiteltu, ei poikkeuksellinen ostos. Pisteet: 1/2p
+
+V12: SISÄPIIRI JA INSTITUUTIOT (0-1p)
+Institutionaalinen omistus korkea (~90%). Sisäpiiri ei ole aggressiivisesti ostanut lähiaikoina. Takaisinostot ovat johdon paras viesti luottamuksesta. Ei punaisia lippuja. Pisteet: 1/1p
+
+YHTEENVETO:
+DOCN on laadukas, kannattava pilviyritys matalalla arvostuksella. Vahvuudet: FCF-generaatio, kehittäjäbrändi, takaisinostot. Heikkoudet: kasvun hidastuminen, rajallinen skaalautuvuus, AI-kilpailu kovaa. Ei räjähtävä ostos, mutta kohtuullinen pitkän aikavälin positio. TRATEGO-pisteet: 11/19p
+

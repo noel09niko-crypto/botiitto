@@ -7,8 +7,14 @@ from src.database import (
     init_db, add_scenario, prune_old_scenarios, get_favorite_tickers, 
     get_active_scenarios, deactivate_scenario
 )
-from src.ai_analyzer import generate_scenarios, quick_news_scan, get_client, validate_scenario
-from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST
+from src.ai_analyzer import (
+    generate_scenarios, quick_news_scan, get_client, validate_scenario,
+    filter_watchlist_with_sonnet, analyze_single_stock, verify_analysis_quality
+)
+from src.stock_analyzer import (
+    get_market_snapshot, get_top_movers, format_movers_for_prompt, 
+    WATCHLIST, get_research_bundle
+)
 from src.news_fetcher import fetch_all_news, format_news_for_prompt
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
@@ -106,68 +112,79 @@ def run_scenario_generation(force=False):
         except Exception as e:
             print(f"Validation error: {e}")
 
-        # 2/3 – Market snapshot
-        WORKER_STATE["status"] = "Haetaan markkinadata..."
-        print("2/3 Fetching market data...")
+        # 2/3 – TUTKIMUSVAIHE (UUSI: HAETAAN DATA ENNEN PISTEITÄ)
+        WORKER_STATE["status"] = "Vaihe 1: Syvän datan keruu..."
+        print("2/3 Vaihe 1: Kerätään tutkimusdataa kaikille osakkeille...")
+        
+        research_bundles = []
         try:
-            # News scanning activation
+            # Uutisissa mainitut + watchlist + suosikit
             mentioned = quick_news_scan(news_text, client) if news_text else []
             all_tickers = list(dict.fromkeys(mentioned + WATCHLIST + fav_tickers))
-            snapshot_list = get_market_snapshot(all_tickers)
-            snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
-            movers = get_top_movers(snapshot_list, top_n=15)
-            movers_text = format_movers_for_prompt(movers)
+            
+            # Kerätään syvä data jokaisesta (tämä kestää hetken)
+            for ticker in all_tickers:
+                WORKER_STATE["current_ticker"] = ticker
+                bundle = get_research_bundle(ticker)
+                if bundle and "error" not in bundle:
+                    research_bundles.append(bundle)
+                time.sleep(0.5) # Pieni viive jotta yfinance ei suutu
         except Exception as e:
-            print(f"Market snapshot error: {e}")
-            snapshot = {}
-            movers_text = "Markkinadata ei saatavilla."
+            print(f"Research bundle error: {e}")
 
-        # 3/3 – KAKSIVAIHEINEN ANALYYSI (SONNET SCORECARD -> SONNET DEEP)
-        WORKER_STATE["status"] = "Vaihe 1: Sonnet-pisteytys..."
-        print(f"3/3 Vaihe 1: Sonnet skannaa {len(WATCHLIST)} osaketta...")
+        # 3/3 – PISTEYTYS JA ANALYYSI (11-VAIHEINEN SEULA)
+        WORKER_STATE["status"] = "Vaihe 2: TRATEGO-pisteytys..."
+        print(f"3/3 Vaihe 2: Sonnet pisteyttää {len(research_bundles)} osaketta...")
         
         try:
-            from src.ai_analyzer import filter_watchlist_with_sonnet, analyze_single_stock
+            # 1. TRATEGO SCORECARD: Poimitaan parhaat ehdokkaat kovan datan perusteella
+            candidates = filter_watchlist_with_sonnet(research_bundles, news_text)
+            print(f"[WORKER] Sonnet valitsi {len(candidates)} ehdokasta jatkoon datan perusteella.")
             
-            # 1. SONNET SCORECARD: Poimitaan parhaat 15 ehdokasta koko listalta
-            candidates = filter_watchlist_with_sonnet(news_text, movers_text, WATCHLIST)
-            print(f"[WORKER] Sonnet valitsi {len(candidates)} ehdokasta jatkoon.")
-            
-            # 2. SONNET: Syväanalyysi valituille ehdokkaille
-            WORKER_STATE["status"] = "Vaihe 2: Sonnet-syväanalyysi..."
+            # 2. SYVÄANALYYSI JA VARMISTUS
             final_scenarios = []
-            
             for ticker in candidates:
+                WORKER_STATE["status"] = f"Vaihe 3: Syväanalyysi ({ticker})..."
                 WORKER_STATE["current_ticker"] = ticker
-                # Sonnet tekee täyden 11-vaiheen analyysin
-                scen = analyze_single_stock(ticker, news_text, client)
+                
+                # Etsitään oikea bundle
+                bundle = next((b for b in research_bundles if b['ticker'] == ticker), None)
+                if not bundle: continue
+                
+                # Kirjoitetaan analyysi
+                scen = analyze_single_stock(ticker, bundle, news_text)
                 
                 if scen:
-                    rec = str(scen.get('recommendation', '')).upper()
-                    # Puhdistetaan confidence (voi olla esim. "14/19 - perustelut...")
-                    raw_conf = str(scen.get('confidence', '0'))
-                    import re
-                    conf_match = re.search(r'(\d+)', raw_conf)
-                    points = int(conf_match.group(1)) if conf_match else 0
-                    
-                    if rec == 'OSTA' and points >= 11:
+                    # Vaihe 4: STRATEGINEN LAADUNVARMISTUS
+                    WORKER_STATE["status"] = f"Vaihe 4: Laadunvarmistus ({ticker})..."
+                    if verify_analysis_quality(ticker, scen, bundle):
                         final_scenarios.append(scen)
-                        print(f"  [VALITTU] {ticker} läpäisi TRATEGO-seulan (Pisteet: {points}/19)")
+                        print(f"  [VALITTU] {ticker} läpäisi seulan ja laadunvarmistuksen.")
                     else:
-                        print(f"  [HYLÄTTY] {ticker} ei täyttänyt TRATEGO-kriteereitä ({rec}, {points}/19)")
+                        print(f"  [HYLÄTTY] {ticker} hylättiin laadunvarmistuksessa.")
                 
-                time.sleep(1) # Rate limit
+                time.sleep(1)
 
             # Tallennetaan parhaat (MAX 5-7 kerrallaan)
             if final_scenarios:
                 print(f"[WORKER] Julkaistaan {len(final_scenarios[:7])} parasta analyysia.")
+                # Haetaan kurssitiedot hinnanmuutosta varten
+                snapshot_list = get_market_snapshot([s.get('tickers') for s in final_scenarios])
+                snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
+                
                 for scen in final_scenarios[:7]:
                     ticker = scen.get('tickers', 'YLEINEN')
                     price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
-                    is_pinned = float(scen.get('confidence', 0)) > 92
+                    # Jos pisteet > 17/19, pinnataan (vahva luottamus)
+                    conf_str = str(scen.get('confidence', '0'))
+                    import re
+                    match = re.search(r'(\d+)', conf_str)
+                    points = int(match.group(1)) if match else 0
+                    is_pinned = points >= 17
+                    
                     add_scenario(scen, is_pinned=is_pinned, price_change=price_change)
             else:
-                print("[WORKER] Yksikään ehdokas ei läpäissyt lopullista Sonnet-seulaa.")
+                print("[WORKER] Yksikään ehdokas ei läpäissyt kriteereitä tänään.")
                 
         except Exception as e:
             print(f"[VIRHE] Kolmivaiheisessa analyysissä: {e}")
