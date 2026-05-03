@@ -364,3 +364,22 @@ def rewrite_scenario(scen: dict, client) -> Optional[dict]:
     except Exception as e:
         print(f"Error rewriting scenario: {e}")
         return None
+def analyze_market(news_text: str, movers_text: str, detailed_stocks: List[str], client=None) -> str:
+    """Wrapper-funktio main.py:tä varten, joka palauttaa tekstimuotoisen yhteenvedon."""
+    results = []
+    for ticker in detailed_stocks[:5]:
+        res = analyze_single_stock(ticker, news_text, client)
+        if res:
+            results.append(res)
+    
+    if not results:
+        return "Ei voitu luoda analyyseja. Tarkista API-yhteydet."
+        
+    output = ""
+    for r in results:
+        output += f"--- {r.get('title', 'Tuntematon')} ({r.get('tickers', 'N/A')}) ---\n"
+        output += f"SUOSITUS: {r.get('recommendation', 'TARKKAILE')} | PISTEET: {r.get('confidence', '0/19')}\n"
+        output += f"YHTEENVETO: {r.get('summary', '')}\n"
+        output += f"PERUSTELU:\n{r.get('reasoning', '')}\n\n"
+        
+    return output
