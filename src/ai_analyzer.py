@@ -5,7 +5,15 @@ import anthropic
 from typing import List, Optional
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
+
+def _get_masked_key(key_name: str) -> str:
+    val = os.environ.get(key_name, "")
+    if not val: return "PUUTTUU"
+    if val == "placeholder": return "VIRHE: placeholder"
+    if len(val) < 10: return "LIIAN LYHYT"
+    return f"{val[:6]}...{val[-4:]}"
+
 
 SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät TRATEGO-analyysijärjestelmää (12 vaihetta, Max 19 pistettä).
 
@@ -53,8 +61,11 @@ def get_client():
 
 def get_anthropic_client():
     key = os.environ.get("ANTHROPIC_API_KEY")
-    if not key: return None
+    if not key or key == "placeholder":
+        print(f"[VAROITUS] Anthropic-avain puuttuu tai on 'placeholder' ({_get_masked_key('ANTHROPIC_API_KEY')})")
+        return None
     return anthropic.Anthropic(api_key=key)
+
 
 def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 16000, model: str = "claude-sonnet-4-6") -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille tietyllä mallilla."""
@@ -69,7 +80,7 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 16000
             )
             return resp.content[0].text
         except Exception as e:
-            print(f"Claude ({model}) error: {e}")
+            print(f"Claude ({model}) error: {e} | Käytössä avain: {_get_masked_key('ANTHROPIC_API_KEY')}")
             # Yritetään fallbackia jos ensisijainen malli epäonnistuu
             if model != "claude-sonnet-4-6":
                 return _get_completion(prompt, system_msg, max_tokens, model="claude-sonnet-4-6")
@@ -87,7 +98,7 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 16000
         )
         return resp.choices[0].message.content
     except Exception as e:
-        print(f"Groq error: {e}")
+        print(f"Groq error: {e} | Käytössä avain: {_get_masked_key('GROQ_API_KEY')}")
     
     return ""
 

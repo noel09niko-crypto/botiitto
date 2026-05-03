@@ -18,16 +18,24 @@ from src.news_fetcher import fetch_all_news, format_news_for_prompt
 from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt
 from src.ai_analyzer import analyze_market, quick_news_scan, get_client
 
-load_dotenv()
+load_dotenv(override=True)
 console = Console()
 
 
 def check_env():
-    key = os.environ.get("GROQ_API_KEY")
-    if not key:
-        console.print("[red]VIRHE: GROQ_API_KEY puuttuu .env tiedostosta![/red]")
+    anth_key = os.environ.get("ANTHROPIC_API_KEY")
+    groq_key = os.environ.get("GROQ_API_KEY")
+    
+    if not anth_key and not groq_key:
+        console.print("[red]VIRHE: Sekä ANTHROPIC_API_KEY että GROQ_API_KEY puuttuvat![/red]")
         sys.exit(1)
-    return key
+        
+    if anth_key:
+        console.print("[green]✓ Claude (Anthropic) käytössä ensisijaisena.[/green]")
+    elif groq_key:
+        console.print("[yellow]! Claude puuttuu, käytetään Groqia fallbackina.[/yellow]")
+    
+    return anth_key or groq_key
 
 
 def print_header():
