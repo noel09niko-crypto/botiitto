@@ -15,8 +15,9 @@ from rich.text import Text
 from rich import print as rprint
 
 from src.news_fetcher import fetch_all_news, format_news_for_prompt
-from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt
-from src.ai_analyzer import analyze_market, quick_news_scan, get_client
+from src.stock_analyzer import get_market_snapshot, get_top_movers, format_movers_for_prompt, WATCHLIST, get_research_bundle
+from src.ai_analyzer import analyze_market, quick_news_scan, get_client, analyze_single_stock
+from src.database import add_scenario, init_db
 
 load_dotenv(override=True)
 console = Console()
@@ -72,7 +73,6 @@ def run_analysis():
     console.print("\n[cyan]Haetaan kurssitiedot...[/cyan]")
     console.print("[dim](Tämä voi kestää 30-60 sekuntia)[/dim]")
 
-    from src.stock_analyzer import WATCHLIST
     all_tickers = list(dict.fromkeys(mentioned_tickers + WATCHLIST))
     snapshot = get_market_snapshot(all_tickers)
 
@@ -100,14 +100,12 @@ def run_analysis():
     # 4. Claude-analyysi
     console.print("\n[cyan]Claude analysoi markkinatilannetta...[/cyan]")
     console.print("[dim](Tämä voi kestää 20-40 sekuntia)[/dim]")
-
-    # Haetaan kertyneet analyysit sanakirjoina
-    from src.ai_analyzer import analyze_single_stock
-    from src.database import add_scenario
     
     results_as_dicts = []
-    for ticker in top_tickers[:5]:
-        res_dict = analyze_single_stock(ticker, news_text, client)
+    for ticker in top_tickers:
+        # Nyt käytetään uutta research_bundlea jos mahdollista
+        bundle = get_research_bundle(ticker)
+        res_dict = analyze_single_stock(ticker, bundle, news_text)
         if res_dict:
             results_as_dicts.append(res_dict)
             # Tallennetaan suoraan tietokantaan!
