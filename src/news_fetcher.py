@@ -21,7 +21,9 @@ HEADERS = {
 def fetch_feed(name: str, url: str, max_age_hours: int = 24) -> List[Dict]:
     articles = []
     try:
-        feed = feedparser.parse(url, request_headers=HEADERS)
+        response = requests.get(url, headers=HEADERS, timeout=10)
+        response.raise_for_status()
+        feed = feedparser.parse(response.content)
         cutoff = datetime.now() - timedelta(hours=max_age_hours)
 
         for entry in feed.entries[:20]:

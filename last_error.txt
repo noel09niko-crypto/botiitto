@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/noelkulvik/Desktop/Investing bot/src/background_worker.py", line 187, in run_scenario_generation
+    prune_old_scenarios(keep_limit=50)
+NameError: name 'prune_old_scenarios' is not defined
