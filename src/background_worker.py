@@ -124,8 +124,8 @@ def run_scenario_generation(force=False):
         except Exception as e:
             print(f"Research bundle error: {e}")
 
-        # 3/3 – PISTEYTYS JA ANALYYSI (11-VAIHEINEN SEULA)
-        WORKER_STATE["status"] = "Vaihe 2: TRATEGO-pisteytys..."
+        # 3/3 – PISTEYTYS JA ANALYYSI (UUSI 3-VAIHEINEN STRATEGIA)
+        WORKER_STATE["status"] = "Vaihe 2: Strateginen alkukarsinta..."
         print(f"3/3 Vaihe 2: Sonnet pisteyttää {len(research_bundles)} osaketta...")
         
         try:

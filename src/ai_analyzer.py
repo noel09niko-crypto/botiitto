@@ -14,29 +14,30 @@ def _get_masked_key(key_name: str) -> str:
     return f"{val[:6]}...{val[-4:]}"
 
 
-SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät TRATEGO-analyysijärjestelmää (12 vaihetta, Max 19 pistettä).
+SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät tästä eteenpäin AINOASTAAN seuraavaa 3-vaiheista sijoitusstrategiaa arvioidessasi yhtiöitä. Et käytä enää pisteitä, vaan etsit yhtiöitä, jotka aidosti sopivat tähän profiiliin.
 
-STRATEGIAN YDIN (11-VAIHEINEN TARKASTUS):
-Jokainen analyysi on läpäistävä tiukka seula, jossa faktat (luvut, sisäpiiri, uutiset) painavat enemmän kuin yleinen hypetys.
+STRATEGIAN YDIN (3 VAIHETTA):
 
-TRATEGO-VAIHEET (Pisteytys per vaihe):
-V1: Ostopaikka ja houkuttelevuus (0-1p)
-V2: Muutossignaali ja markkina (0-2p)
-V3: Tuotteen laatu ja skaalautuvuus (0-2p)
-V4: Hinnoitteluvoima (0-2p)
-V5: Markkinaosuus ja kilpailutilanne (0-1p)
-V6: Johto ja omistus (0-2p)
-V7: Kannattavuus ja kassavirta (0-2p) - KÄYTÄ ANNETTUA FCF-DATAA.
-V8: Regulaatioriski (0-1p)
-V9: Avainluvut (0-1p) - KÄYTÄ ANNETTUJA P/E JA MARGINAALEJA.
-V10: Ajoitus ja katalyytti (0-1p)
-V11: Hinta vs. Arvo (GARP) (0-2p) - VERTAA TAVOITEHINTAA NYKYHINTAAN.
-V12: Sisäpiiri ja instituutiot (0-1p) - KÄYTÄ ANNETTUA INSIDER-DATAA.
+Vaihe 1 — Arvostus
+Arvostuksessa arvioidaan kuinka paljon sijoittaja maksaa suhteessa yhtiön tulevaisuuden näkymiin ja siihen missä kehitysvaiheessa yhtiö tällä hetkellä on. Tavoitteena ei ole välttämättä ostaa halpaa — yhtiöstä voi maksaa korkeammankin hinnan jos tulevaisuuden kasvunäkymät ovat riittävän vahvat. Olennaista on ettei yhtiö ole yliarvostettu suhteessa tilanteeseen kokonaisuutena. Arvostus on läpileikkaava teema johon palataan analyysin myöhemmissäkin vaiheissa.
+
+Vaihe 2 — Miksi hinta on alempi kuin pitäisi
+Etsi syy miksi yhtiö on tällä hetkellä aliarvostettu. Syy on yksi tai useampi seuraavista:
+- Markkinapelko: jokin laaja ulkoinen tekijä (kriisi, sota, taantuma, regulaatio) on painanut kurssia alas vaikka liiketoiminta jatkuu normaalisti. Arvioi vaikuttaako ulkoinen paine oikeasti liiketoimintaan pitkällä aikavälillä — jos ei, hinta on perusteettomasti alhaalla.
+- Hinnoittelematon muutos: jokin tuleva tai käynnissä oleva tekijä parantaa yhtiön asemaa mutta markkina ei ole reagoinut täysimääräisesti. Uusi tuote, toimialan murros, hyödyttävä regulaatio, kilpailijan heikkeneminen tai muu rakenteellinen muutos joka näkyy tuloksessa vasta myöhemmin.
+- Näkymättömyys: yhtiöllä ei ole analyytikkoseurantaa, mediahuomiota tai institutionaalisia sijoittajia. Liiketoiminta on kunnossa mutta markkina ei ole löytänyt sitä vielä (erityisen yleistä pienissä ja keskisuurissa yhtiöissä).
+
+Vaihe 3 — Tuote ja Kilpailuetu
+Botti arvioi onko tuote oikeasti poikkeuksellinen vai ainoastaan hyvä. Ero on merkittävä — hyvä tuote kilpailluilla markkinoilla tuottaa kohtuullisen bisneksen, poikkeuksellinen tuote uudessa markkinassa voi tuottaa kymmenkertaisen kasvun.
+- Markkina ensin: Onko markkina vasta syntymässä, nopeasti kasvava vai jo kypsä. Paras tilanne on varhainen tai nopeasti kasvava markkina jossa yhtiö kasvaa markkinan mukana ilman kovaa taistelua osuuksista. Onko yhtiö muutoksen tekijä vai uhri? Murroksen tekijällä on ajan henki puolellaan.
+- Tuotteen laatu: Onko tuote selvästi parempi kuin vaihtoehdot vai ainoastaan marginaalisesti erilainen? Onko se välttämätön vai mukavuus? Onko yhtiöllä hinnoitteluvoimaa?
+- Adoptiovauhti ja asiakaskäyttäytyminen: Leviääkö tuote orgaanisesti? Tuleeko kasvu uusilta asiakkailta ja lisäostoista? Jos NRR (Net Revenue Retention) on yli 110%, tuote on oikeasti arvokas.
+- Este kopioinnille (Kilpailuetu): Etsi vähintään yksi asia jota on vaikea kopioida — verkostovaikutus, switching cost, brändi, patentit, data joka paranee käytön myötä, tai vuosien kehitystyö jota ei pysty ostamaan rahalla lyhyessä ajassa.
 
 KIRJOITUSTYYLI:
 - AMMATTIMAINEN & TÖKKIVÄ: Lyhyitä, tylyjä ja selkeitä lauseita. Fakta kerrallaan.
 - ELI5: Selitä monimutkaiset asiat yksinkertaisesti.
-- DATA-LÄHTÖINEN: Jos data sanoo "Insider Buy", mainitse se. Jos data puuttuu, ole rehellinen.
+- DATA-LÄHTÖINEN: Jos data vahvistaa kilpailuedun tai aliarvostuksen, mainitse se.
 
 JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
 [
@@ -44,17 +45,17 @@ JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
     "title": "YHTIÖN NIMI",
     "tickers": "TICKER",
     "summary": "PIKAKUVAUS: Mitä yritys tekee.",
-    "global_context": "ISO KUVA: Markkina ja maailman tapahtumat (V1 & V2).",
-    "competitive_landscape": "KILPAILUASEMA: (V3, V4 & V5).",
-    "reasoning": "TRATEGO-ANALYYSI: Kaikki 12 vaihetta otsikoittain (V1 - V12). Anna pisteet per vaihe (esim. V1: 1/1p).",
-    "metrics_explanation": "NUMEROT: Keskeiset luvut ja niiden merkitys (V7 & V9).",
-    "recommendation": "AINA 'OSTA'",
-    "confidence": "Lopulliset TRATEGO-pisteet (esim. 14/19)",
+    "global_context": "VAIHE 1: Arvostuksen perusteet.",
+    "competitive_landscape": "VAIHE 3: Tuote, markkina ja kilpailuetu.",
+    "reasoning": "VAIHE 2 & YHTEENVETO: Miksi hinta on nyt alempi kuin pitäisi (Markkinapelko, Hinnoittelematon muutos, tai Näkymättömyys) ja miksi tämä on ostopaikka.",
+    "metrics_explanation": "NUMEROT: Keskeiset luvut (FCF, marginaalit) jotka tukevat strategiaa.",
+    "recommendation": "AINA 'OSTA' TAI 'TARKKAILE'",
+    "confidence": "Yhteensopivuus strategiaan prosenteissa (esim. '100' tai '90')",
     "timeframe": "1-3 vuotta",
-    "risks": "Keskeisimmät riskit (V8)."
+    "risks": "Keskeisimmät riskit (esim. arvostus tai kopioitavuus)."
   }
 ]
-TÄRKEÄÄ: Älä koskaan suosittele 'MYY'. Jos osake ei ole ostopaikka, jätä se pois tuloksista.
+TÄRKEÄÄ: Älä koskaan suosittele 'MYY'. Jos osake ei aidosti sovi tähän 3-vaiheiseen strategiaan, jätä se pois tuloksista.
 """
 
 
@@ -156,8 +157,7 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
         return []
 
 def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> List[str]:
-    """Vaihe 1: Sonnet tekee TRATEGO-pisteytyksen hyödyntäen syvää tutkimusdataa."""
-    print(f"  [TRATEGO SCORECARD] Pisteytetään {len(research_data)} osaketta datan perusteella...")
+    print(f"  [STRATEGIASUODATIN] Analysoidaan {len(research_data)} osaketta uuden laadullisen strategian läpi...")
     
     # Tiivistetään data jotta se mahtuu promptiin
     data_summary = ""
@@ -168,8 +168,10 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
         insider = "Kyllä" if d.get('insider') else "Ei tietoa"
         data_summary += f"- {ticker}: Price ${cons.get('current_price')}, Target ${cons.get('target_mean')}, FCF ${fins.get('free_cash_flow')}, Insider: {insider}\n"
 
-    prompt = f"""TEHTÄVÄ: Pisteytä nämä osakkeet TRATEGO-järjestelmän (V1-V12) mukaisesti.
-    Käytä annettua tutkimusdataa ja uutisia. Älä arvaa pisteitä jos data puuttuu, vaan ole tiukka.
+    prompt = f"""TEHTÄVÄ: Käy läpi nämä osakkeet tiukan 3-vaiheisen sijoitusstrategiamme läpi:
+    1. Arvostus (Kasvunäkymät vs. hinta)
+    2. Aliarvostuksen syy (Markkinapelko, Hinnoittelematon muutos, Näkymättömyys)
+    3. Tuote & Kilpailuetu (Markkinaosuus, Kopioinnin esteet, NRR)
     
     TUTKIMUSDATA:
     {data_summary}
@@ -177,9 +179,11 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
     UUTISET:
     {news_text[:2000]}
     
-    VASTAA VAIN JSON-TAULUKKONA:
+    Poimi listalta KORKEINTAAN 5-7 osaketta, jotka SOPIVAT TÄYDELLISESTI TÄHÄN STRATEGIAAN. Älä anna pisteitä. Valitse vain helmet.
+    
+    VASTAA VAIN JSON-TAULUKKONA (pelkät osaketunnukset, jotka valitsit):
     [
-      {{"ticker": "XYZ", "tratego_score": 14, "reason": "Miksi sai nämä pisteet?"}},
+      {{"ticker": "XYZ", "reason": "Lyhyt lause miksi tämä sopii strategiaan täydellisesti"}},
       ...
     ]
     """
@@ -189,9 +193,7 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
         if "[" in content:
             content = content[content.find("["):content.rfind("]")+1]
         data = json.loads(content)
-        # Suodatetaan TRATEGO-kriteerin mukaan (>= 11p) tai jos on poikkeuksellinen syy
-        selected_data = [item for item in data if item.get('tratego_score', 0) >= 11]
-        selected = [str(item['ticker']).upper().strip() for item in selected_data]
+        selected = [str(item['ticker']).upper().strip() for item in data if 'ticker' in item]
         return selected
     except:
         return []
@@ -208,7 +210,7 @@ def quick_news_scan(news_text: str, client=None) -> List[str]:
         return []
 
 def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> Optional[dict]:
-    """Suorittaa syvän TRATEGO 12-vaiheen analyysin käyttäen kerättyä tutkimusdataa."""
+    """Suorittaa syvän 3-vaiheisen analyysin käyttäen kerättyä tutkimusdataa."""
     print(f"  [TRATEGO ANALYYSI] {ticker}...")
     
     # Muotoillaan tutkimusdata helposti luettavaksi
@@ -224,7 +226,7 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
     SISÄPIIRI (Viimeisimmät): {json.dumps(insider, ensure_ascii=False)}
     """
     
-    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN TRATEGO-STRATEGIAA:
+    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN UUTTA 3-VAIHEISTA STRATEGIAA:
     Yritys: {ticker}
     
     TUTKIMUSDATA:
@@ -233,7 +235,7 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
     UUTISET:
     {news_text[:3000]}
     
-    Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele jokainen TRATEGO-vaihe (V1-V12) datalla.
+    Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele Vaihe 1, Vaihe 2 ja Vaihe 3 datalla.
     """
     
     content = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
@@ -255,24 +257,22 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
         return None
 
 def verify_analysis_quality(ticker: str, analysis: dict, research_bundle: dict) -> bool:
-    """Strateginen tarkastus: Varmistaa että analyysi vastaa faktoja ja 11 kriteeriä."""
     print(f"  [QUALITY GUARD] Tarkistetaan {ticker}...")
     
-    prompt = f"""Olet laadunvalvoja. Tarkista onko tämä analyysi FAKTAPOHJAINEN ja noudattaako se TRATEGO-sääntöjä.
+    prompt = f"""Olet laadunvalvoja. Tarkista onko tämä analyysi FAKTAPOHJAINEN ja noudattaako se uutta 3-vaiheista strategiaa.
     
     ANALYYSIN TIIVISTELMÄ:
     Suositus: {analysis.get('recommendation')}
-    Pisteet: {analysis.get('confidence')}
     Perustelu (ote): {analysis.get('reasoning')[:500]}
+    Kilpailuetu (ote): {analysis.get('competitive_landscape')[:500]}
     
     TODELLISET FAKTAT (Tutkimusdata):
     {json.dumps(research_bundle, ensure_ascii=False)[:2000]}
     
     TARKISTUSLISTA:
-    1. Onko analyysi ristiriidassa numeroiden kanssa? (Esim. sanotaan "halpa" vaikka P/E on 100)
-    2. Onko sisäpiiri-data (V12) huomioitu oikein?
-    3. Onko tavoitehinta (V11) huomioitu?
-    4. Onko kieli ammattimaista (ei hypeä)?
+    1. Onko analyysissa tunnistettu aito syy aliarvostukselle (Vaihe 2)?
+    2. Onko kilpailuetu oikeasti vahva ja olemassa (Vaihe 3)?
+    3. Onko analyysi ristiriidassa kylmän datan kanssa?
     
     VASTAA VAIN JSON: {{"status": "PASS"/"FAIL", "reason": "Miksi?"}}"""
     
@@ -287,7 +287,7 @@ def verify_analysis_quality(ticker: str, analysis: dict, research_bundle: dict) 
             print(f"  [REJECTED] {ticker}: {data.get('reason')}")
             return False
     except:
-        return True # Jos tarkastus epäonnistuu teknisesti, päästetään läpi varmuuden vuoksi
+        return True
 
 def resolve_ticker(query: str, client=None) -> Optional[str]:
     if 1 < len(query) <= 5 and query.isalpha() and query.isupper(): return query

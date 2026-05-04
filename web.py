@@ -226,7 +226,7 @@ def view_logs():
             "current_ticker": w_state.get("current_ticker"),
             "last_scan_timestamp": last_scan,
             "last_error": err_text,
-            "info": "Botti käy läpi osakkeita. 11 vaiheen analyysi kestää n. 1min per osake."
+            "info": "Botti käy läpi osakkeita. 3-vaiheinen syväanalyysi kestää n. 1min per osake."
         })
     except Exception as e:
         return str(e)
