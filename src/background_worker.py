@@ -78,7 +78,8 @@ def run_scenario_generation(force=False):
             for scen in active_scens:
                 ticker = scen.get('tickers')
                 if ticker in snapshot:
-                    if not ai.validate_scenario(scen, snapshot[ticker]):
+                    val_result = ai.validate_scenario(scen, snapshot[ticker])
+                    if val_result.get('status') == 'INVALID':
                         db.deactivate_scenario(scen['id'])
         except Exception as e:
             print(f"Validation error: {e}")
@@ -94,7 +95,14 @@ def run_scenario_generation(force=False):
         # 3/3 – AI Filtering & Analysis
         WORKER_STATE["status"] = "Vaihe 2: Strateginen suodatus..."
         WORKER_STATE["current_ticker"] = "AI Seula"
-        movers_text = sa.format_movers_for_prompt(research_bundles)
+        
+        # Korjataan Problem 2: Luodaan oikeanlainen movers_dict
+        movers_dict = {
+            "gainers": [b for b in research_bundles if (b.get('financials', {}).get('change_pct_1d') or 0) > 2],
+            "losers": [b for b in research_bundles if (b.get('financials', {}).get('change_pct_1d') or 0) < -2],
+            "high_volume": [b for b in research_bundles if (b.get('financials', {}).get('volume_ratio') or 0) > 2]
+        }
+        movers_text = sa.format_movers_for_prompt(movers_dict)
         
         candidates = ai.filter_watchlist_with_sonnet(research_bundles, news_text, movers_text)
         

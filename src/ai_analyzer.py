@@ -88,7 +88,7 @@ def get_anthropic_client():
     return anthropic.Anthropic(api_key=key)
 
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 4096, model: str = "claude-3-opus-20240229") -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-3-5-sonnet-20240620") -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille. Vain Claude sallittu laadun takaamiseksi."""
     anth_client = get_anthropic_client()
     if anth_client:
@@ -173,11 +173,11 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
     except:
         return []
 
-def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> List[str]:
-    print(f"  [STRATEGIASUODATIN] Analysoidaan {len(research_data)} osaketta 5-vaiheisen strategian läpi...")
+def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, movers_text: str = "") -> List[str]:
+    print(f"  [STRATEGIASUODATIN] Analysoidaan {len(research_bundles)} osaketta 5-vaiheisen strategian läpi...")
     
     data_summary = ""
-    for d in research_data:
+    for d in research_bundles:
         ticker = d.get('ticker')
         cons = d.get('consensus', {})
         fins = d.get('financials', {})
