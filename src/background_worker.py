@@ -51,8 +51,19 @@ def run_scenario_generation(force=False):
     global _WORKER_RUNNING, WORKER_STATE
     
     # Paikallinen import jotta vältetään UnboundLocalError lopullisesti
-    from src.database import add_scenario, deactivate_scenario, get_active_scenarios, get_favorite_tickers
-    from src.ai_analyzer import get_client, validate_scenario, generate_scenarios
+    from src.database import (
+        init_db, add_scenario, prune_old_scenarios, get_favorite_tickers, 
+        get_active_scenarios, deactivate_scenario
+    )
+    from src.ai_analyzer import (
+        generate_scenarios, quick_news_scan, get_client, validate_scenario,
+        filter_watchlist_with_sonnet, analyze_single_stock, verify_analysis_quality
+    )
+    from src.stock_analyzer import (
+        get_market_snapshot, get_top_movers, format_movers_for_prompt, 
+        WATCHLIST, get_research_bundle
+    )
+    from src.news_fetcher import fetch_all_news, format_news_for_prompt
     
     if _WORKER_RUNNING:
         print("[Worker] Already running – skipping new run.")
