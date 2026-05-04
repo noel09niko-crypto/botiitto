@@ -55,6 +55,15 @@ def index():
 
 @app.route('/health')
 def health():
+
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
     return jsonify({'status': 'ok'}), 200
 
 # Hakee kaikki aktiiviset (ja uudet) mahdollisuudet
@@ -69,7 +78,16 @@ def fetch_scenarios():
             with open("last_scan.txt", "r") as f:
                 last_scan = f.read().strip()
         
-        return jsonify({
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({
             "success": True,
             "active": active,
             "favorites": favorites,
@@ -78,16 +96,43 @@ def fetch_scenarios():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"success": False, "error": str(e)}), 500
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": str(e)}), 500
 
 # Endpoint tykkäämiselle
 @app.route('/api/favorite/<int:scenario_id>', methods=['POST'])
 def favorite_scenario(scenario_id):
     try:
         toggle_favorite(scenario_id)
-        return jsonify({"success": True})
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": True})
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": str(e)}), 500
 
 # Endpoint analyysien nollaamiseen (Puhdas pöytä)
 @app.route('/api/clear_all', methods=['GET'])
@@ -124,6 +169,15 @@ def force_scan_ajax():
     def run_scan():
         run_scenario_generation(force=True)
     threading.Thread(target=run_scan).start()
+
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
     return jsonify({"success": True, "message": "Skannaus käynnistetty. Odota pari minuuttia ja päivitä sivu."})
 
 @app.route('/api/nuclear_wipe', methods=['GET'])
@@ -220,7 +274,16 @@ def view_logs():
             with open("last_error.txt", "r") as f:
                 err_text = f.read().strip() or LAST_ERROR
 
-        return jsonify({
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({
             "worker_status": status,
             "current_status": w_state.get("status"),
             "current_ticker": w_state.get("current_ticker"),
@@ -236,7 +299,16 @@ def search_and_analyze():
     data = request.json
     query = data.get('query', '').strip().upper()
     if not query:
-        return jsonify({"success": False, "error": "Query missing"}), 400
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": "Query missing"}), 400
         
     try:
         from src.ai_analyzer import resolve_ticker, generate_scenarios, get_client
@@ -250,12 +322,30 @@ def search_and_analyze():
         ticker = resolve_ticker(query, client)
         print(f"[DEBUG] Resolved ticker: {ticker}")
         if not ticker:
-            return jsonify({"success": False, "error": f"Yhtiötä '{query}' ei löytynyt."}), 404
+        
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": f"Yhtiötä '{query}' ei löytynyt."}), 404
             
         # 2. Hae osakkeen data
         stock_data = get_stock_data(ticker)
         if not stock_data:
-            return jsonify({"success": False, "error": f"Dataa tickerille {ticker} ei saatavilla."}), 404
+        
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": f"Dataa tickerille {ticker} ei saatavilla."}), 404
             
         # 3. Luo mini-movers teksti tekoälylle (vain tämä yksi osake)
         movers_text = f"ANALYYSIKOHDE: {stock_data['ticker']}\n"
@@ -271,17 +361,44 @@ def search_and_analyze():
         scenarios = generate_scenarios(news_text, movers_text, client, watchlist_hint=ticker)
         
         if not scenarios:
-             return jsonify({"success": False, "error": "AI-analyysin luonti epäonnistui."}), 500
+         
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": "AI-analyysin luonti epäonnistui."}), 500
              
         # 5. Tallenna kantaan manuaalisena hakuna (is_manual=True)
         add_scenario(scenarios[0], is_manual=True)
         
-        return jsonify({"success": True, "ticker": ticker})
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": True, "ticker": ticker})
         
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return jsonify({"success": False, "error": str(e)}), 500
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": str(e)}), 500
 
 def calculate_rsi(data, window=14):
     try:
@@ -412,10 +529,28 @@ def get_stock_details(ticker):
             "news": news_list
         }
 
-        return jsonify({"success": True, "data": data})
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": True, "data": data})
 
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+    
+    try:
+        if os.path.exists("worker_state.json"):
+            with open("worker_state.json", "r") as f:
+                shared_state = json.load(f)
+                w_state.update(shared_state)
+    except:
+        pass
+    
+    return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))

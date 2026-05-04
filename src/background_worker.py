@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 
 # Tila-muuttuja jotta emme aja kahta yhtä aikaa (saman prosessin sisällä)
-_WORKER_RUNNING = False
+_WORKER_RUNNING = False; _save_state()
 WORKER_STATE = {
     "status": "Odottaa...",
     "current_ticker": "N/A"
@@ -47,7 +47,17 @@ def _release_lock():
         except Exception:
             pass
 
+
+def _save_state():
+    try:
+        with open("worker_state.json", "w") as f:
+            json.dump(WORKER_STATE, f)
+    except:
+        pass
+
 def run_scenario_generation(force=False):
+    global _WORKER_RUNNING, WORKER_STATE
+
     global _WORKER_RUNNING, WORKER_STATE
     
     # Paikallinen import jotta vältetään UnboundLocalError lopullisesti
@@ -70,8 +80,8 @@ def run_scenario_generation(force=False):
         return
 
     _WORKER_RUNNING = True
-    WORKER_STATE["status"] = "KÄYNNISSÄ"
-    WORKER_STATE["current_ticker"] = "Alustetaan..."
+    _save_state(); WORKER_STATE["status"] = "KÄYNNISSÄ"
+    _save_state(); WORKER_STATE["current_ticker"] = "Alustetaan..."
     print(f"[{datetime.now()}] Starting autonomous scenario generation (force={force})")
 
     try:
@@ -79,8 +89,8 @@ def run_scenario_generation(force=False):
         fav_tickers = get_favorite_tickers()
 
         # 1/3 – News fetching
-        WORKER_STATE["status"] = "Haetaan uutisia..."
-        WORKER_STATE["current_ticker"] = "Uutiset"
+        _save_state(); WORKER_STATE["status"] = "Haetaan uutisia..."
+        _save_state(); WORKER_STATE["current_ticker"] = "Uutiset"
         print("1/3 Fetching news data...")
         try:
             articles = fetch_all_news(max_age_hours=168)
@@ -91,7 +101,7 @@ def run_scenario_generation(force=False):
             articles = []
 
         # 1.5/3 – Validate old scenarios
-        WORKER_STATE["status"] = "Validointi vanhoille analyyseille..."
+        _save_state(); WORKER_STATE["status"] = "Validointi vanhoille analyyseille..."
         print("1.5/3 Validating existing scenarios...")
         try:
             active_scens = get_active_scenarios(limit=50)
@@ -99,7 +109,7 @@ def run_scenario_generation(force=False):
             snapshot = {s['ticker']: s for s in snapshot_list if 'ticker' in s}
             for scen in active_scens:
                 ticker = scen.get('tickers', 'YLEINEN')
-                WORKER_STATE["current_ticker"] = ticker
+                _save_state(); WORKER_STATE["current_ticker"] = ticker
                 price_change = snapshot.get(ticker, {}).get('change_pct_1d', 0.0)
                 validation = validate_scenario(scen, news_text, client)
                 status = validation.get('status', 'VALID')
@@ -116,7 +126,7 @@ def run_scenario_generation(force=False):
             print(f"Validation error: {e}")
 
         # 2/3 – TUTKIMUSVAIHE (UUSI: HAETAAN DATA ENNEN PISTEITÄ)
-        WORKER_STATE["status"] = "Vaihe 1: Syvän datan keruu..."
+        _save_state(); WORKER_STATE["status"] = "Vaihe 1: Syvän datan keruu..."
         print("2/3 Vaihe 1: Kerätään tutkimusdataa kaikille osakkeille...")
         
         research_bundles = []
@@ -127,7 +137,7 @@ def run_scenario_generation(force=False):
             
             # Kerätään syvä data jokaisesta (tämä kestää hetken)
             for ticker in all_tickers:
-                WORKER_STATE["current_ticker"] = ticker
+                _save_state(); WORKER_STATE["current_ticker"] = ticker
                 bundle = get_research_bundle(ticker)
                 if bundle and "error" not in bundle:
                     research_bundles.append(bundle)
@@ -136,7 +146,7 @@ def run_scenario_generation(force=False):
             print(f"Research bundle error: {e}")
 
         # 3/3 – PISTEYTYS JA ANALYYSI (UUSI 3-VAIHEINEN STRATEGIA)
-        WORKER_STATE["status"] = "Vaihe 2: Strateginen alkukarsinta..."
+        _save_state(); WORKER_STATE["status"] = "Vaihe 2: Strateginen alkukarsinta..."
         print(f"3/3 Vaihe 2: Sonnet pisteyttää {len(research_bundles)} osaketta...")
         
         try:
@@ -147,8 +157,8 @@ def run_scenario_generation(force=False):
             # 2. SYVÄANALYYSI JA VARMISTUS
             final_scenarios = []
             for ticker in candidates:
-                WORKER_STATE["status"] = f"Vaihe 3: Syväanalyysi ({ticker})..."
-                WORKER_STATE["current_ticker"] = ticker
+                _save_state(); WORKER_STATE["status"] = f"Vaihe 3: Syväanalyysi ({ticker})..."
+                _save_state(); WORKER_STATE["current_ticker"] = ticker
                 
                 # Etsitään oikea bundle
                 bundle = next((b for b in research_bundles if b['ticker'] == ticker), None)
@@ -159,7 +169,7 @@ def run_scenario_generation(force=False):
                 
                 if scen:
                     # Vaihe 4: STRATEGINEN LAADUNVARMISTUS
-                    WORKER_STATE["status"] = f"Vaihe 4: Laadunvarmistus ({ticker})..."
+                    _save_state(); WORKER_STATE["status"] = f"Vaihe 4: Laadunvarmistus ({ticker})..."
                     if verify_analysis_quality(ticker, scen, bundle):
                         final_scenarios.append(scen)
                         print(f"  [VALITTU] {ticker} läpäisi seulan ja laadunvarmistuksen.")
@@ -215,9 +225,9 @@ def run_scenario_generation(force=False):
         except:
             pass
     finally:
-        _WORKER_RUNNING = False
-        WORKER_STATE["status"] = "Valmis / Odottaa"
-        WORKER_STATE["current_ticker"] = "N/A"
+        _WORKER_RUNNING = False; _save_state()
+        _save_state(); WORKER_STATE["status"] = "Valmis / Odottaa"
+        _save_state(); WORKER_STATE["current_ticker"] = "N/A"
 
 
 def _worker_loop(interval_hours=None):
