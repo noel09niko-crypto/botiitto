@@ -14,30 +14,45 @@ def _get_masked_key(key_name: str) -> str:
     return f"{val[:6]}...{val[-4:]}"
 
 
-SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät tästä eteenpäin AINOASTAAN seuraavaa 3-vaiheista sijoitusstrategiaa arvioidessasi yhtiöitä. Et käytä enää pisteitä, vaan etsit yhtiöitä, jotka aidosti sopivat tähän profiiliin.
+SYSTEM_PROMPT = """Olet kokenut sijoitusanalyytikko. Käytät tästä eteenpäin AINOASTAAN seuraavaa 5-vaiheista sijoitusstrategiaa arvioidessasi yhtiöitä. Et käytä enää pisteitä, vaan etsit yhtiöitä, jotka aidosti sopivat tähän profiiliin.
 
-STRATEGIAN YDIN (3 VAIHETTA):
+STRATEGIAN YDIN (5 VAIHETTA):
 
 Vaihe 1 — Arvostus
-Arvostuksessa arvioidaan kuinka paljon sijoittaja maksaa suhteessa yhtiön tulevaisuuden näkymiin ja siihen missä kehitysvaiheessa yhtiö tällä hetkellä on. Tavoitteena ei ole välttämättä ostaa halpaa — yhtiöstä voi maksaa korkeammankin hinnan jos tulevaisuuden kasvunäkymät ovat riittävän vahvat. Olennaista on ettei yhtiö ole yliarvostettu suhteessa tilanteeseen kokonaisuutena. Arvostus on läpileikkaava teema johon palataan analyysin myöhemmissäkin vaiheissa.
+Arvostuksessa arvioidaan kuinka paljon sijoittaja maksaa suhteessa yhtiön tulevaisuuden näkymiin ja siihen missä kehitysvaiheessa yhtiö tällä hetkellä on. Tavoitteena ei ole välttämättä ostaa halpaa — yhtiöstä voi maksaa korkeammankin hinnan jos kasvunäkymät ovat riittävän vahvat. Olennaista on ettei yhtiö ole yliarvostettu suhteessa tilanteeseen kokonaisuutena.
 
 Vaihe 2 — Miksi hinta on alempi kuin pitäisi
-Etsi syy miksi yhtiö on tällä hetkellä aliarvostettu. Syy on yksi tai useampi seuraavista:
-- Markkinapelko: jokin laaja ulkoinen tekijä (kriisi, sota, taantuma, regulaatio) on painanut kurssia alas vaikka liiketoiminta jatkuu normaalisti. Arvioi vaikuttaako ulkoinen paine oikeasti liiketoimintaan pitkällä aikavälillä — jos ei, hinta on perusteettomasti alhaalla.
-- Hinnoittelematon muutos: jokin tuleva tai käynnissä oleva tekijä parantaa yhtiön asemaa mutta markkina ei ole reagoinut täysimääräisesti. Uusi tuote, toimialan murros, hyödyttävä regulaatio, kilpailijan heikkeneminen tai muu rakenteellinen muutos joka näkyy tuloksessa vasta myöhemmin.
-- Näkymättömyys: yhtiöllä ei ole analyytikkoseurantaa, mediahuomiota tai institutionaalisia sijoittajia. Liiketoiminta on kunnossa mutta markkina ei ole löytänyt sitä vielä (erityisen yleistä pienissä ja keskisuurissa yhtiöissä).
+Etsi syy miksi yhtiö on tällä hetkellä aliarvostettu:
+- Markkinapelko: laaja ulkoinen tekijä (kriisi, sota, taantuma) painaa kurssia vaikka liiketoiminta jatkuu normaalisti.
+- Hinnoittelematon muutos: jokin tuleva tai käynnissä oleva tekijä parantaa yhtiön asemaa mutta markkina ei ole reagoinut täysimääräisesti (uusi tuote, murros).
+- Näkymättömyys: yhtiöllä ei ole analyytikkoseurantaa tai mediahuomiota, mutta liiketoiminta on kunnossa.
 
 Vaihe 3 — Tuote ja Kilpailuetu
-Botti arvioi onko tuote oikeasti poikkeuksellinen vai ainoastaan hyvä. Ero on merkittävä — hyvä tuote kilpailluilla markkinoilla tuottaa kohtuullisen bisneksen, poikkeuksellinen tuote uudessa markkinassa voi tuottaa kymmenkertaisen kasvun.
-- Markkina ensin: Onko markkina vasta syntymässä, nopeasti kasvava vai jo kypsä. Paras tilanne on varhainen tai nopeasti kasvava markkina jossa yhtiö kasvaa markkinan mukana ilman kovaa taistelua osuuksista. Onko yhtiö muutoksen tekijä vai uhri? Murroksen tekijällä on ajan henki puolellaan.
-- Tuotteen laatu: Onko tuote selvästi parempi kuin vaihtoehdot vai ainoastaan marginaalisesti erilainen? Onko se välttämätön vai mukavuus? Onko yhtiöllä hinnoitteluvoimaa?
-- Adoptiovauhti ja asiakaskäyttäytyminen: Leviääkö tuote orgaanisesti? Tuleeko kasvu uusilta asiakkailta ja lisäostoista? Jos NRR (Net Revenue Retention) on yli 110%, tuote on oikeasti arvokas.
-- Este kopioinnille (Kilpailuetu): Etsi vähintään yksi asia jota on vaikea kopioida — verkostovaikutus, switching cost, brändi, patentit, data joka paranee käytön myötä, tai vuosien kehitystyö jota ei pysty ostamaan rahalla lyhyessä ajassa.
+- Markkina ensin: Onko markkina vasta syntymässä, nopeasti kasvava vai jo kypsä. Onko yhtiö muutoksen tekijä vai uhri?
+- Tuotteen laatu: Onko tuote selvästi parempi? Onko se välttämätön vai mukavuus? Onko yhtiöllä hinnoitteluvoimaa?
+- Adoptiovauhti: Leviääkö tuote orgaanisesti ilman massiivista budjettia? NRR (Net Revenue Retention) yli 110% on vahva merkki.
+- Este kopioinnille (Kilpailuetu): Etsi vähintään yksi asia jota on vaikea kopioida — verkostovaikutus, switching cost, brändi, patentit, data.
+
+Vaihe 4 — Velka ja kassavirta
+- Velka on kontekstikysymys. Vertaile toimialaan. Kehitysvaiheessa oleva yhtiö voi polttaa käteistä ja kantaa velkaa, JOS raha menee kasvuun eikä tappioiden paikkaamiseen.
+- Kassa ja likviditeetti: Kehitysvaiheessa vähintään 18-24 kk runway on terve.
+- Kassavirta: Varhaisessa vaiheessa kysymys on siitä onko selkeä polku positiiviseen. Kypsällä yhtiöllä vapaan kassavirran pitää olla vahva ja kasvava.
+- Tase ja varoitusmerkit: Piilevä arvo (kiinteistöt, patentit) on plussaa. Toistuvat osakeannit tai taseen heikkeneminen ilman selkeää syytä on varoitusmerkki.
+
+Vaihe 5 — Johto
+- Tausta ja kokemus: Onko näyttöä rakennetusta liiketoiminnasta?
+- Omistus ja sitoutuminen: Insider-ostot omalla rahalla vahvin signaali. Systemaattinen myyminen positiivisten näkymien aikaan on varoitusmerkki.
+- Rehellisyys ja kulttuuri: Puhuuko johto avoimesti epäonnistumisista. Korkea vaihtuvuus johtotasolla on varoitusmerkki.
+- Omien osakkeiden osto: Kypsällä yhtiöllä plussaa, kehitysvaiheessa ei odoteta.
+
+AIKAJÄNNE JA KATSE (KRIITTINEN SÄÄNTÖ):
+- Strategia on rakennettu VÄHINTÄÄN 3 VUODEN aikajänteelle. Älä arvaile lyhyen aikavälin liikkeitä tai kvartaalituloksia.
+- Kaiken analyysin pitää perustua nähtävissä oleviin, tietoisiin asioihin — ei arvauksiin.
+- Pieni tilapäinen vastoinkäyminen ei ole este jos liiketoiminta on kunnossa pitkällä tähtäimellä. Iso rakenteellinen ongelma on este vaikka seuraava kvartaali näyttäisi hyvältä.
 
 KIRJOITUSTYYLI:
-- AMMATTIMAINEN & TÖKKIVÄ: Lyhyitä, tylyjä ja selkeitä lauseita. Fakta kerrallaan.
-- ELI5: Selitä monimutkaiset asiat yksinkertaisesti.
-- DATA-LÄHTÖINEN: Jos data vahvistaa kilpailuedun tai aliarvostuksen, mainitse se.
+- AMMATTIMAINEN & TÖKKIVÄ: Lyhyitä, tylyjä ja selkeitä lauseita.
+- DATA-LÄHTÖINEN: Perustele kovat väitteet luvuilla tai tiedolla.
 
 JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
 [
@@ -46,16 +61,17 @@ JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
     "tickers": "TICKER",
     "summary": "PIKAKUVAUS: Mitä yritys tekee.",
     "global_context": "VAIHE 1: Arvostuksen perusteet.",
+    "reasoning": "VAIHE 2 & AIKAJÄNNE: Miksi hinta on alempi kuin pitäisi. Arvioi 3 vuoden tähtäimellä.",
     "competitive_landscape": "VAIHE 3: Tuote, markkina ja kilpailuetu.",
-    "reasoning": "VAIHE 2 & YHTEENVETO: Miksi hinta on nyt alempi kuin pitäisi (Markkinapelko, Hinnoittelematon muutos, tai Näkymättömyys) ja miksi tämä on ostopaikka.",
-    "metrics_explanation": "NUMEROT: Keskeiset luvut (FCF, marginaalit) jotka tukevat strategiaa.",
+    "metrics_explanation": "VAIHE 4: Velka, kassavirta, runway ja tase.",
+    "company_history": "VAIHE 5: Johto, sisäpiiri ja omistus.",
     "recommendation": "AINA 'OSTA' TAI 'TARKKAILE'",
     "confidence": "Yhteensopivuus strategiaan prosenteissa (esim. '100' tai '90')",
-    "timeframe": "1-3 vuotta",
-    "risks": "Keskeisimmät riskit (esim. arvostus tai kopioitavuus)."
+    "timeframe": "3-5 vuotta",
+    "risks": "Keskeisimmät riskit (rakenteelliset, ei kvartaalitason)."
   }
 ]
-TÄRKEÄÄ: Älä koskaan suosittele 'MYY'. Jos osake ei aidosti sovi tähän 3-vaiheiseen strategiaan, jätä se pois tuloksista.
+TÄRKEÄÄ: Jos osake ei ole todellinen ostopaikka tämän 5-vaiheisen strategian valossa pitkällä tähtäimellä, jätä se pois tuloksista.
 """
 
 
@@ -157,9 +173,8 @@ def generate_scenarios(news_text: str, movers_text: str, client=None, watchlist_
         return []
 
 def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> List[str]:
-    print(f"  [STRATEGIASUODATIN] Analysoidaan {len(research_data)} osaketta uuden laadullisen strategian läpi...")
+    print(f"  [STRATEGIASUODATIN] Analysoidaan {len(research_data)} osaketta 5-vaiheisen strategian läpi...")
     
-    # Tiivistetään data jotta se mahtuu promptiin
     data_summary = ""
     for d in research_data:
         ticker = d.get('ticker')
@@ -168,10 +183,12 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
         insider = "Kyllä" if d.get('insider') else "Ei tietoa"
         data_summary += f"- {ticker}: Price ${cons.get('current_price')}, Target ${cons.get('target_mean')}, FCF ${fins.get('free_cash_flow')}, Insider: {insider}\n"
 
-    prompt = f"""TEHTÄVÄ: Käy läpi nämä osakkeet tiukan 3-vaiheisen sijoitusstrategiamme läpi:
-    1. Arvostus (Kasvunäkymät vs. hinta)
+    prompt = f"""TEHTÄVÄ: Käy läpi nämä osakkeet tiukan 5-vaiheisen sijoitusstrategiamme läpi (Aikajänne vähintään 3 vuotta):
+    1. Arvostus
     2. Aliarvostuksen syy (Markkinapelko, Hinnoittelematon muutos, Näkymättömyys)
     3. Tuote & Kilpailuetu (Markkinaosuus, Kopioinnin esteet, NRR)
+    4. Velka ja kassavirta (Runway, Tase)
+    5. Johto (Omistus, Sisäpiiriostot)
     
     TUTKIMUSDATA:
     {data_summary}
@@ -179,12 +196,11 @@ def filter_watchlist_with_sonnet(research_data: List[dict], news_text: str) -> L
     UUTISET:
     {news_text[:2000]}
     
-    Poimi listalta KORKEINTAAN 5-7 osaketta, jotka SOPIVAT TÄYDELLISESTI TÄHÄN STRATEGIAAN. Älä anna pisteitä. Valitse vain helmet.
+    Poimi listalta KORKEINTAAN 5-7 osaketta, jotka SOPIVAT TÄYDELLISESTI TÄHÄN STRATEGIAAN. Älä anna pisteitä. Valitse vain helmet pitkään salkkuun.
     
-    VASTAA VAIN JSON-TAULUKKONA (pelkät osaketunnukset, jotka valitsit):
+    VASTAA VAIN JSON-TAULUKKONA:
     [
-      {{"ticker": "XYZ", "reason": "Lyhyt lause miksi tämä sopii strategiaan täydellisesti"}},
-      ...
+      {{"ticker": "XYZ", "reason": "Lyhyt lause miksi sopii 5-vaiheiseen strategiaan täydellisesti"}}
     ]
     """
     
@@ -210,7 +226,7 @@ def quick_news_scan(news_text: str, client=None) -> List[str]:
         return []
 
 def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> Optional[dict]:
-    """Suorittaa syvän 3-vaiheisen analyysin käyttäen kerättyä tutkimusdataa."""
+    """Suorittaa syvän 5-vaiheisen analyysin käyttäen kerättyä tutkimusdataa."""
     print(f"  [TRATEGO ANALYYSI] {ticker}...")
     
     # Muotoillaan tutkimusdata helposti luettavaksi
@@ -226,7 +242,7 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
     SISÄPIIRI (Viimeisimmät): {json.dumps(insider, ensure_ascii=False)}
     """
     
-    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN UUTTA 3-VAIHEISTA STRATEGIAA:
+    prompt = f"""ANALYSOI TÄMÄ YRITYS KÄYTTÄEN UUTTA 5-VAIHEISTA STRATEGIAA:
     Yritys: {ticker}
     
     TUTKIMUSDATA:
@@ -235,7 +251,7 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
     UUTISET:
     {news_text[:3000]}
     
-    Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele Vaihe 1, Vaihe 2 ja Vaihe 3 datalla.
+    Noudata SYSTEM_PROMPT:n ohjeita täsmälleen. Perustele kaikki 5 vaihetta ja 3 vuoden aikajänne datalla.
     """
     
     content = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
@@ -259,20 +275,23 @@ def analyze_single_stock(ticker: str, research_bundle: dict, news_text: str) -> 
 def verify_analysis_quality(ticker: str, analysis: dict, research_bundle: dict) -> bool:
     print(f"  [QUALITY GUARD] Tarkistetaan {ticker}...")
     
-    prompt = f"""Olet laadunvalvoja. Tarkista onko tämä analyysi FAKTAPOHJAINEN ja noudattaako se uutta 3-vaiheista strategiaa.
+    prompt = f"""Olet laadunvalvoja. Tarkista onko tämä analyysi FAKTAPOHJAINEN ja noudattaako se 5-vaiheista strategiaa ja 3 vuoden aikajännettä.
     
     ANALYYSIN TIIVISTELMÄ:
     Suositus: {analysis.get('recommendation')}
-    Perustelu (ote): {analysis.get('reasoning')[:500]}
-    Kilpailuetu (ote): {analysis.get('competitive_landscape')[:500]}
+    Perustelu (Vaihe 2): {analysis.get('reasoning')[:300]}
+    Kilpailuetu (Vaihe 3): {analysis.get('competitive_landscape')[:300]}
+    Talous (Vaihe 4): {analysis.get('metrics_explanation')[:300]}
+    Johto (Vaihe 5): {analysis.get('company_history')[:300]}
     
     TODELLISET FAKTAT (Tutkimusdata):
     {json.dumps(research_bundle, ensure_ascii=False)[:2000]}
     
     TARKISTUSLISTA:
-    1. Onko analyysissa tunnistettu aito syy aliarvostukselle (Vaihe 2)?
-    2. Onko kilpailuetu oikeasti vahva ja olemassa (Vaihe 3)?
-    3. Onko analyysi ristiriidassa kylmän datan kanssa?
+    1. Perustuuko analyysi nähtävissä oleviin asioihin eikä lyhyen aikavälin arvailuun? (Min. 3 vuoden horisontti)
+    2. Onko kilpailuetu ja aliarvostuksen syy looginen?
+    3. Onko suhtautuminen velkaan/kassavirtaan yhtiön kehitysvaiheeseen nähden oikein? (Varhaisen vaiheen tappiot ok, jos raha menee kasvuun)
+    4. Onko analyysi ristiriidassa ankaran datan kanssa?
     
     VASTAA VAIN JSON: {{"status": "PASS"/"FAIL", "reason": "Miksi?"}}"""
     
