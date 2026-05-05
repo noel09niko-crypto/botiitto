@@ -279,11 +279,17 @@ MUISTA:
     content = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
     
     try:
-        start_idx = content.find("[")
-        if start_idx == -1: start_idx = content.find("{")
-        end_idx = content.rfind("]") if content.rfind("]") != -1 else content.rfind("}")
+        start_idx_array = content.find("[")
+        start_idx_obj = content.find("{")
         
-        if start_idx != -1 and end_idx != -1:
+        if start_idx_array != -1 and (start_idx_obj == -1 or start_idx_array < start_idx_obj):
+            start_idx = start_idx_array
+            end_idx = content.rfind("]")
+        else:
+            start_idx = start_idx_obj
+            end_idx = content.rfind("}")
+            
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
             content_clean = content[start_idx:end_idx+1]
             data = json.loads(content_clean)
             res = data[0] if isinstance(data, list) else data
