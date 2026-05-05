@@ -184,8 +184,8 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
     MARKKINALIIKKEET:
     {movers_text[:1000]}
     
-    Poimi KORKEINTAAN 7 osaketta jotka sopivat strategiaan. Jos uutisia ei ole, se EI ole syy hylätä — arvioi talouslukujen, tuotteiden ja yrityksen kuvauksen perusteella.
-    
+    Poimi KORKEINTAAN 7 osaketta jotka sopivat strategiaan. 
+    TÄRKEÄÄ JOHDONMUKAISUUDESTA: Älä hylkää hyvää yhtiötä vain siksi, ettei siitä ole tuoreita uutisia. Uutisten puuttuminen EI SAA vaikuttaa negatiivisesti. Perusta valintasi pitkän aikavälin lukuihin, kilpailuetuun ja liiketoiminnan laatuun. Pysy johdonmukaisena valinnoissasi.
     VASTAA VAIN JSON:
     [
       {{"ticker": "XYZ", "reason": "Lyhyt syy miksi sopii strategiaan"}}
