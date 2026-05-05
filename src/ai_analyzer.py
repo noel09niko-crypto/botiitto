@@ -32,10 +32,11 @@ AIKAJÄNNE: Vähintään 3 vuotta. Ei lyhyen aikavälin arvailua.
 
 TIEDONHAKU: Jos uutisia ei ole, se EI ole syy hylätä. Arvioi taloustietojen, tuotteiden ja kuvauksen perusteella.
 
-KIRJOITUSTYYLI (TÄRKEÄÄ):
+KIRJOITUSTYYLI (TÄRKEÄÄ — RIKO NÄITÄ SÄÄNTÖJÄ JA ANALYYSI HYLÄTÄÄN):
 - Kirjoita kuin selittäisit kaverille joka ymmärtää sijoittamisesta perusasiat.
-- ÄLÄ käytä raakoja lukuja tai tunnuslukuja (ei P/E 34.5, ei FCF $2.3B). Selitä asiat sanoin: "yhtiö on kannattava ja kassavirta kasvaa vuosi vuodelta" eikä "FCF $2.3B, P/E 34.5".
-- ÄLÄ koskaan sano "Vaihe 1", "Vaihe 2" tai numeroi vaiheita. Käytä VAIN näitä otsikoita.
+- ÄLÄ käytä raakoja lukuja tai tunnuslukuja (ei P/E 34.5, ei FCF $2.3B, ei prosentteja). Selitä asiat sanoin.
+- ÄLÄ KOSKAAN kirjoita sanaa "Vaihe", "VAIHE", "vaihe", "Vaihe 1", "Vaihe 2" tai mitään vaiheen numerointia. KIELLETTY.
+- ÄLÄ KOSKAAN kirjoita osion otsikkoa tekstin sisään (ei "ARVOSTUS:", ei "MIKSI HINTA ON ALEMPANA:", ei "TUOTE:"). Aloita suoraan asiasta.
 - Teksti pitää olla vakuuttavaa ja ammattimaista mutta helppo ymmärtää.
 - Älä toista samaa asiaa eri kohdissa.
 - Jokaisessa osiossa käy läpi KAIKKI kyseisen osion teemat perusteellisesti.
@@ -46,11 +47,11 @@ JSON-RAKENNE (VASTAA VAIN TÄLLÄ):
     "title": "YHTIÖN NIMI",
     "tickers": "TICKER",
     "summary": "Yksi selkeä lause: mitä yhtiö tekee ja miksi se on kiinnostava sijoituskohde.",
-    "global_context": "ARVOSTUS: Kuvaile yhtiön arvostustaso suhteessa tulevaisuuden näkymiin ja kehitysvaiheeseen. Onko hinta kohtuullinen siihen nähden mitä yhtiö voi saavuttaa?",
-    "reasoning": "MIKSI HINTA ON ALEMPANA KUIN PITÄISI: Selitä aliarvostuksen syy (markkinapelko / hinnoittelematon muutos / näkymättömyys). Kuvaile myös yhtiön kilpailuetu — mikä tekee siitä vaikean kopioida.",
-    "competitive_landscape": "TUOTE: Kerro minkälaisella markkinalla yhtiö toimii, onko yhtiö muutoksen tekijä vai uhri, onko tuote selvästi parempi kuin kilpailijat, miten nopeasti se leviää ja voiko sitä kopioida.",
-    "metrics_explanation": "VELKA JA KASSAVIRTA: Kuvaile yhtiön taloudellinen tilanne — onko velka hallinnassa, miltä kassavirta näyttää, riittääkö kassa kasvun rahoittamiseen.",
-    "company_history": "JOHTO: Kerro johdon taustasta, omistavatko he itse yhtiötä, ovatko he rehellisiä ja minkälainen kulttuuri yhtiössä on.",
+    "global_context": "Kuvaile yhtiön arvostustaso suhteessa tulevaisuuden näkymiin ja kehitysvaiheeseen. Onko hinta kohtuullinen? Aloita suoraan asiasta, ei otsikkoa.",
+    "reasoning": "Selitä aliarvostuksen syy (markkinapelko / hinnoittelematon muutos / näkymättömyys). Kuvaile myös kilpailuetu. Aloita suoraan asiasta, ei otsikkoa.",
+    "competitive_landscape": "Kerro minkälaisella markkinalla yhtiö toimii, onko se muutoksen tekijä vai uhri, onko tuote parempi kuin kilpailijat, leviääkö se ja voiko kopioida. Aloita suoraan asiasta, ei otsikkoa.",
+    "metrics_explanation": "Kuvaile yhtiön taloudellinen tilanne — onko velka hallinnassa, miltä kassavirta näyttää, riittääkö kassa. Aloita suoraan asiasta, ei otsikkoa.",
+    "company_history": "Kerro johdon taustasta, omistuksesta, rehellisyydestä ja kulttuurista. Aloita suoraan asiasta, ei otsikkoa.",
     "recommendation": "OSTA tai TARKKAILE",
     "confidence": "Prosenttiluku 0-100",
     "timeframe": "3-5 vuotta",
