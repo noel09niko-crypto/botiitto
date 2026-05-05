@@ -216,13 +216,31 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
     """
     
     content = _get_completion(prompt, system_msg="Olet ammattimainen Research Agent. Etsi VAIN nousevia osakkeita.", max_tokens=4000)
+    print(f"  [FILTER RAW RESPONSE] ({len(content)} chars): {content[:500]}")
+    
+    if not content or len(content) < 5:
+        print("  [FILTER] Tyhjä vastaus Claudelta!")
+        return []
+    
     try:
+        # Yritä parsiminen useilla tavoilla
+        if "```json" in content:
+            content = content.split("```json")[1].split("```")[0].strip()
+        elif "```" in content:
+            content = content.split("```")[1].split("```")[0].strip()
+        
         if "[" in content:
             content = content[content.find("["):content.rfind("]")+1]
+        elif "{" in content:
+            content = "[" + content[content.find("{"):content.rfind("}")+1] + "]"
+        
         data = json.loads(content)
         selected = [str(item['ticker']).upper().strip() for item in data if 'ticker' in item]
+        print(f"  [FILTER RESULT] Valitut: {selected}")
         return selected
-    except:
+    except Exception as e:
+        print(f"  [FILTER JSON ERROR] {e}")
+        print(f"  [FILTER CONTENT] {content[:300]}")
         return []
 
 def quick_news_scan(news_text: str, client=None) -> List[str]:
