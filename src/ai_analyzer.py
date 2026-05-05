@@ -186,11 +186,10 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
     {movers_text[:1000]}
     
     KÄYTTÄYTYMISSÄÄNNÖT (TIUKAT):
-    1. ARVIOI JOKAINEN YHTIÖ MATEMAATTISEN KYLMÄSTI fundamentein ja pitkän aikavälin strategian mukaan.
-    2. PISTEYTÄ KAIKKI YHTIÖT objektiivisesti (esim. 0-100) aliarvostuksen, kilpailuedun ja laadun perusteella.
-    3. Valitse EHDOTTOMASTI vain listan 7 KORKEIMMAT pisteet saanutta osaketta.
-    4. Uutisten puuttuminen ei saa missään nimessä alentaa yhtiön pisteitä. Yhtiön arvo ei katoa, vaikka uutisissa olisi hiljaista.
-    5. Järjestelmä on ammattimainen: täsmälleen saman datan pitää tuottaa sama top 7 -lista joka kerta. Älä arvo yhtiöitä satunnaisesti.
+    1. Arvioi osakkeita luovasti ja analyyttisesti 5-vaiheisen strategian kautta. Etsi piilevää arvoa, hinnoittelemattomia muutoksia ja markkinoiden ylilyöntejä (pelkoa).
+    2. Älä suosi pelkästään isoja tai turvallisia yhtiöitä. Etsi todellista nousuvaraa (upside).
+    3. Pysy ehdottoman johdonmukaisena: jos yhtiön tarina on erinomainen eilen, se on sitä myös tänään. Uutisten puuttuminen ei saa missään nimessä vähentää yhtiön arvoa.
+    4. Valitse 7 yhtiötä, jotka parhaiten täyttävät laadukkaan ja aliarvostetun liiketoiminnan kriteerit. Pysy linjassasi.
 
     VASTAA VAIN JSON:
     [
@@ -198,7 +197,7 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
     ]
     """
     
-    content = _get_completion(prompt, system_msg="Olet objektiivinen ja äärimmäisen looginen sijoitusalgoritmi. Etsi VAIN nousevia osakkeita ja pisteytä ne kylmästi.", max_tokens=4000, temperature=0.0)
+    content = _get_completion(prompt, system_msg="Olet näkemyksellinen ja terävä sijoitusanalyytikko. Etsi markkinoilta todellisia helmiä ja aliarvostuksia johdonmukaisesti.", max_tokens=4000, temperature=0.3)
     print(f"  [FILTER RAW RESPONSE] ({len(content)} chars): {content[:500]}")
     
     if not content or len(content) < 5:
