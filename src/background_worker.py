@@ -40,6 +40,15 @@ def _release_lock():
         except:
             pass
 
+def _keep_alive_pinger():
+    import urllib.request
+    while _WORKER_RUNNING:
+        try:
+            urllib.request.urlopen("https://investing-bot-ikgq.onrender.com/", timeout=10)
+        except Exception:
+            pass
+        time.sleep(180) # Ping every 3 minutes
+
 def run_scenario_generation(force=False):
     global _WORKER_RUNNING, WORKER_STATE
     
@@ -48,6 +57,8 @@ def run_scenario_generation(force=False):
         return
 
     _WORKER_RUNNING = True
+    threading.Thread(target=_keep_alive_pinger, daemon=True).start()
+    
     WORKER_STATE["status"] = "KÄYNNISSÄ"
     WORKER_STATE["current_ticker"] = "Alustetaan..."
     print(f"[{datetime.now()}] Starting scan (force={force})")
