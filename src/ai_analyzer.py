@@ -74,7 +74,7 @@ def get_anthropic_client():
     return anthropic.Anthropic(api_key=key)
 
 
-def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-sonnet-4-5-20250929") -> str:
+def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192, model: str = "claude-sonnet-4-5-20250929", temperature: float = 0.1) -> str:
     """Yleiskäyttöinen apufunktio AI-kyselyille."""
     anth_client = get_anthropic_client()
     if anth_client:
@@ -82,6 +82,7 @@ def _get_completion(prompt: str, system_msg: str = None, max_tokens: int = 8192,
             resp = anth_client.messages.create(
                 model=model,
                 max_tokens=max_tokens,
+                temperature=temperature,
                 system=system_msg if system_msg else "",
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -184,15 +185,20 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
     MARKKINALIIKKEET:
     {movers_text[:1000]}
     
-    Poimi KORKEINTAAN 7 osaketta jotka sopivat strategiaan. 
-    TÄRKEÄÄ JOHDONMUKAISUUDESTA: Älä hylkää hyvää yhtiötä vain siksi, ettei siitä ole tuoreita uutisia. Uutisten puuttuminen EI SAA vaikuttaa negatiivisesti. Perusta valintasi pitkän aikavälin lukuihin, kilpailuetuun ja liiketoiminnan laatuun. Pysy johdonmukaisena valinnoissasi.
+    KÄYTTÄYTYMISSÄÄNNÖT (TIUKAT):
+    1. ARVIOI JOKAINEN YHTIÖ MATEMAATTISEN KYLMÄSTI fundamentein ja pitkän aikavälin strategian mukaan.
+    2. PISTEYTÄ KAIKKI YHTIÖT objektiivisesti (esim. 0-100) aliarvostuksen, kilpailuedun ja laadun perusteella.
+    3. Valitse EHDOTTOMASTI vain listan 7 KORKEIMMAT pisteet saanutta osaketta.
+    4. Uutisten puuttuminen ei saa missään nimessä alentaa yhtiön pisteitä. Yhtiön arvo ei katoa, vaikka uutisissa olisi hiljaista.
+    5. Järjestelmä on ammattimainen: täsmälleen saman datan pitää tuottaa sama top 7 -lista joka kerta. Älä arvo yhtiöitä satunnaisesti.
+
     VASTAA VAIN JSON:
     [
       {{"ticker": "XYZ", "reason": "Lyhyt syy miksi sopii strategiaan"}}
     ]
     """
     
-    content = _get_completion(prompt, system_msg="Olet ammattimainen Research Agent. Etsi VAIN nousevia osakkeita.", max_tokens=4000)
+    content = _get_completion(prompt, system_msg="Olet objektiivinen ja äärimmäisen looginen sijoitusalgoritmi. Etsi VAIN nousevia osakkeita ja pisteytä ne kylmästi.", max_tokens=4000, temperature=0.0)
     print(f"  [FILTER RAW RESPONSE] ({len(content)} chars): {content[:500]}")
     
     if not content or len(content) < 5:
