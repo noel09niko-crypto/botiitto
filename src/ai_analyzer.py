@@ -373,19 +373,27 @@ def validate_scenario(scenario: dict, latest_news: str, world_news_text: str = "
 
 def rewrite_scenario(scen: dict, client) -> Optional[dict]:
     """Uudelleenkirjoittaa olemassa olevan analyysin."""
-    prompt = f"""UUDELLEENKIRJOITA TÄMÄ ANALYYSI käyttäen 5-vaiheista strategiaa.
-    
-    ALKUPERÄINEN:
-    Otsikko: {scen.get('title')}
-    Ticker: {scen.get('tickers')}
-    Yhteenveto: {scen.get('summary')}
-    Kilpailutilanne: {scen.get('competitive_landscape')}
-    Konteksti: {scen.get('global_context')}
-    Perustelu: {scen.get('reasoning')}
-    Numerot: {scen.get('metrics_explanation')}
-    
-    Palauta samassa JSON-muodossa kuin SYSTEM_PROMPT ohjeistaa.
-    """
+    prompt = f"""UUDELLEENKIRJOITA TÄMÄ ANALYYSI uudella kirjoitustyylillä.
+
+SÄÄNNÖT:
+- ÄLÄ KOSKAAN kirjoita "Vaihe 1", "Vaihe 2", "VAIHE 1" tai numeroi vaiheita. Aloita suoraan asiasta.
+- ÄLÄ käytä raakoja lukuja (ei P/E 34.5, ei FCF $2.3B). Selitä kaikki sanallisesti.
+- Kirjoita kuin selittäisit kaverille joka ymmärtää sijoittamisen perusasiat.
+- Vakuuttava, ammattimainen mutta helppo ymmärtää.
+- Käy läpi kaikki teemat perusteellisesti.
+
+ALKUPERÄINEN DATA:
+Otsikko: {scen.get('title')}
+Ticker: {scen.get('tickers')}
+Yhteenveto: {scen.get('summary')}
+Arvostus: {scen.get('global_context')}
+Miksi hinta alempana: {scen.get('reasoning')}
+Tuote: {scen.get('competitive_landscape')}
+Velka ja kassavirta: {scen.get('metrics_explanation')}
+Johto: {scen.get('company_history')}
+
+Palauta samassa JSON-muodossa kuin SYSTEM_PROMPT ohjeistaa.
+"""
     
     try:
         resp = _get_completion(prompt, system_msg=SYSTEM_PROMPT)
