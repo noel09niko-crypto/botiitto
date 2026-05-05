@@ -188,7 +188,7 @@ def filter_watchlist_with_sonnet(research_bundles: List[dict], news_text: str, m
         fins = d.get('financials', {})
         biz = d.get('business_summary', '')[:150]
         insider = "Kyllä" if d.get('insider') else "Ei tietoa"
-        news_titles = ", ".join([n.get('title', '') for n in d.get('news', [])[:3]])
+        news_titles = ", ".join([n.get('title') or '' for n in d.get('news', [])[:3]])
         data_summary += f"- {ticker}: Price ${cons.get('current_price')}, Target ${cons.get('target_mean')}, Rec: {cons.get('recommendation')}, FCF ${fins.get('free_cash_flow')}, D/E: {fins.get('debt_to_equity')}, Insider: {insider}, Kuvaus: {biz}, Uutiset: {news_titles}\n"
 
     prompt = f"""TEHTÄVÄ: Käy läpi nämä osakkeet 5-vaiheisen strategian läpi. Etsi VAIN nousevia osakkeita — aliarvostettuja tai sellaisia joissa on hinnoittelematon muutos tai katalyytti jonka markkina ei ole vielä huomioinut.
