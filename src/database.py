@@ -294,6 +294,41 @@ def toggle_favorite(scenario_id):
         conn.commit()
     conn.close()
 
+def update_scenario(scenario_id, update_data: dict):
+    """Päivittää olemassa olevan skenaarion kenttiä — EI poista, vaan muokkaa sopivaksi nykytilanteeseen."""
+    from datetime import datetime
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    p = _placeholder()
+    
+    allowed_fields = ['reasoning', 'global_context', 'metrics_explanation', 'company_history', 
+                      'competitive_landscape', 'summary', 'risks', 'confidence']
+    
+    set_parts = []
+    values = []
+    for field, value in update_data.items():
+        if field in allowed_fields:
+            set_parts.append(f"{field} = {p}")
+            if isinstance(value, (list, dict)):
+                import json
+                values.append(json.dumps(value, ensure_ascii=False))
+            else:
+                values.append(value)
+    
+    if not set_parts:
+        conn.close()
+        return
+    
+    # Merkitään päivitetyksi
+    set_parts.append(f"is_updated = TRUE")
+    values.append(scenario_id)
+    
+    query = f"UPDATE scenarios SET {', '.join(set_parts)} WHERE id = {p}"
+    cursor.execute(query, tuple(values))
+    conn.commit()
+    conn.close()
+    print(f"  [DB-UPDATE] Scenario {scenario_id} päivitetty: {list(update_data.keys())}")
+
 def deactivate_scenario(scenario_id, reason: str = "Ei perustelua kirjattu"):
     """Merkitsee analyysin passiiviseksi ja tallentaa AINA syyn lokiin."""
     from datetime import datetime

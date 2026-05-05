@@ -3,6 +3,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import List, Dict
 
+# Yrityskohtaiset uutislähteet
 RSS_FEEDS = {
     "Reuters Business": "https://feeds.reuters.com/reuters/businessNews",
     "Reuters Finance": "https://feeds.reuters.com/reuters/financialsNews",
@@ -11,6 +12,18 @@ RSS_FEEDS = {
     "MarketWatch": "https://feeds.marketwatch.com/marketwatch/topstories/",
     "Investing.com": "https://www.investing.com/rss/news.rss",
     "Seeking Alpha": "https://seekingalpha.com/market_currents.xml",
+}
+
+# Maailmantapahtumia, kriisejä, geopolitiikkaa, makrotaloutta
+WORLD_NEWS_FEEDS = {
+    "Reuters World": "https://feeds.reuters.com/Reuters/worldNews",
+    "Reuters Politics": "https://feeds.reuters.com/Reuters/PoliticsNews",
+    "BBC World": "http://feeds.bbci.co.uk/news/world/rss.xml",
+    "BBC Business": "http://feeds.bbci.co.uk/news/business/rss.xml",
+    "Al Jazeera": "https://www.aljazeera.com/xml/rss/all.xml",
+    "NPR World": "https://feeds.npr.org/1004/rss.xml",
+    "AP Top News": "https://rsshub.app/apnews/topics/apf-topnews",
+    "Reuters Tech": "https://feeds.reuters.com/reuters/technologyNews",
 }
 
 HEADERS = {
@@ -54,6 +67,7 @@ def fetch_feed(name: str, url: str, max_age_hours: int = 24) -> List[Dict]:
 
 
 def fetch_all_news(max_age_hours: int = 24) -> List[Dict]:
+    """Hakee sekä yritysuutiset ETTÄ maailmantapahtumat."""
     all_articles = []
     for name, url in RSS_FEEDS.items():
         articles = fetch_feed(name, url, max_age_hours)
@@ -63,9 +77,20 @@ def fetch_all_news(max_age_hours: int = 24) -> List[Dict]:
     return all_articles
 
 
+def fetch_world_news(max_age_hours: int = 48) -> List[Dict]:
+    """Hakee maailmantapahtumat, kriisit, geopolitiikka, makrotalous — laaja kuva."""
+    all_articles = []
+    for name, url in WORLD_NEWS_FEEDS.items():
+        articles = fetch_feed(name, url, max_age_hours)
+        all_articles.extend(articles)
+
+    all_articles.sort(key=lambda x: x["published"], reverse=True)
+    return all_articles
+
+
 def format_news_for_prompt(articles: List[Dict], max_articles: int = 60) -> str:
     if not articles:
-        return "No recent news available."
+        return "Ei tuoreita uutisia saatavilla."
 
     lines = []
     for i, art in enumerate(articles[:max_articles], 1):
@@ -73,6 +98,21 @@ def format_news_for_prompt(articles: List[Dict], max_articles: int = 60) -> str:
             f"{i}. [{art['source']}] {art['title']}\n"
             f"   {art['summary'][:200]}\n"
             f"   Published: {art['published']}"
+        )
+
+    return "\n\n".join(lines)
+
+
+def format_world_news_for_prompt(articles: List[Dict], max_articles: int = 30) -> str:
+    """Muotoilee maailmantapahtumat AI:lle luettavaan muotoon."""
+    if not articles:
+        return "Ei maailmantapahtumia saatavilla."
+
+    lines = ["=== MAAILMANTAPAHTUMAT, KRIISIT JA GEOPOLITIIKKA ==="]
+    for i, art in enumerate(articles[:max_articles], 1):
+        lines.append(
+            f"{i}. [{art['source']}] {art['title']}\n"
+            f"   {art['summary'][:300]}"
         )
 
     return "\n\n".join(lines)
