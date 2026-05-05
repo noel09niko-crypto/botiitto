@@ -350,9 +350,14 @@ def validate_scenario(scenario: dict, latest_news: str, world_news_text: str = "
     
     SÄÄNNÖT:
     - Analyysit EIVÄT vaihdu joka päivä. Pitkä horisontti (3+ vuotta).
-    - POISTA (INVALID) vasta kun ostopaikka on ohi: osake ei enää nouse, et pysty enää perustelemaan ostoa.
-    - PÄIVITÄ (UPDATE) jos uutta tietoa on tullut, perustelu vanhentunut, mutta osake on yhä hyvä osto. Anna päivitetty teksti.
+    - POISTA (INVALID) vasta kun ostopaikka on ohi: alkuperäinen teesi on murtunut, johto sählää tai kilpailuetu menetetty.
+    - PÄIVITÄ (UPDATE) jos uutta tietoa on tullut (esim. osari tai uusi tuote), mutta osake on yhä hyvä osto.
     - PIDÄ (VALID) jos mikään ei ole muuttunut merkittävästi. Uutishiljaisuus = VALID.
+    
+    KIRJOITUSSÄÄNNÖT PÄIVITYKSIIN (TÄRKEÄÄ!):
+    - ÄLÄ KOSKAAN kirjoita "Vaihe", "VAIHE", "Vaihe 1" tms.
+    - ÄLÄ KOSKAAN lauta otsikkoa tekstin sisään (esim. "ARVOSTUS:").
+    - Älä käytä raakoja lukuja tai tunnuslukuja, selitä asiat sanoin helposti ymmärrettävästi.
     
     MAAILMANTAPAHTUMAT:
     {world_news_text[:1500]}
@@ -362,7 +367,7 @@ def validate_scenario(scenario: dict, latest_news: str, world_news_text: str = "
     
     VASTAA JSON:
     Jos VALID: {{"status": "VALID", "reason": "Lyhyt perustelu"}}
-    Jos UPDATE: {{"status": "UPDATE", "reason": "Mikä muuttui", "updated_reasoning": "Uusi Vaihe 2 teksti", "updated_global_context": "Uusi Vaihe 1 teksti", "updated_metrics": "Uusi Vaihe 4 teksti"}}
+    Jos UPDATE: {{"status": "UPDATE", "reason": "Mikä muuttui", "updated_reasoning": "Uusi selitys miksi hinta on alempana", "updated_global_context": "Uusi arvostuksen selitys", "updated_metrics": "Uusi velan ja kassavirran selitys"}}
     Jos INVALID: {{"status": "INVALID", "reason": "Miksi ostopaikka on ohi"}}"""
     content = _get_completion(prompt, max_tokens=1500)
     try:
