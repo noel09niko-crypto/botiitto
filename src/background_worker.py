@@ -124,10 +124,13 @@ def run_scenario_generation(force=False):
         movers_text = sa.format_movers_for_prompt(movers_dict)
         
         candidates = ai.filter_watchlist_with_sonnet(research_bundles, news_text, movers_text, world_news_text=world_news_text)
+        WORKER_STATE["debug_candidates"] = candidates
+        WORKER_STATE["debug_bundles_count"] = len(research_bundles)
         print(f"  [SUODATIN] {len(candidates)} osaketta läpäisi seulan: {candidates}")
         
         # === VAIHE 4: Syväanalyysi (kaikki 5 vaihetta joka osakkeelle) ===
         final_scenarios = []
+        rejected = []
         for ticker in candidates:
             WORKER_STATE["status"] = f"Vaihe 4: Syväanalyysi ({ticker})..."
             WORKER_STATE["current_ticker"] = ticker
@@ -140,6 +143,13 @@ def run_scenario_generation(force=False):
                 if ai.verify_analysis_quality(ticker, scen, bundle):
                     final_scenarios.append(scen)
                     print(f"  [HYVÄKSYTTY] {ticker}")
+                else:
+                    rejected.append(ticker)
+            else:
+                rejected.append(f"{ticker}(no-json)")
+
+        WORKER_STATE["debug_rejected"] = rejected
+        WORKER_STATE["debug_saved"] = len(final_scenarios)
 
         # === VAIHE 6: Tallennus ===
         if final_scenarios:
