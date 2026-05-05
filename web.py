@@ -225,8 +225,12 @@ def view_logs():
             "current_status": w_state.get("status"),
             "current_ticker": w_state.get("current_ticker"),
             "last_scan_timestamp": last_scan,
-            "last_error": err_text,
-            "info": "Botti käy läpi osakkeita. 3-vaiheinen syväanalyysi kestää n. 1min per osake."
+            "last_error": w_state.get("last_error", err_text),
+            "debug_bundles_count": w_state.get("debug_bundles_count", "N/A"),
+            "debug_candidates": w_state.get("debug_candidates", []),
+            "debug_rejected": w_state.get("debug_rejected", []),
+            "debug_saved": w_state.get("debug_saved", "N/A"),
+            "info": "5-vaiheinen strategia-analyysi."
         })
     except Exception as e:
         return str(e)
