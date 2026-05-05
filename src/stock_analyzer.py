@@ -206,10 +206,25 @@ def get_detailed_info(ticker: str) -> str:
 
 def get_research_bundle(ticker: str) -> Dict:
     """Hakee kattavan tutkimuspaketin yhtiöstä (Insider, FCF, Analyst consensus, News)."""
-    time.sleep(1.5)  # Estetään Yahoo Finance rate limit
+    max_retries = 2
+    for attempt in range(max_retries + 1):
+        time.sleep(3 + attempt * 2)  # 3s, 5s, 7s viive
+        try:
+            stock = yf.Ticker(ticker)
+            info = stock.info
+            if not info or info.get('trailingPegRatio') is None and info.get('currentPrice') is None:
+                if attempt < max_retries:
+                    print(f"  [RETRY] {ticker} - tyhjä data, yritys {attempt+2}/{max_retries+1}")
+                    continue
+                return {"ticker": ticker, "error": "empty data after retries"}
+            break
+        except Exception as e:
+            if "Too Many Requests" in str(e) and attempt < max_retries:
+                print(f"  [RETRY] {ticker} - rate limited, yritys {attempt+2}/{max_retries+1}")
+                continue
+            print(f"Error fetching research bundle for {ticker}: {e}")
+            return {"ticker": ticker, "error": str(e)}
     try:
-        stock = yf.Ticker(ticker)
-        info = stock.info
         
         # 1. Sisäpiiri (Insider Transactions)
         insider = []
