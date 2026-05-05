@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+import time
 from typing import List, Dict, Optional
 from datetime import datetime
 
@@ -131,6 +132,7 @@ def get_market_snapshot(tickers: List[str] = None) -> List[Dict]:
         data = get_stock_data(ticker)
         if data:
             results.append(data)
+        time.sleep(1.0)
 
     results.sort(key=lambda x: abs(x["change_pct_1d"]), reverse=True)
     return results
@@ -204,6 +206,7 @@ def get_detailed_info(ticker: str) -> str:
 
 def get_research_bundle(ticker: str) -> Dict:
     """Hakee kattavan tutkimuspaketin yhtiöstä (Insider, FCF, Analyst consensus, News)."""
+    time.sleep(1.5)  # Estetään Yahoo Finance rate limit
     try:
         stock = yf.Ticker(ticker)
         info = stock.info
