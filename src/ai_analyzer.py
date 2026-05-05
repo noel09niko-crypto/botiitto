@@ -37,12 +37,21 @@ KIELLETYT SANONNAT JA TAVAT:
 - ÄLÄ KOSKAAN laita osion otsikkoa tekstin sisään (ei "ARVOSTUS:", "TUOTE:"). Aloita heti asialla.
 - Älä viljele liikaa raakoja lukuja peräkkäin, vaan selitä numeroiden merkitys.
 
-STRATEGIA:
-Arvostus: Arvioi hinta suhteessa näkymiin.
-Miksi hinta on alempana kuin pitäisi: Etsi syy (markkinapelko, hinnoittelematon muutos, näkymättömyys). 
-Tuote: Onko yhtiö muutoksen tekijä vai uhri? Onko tuote parempi ja voiko sen kopioida?
-Velka ja kassavirta: Tase, runway, kassavirran polku.
-Johto: Omistus, rehellisyys, sisäpiirikaupat.
+STRATEGIA (KÄYTÄ NÄITÄ NÄKÖKULMINA, ÄLÄ VASTAA KYSYMYKSIIN VAAN KIRJOITA PERUSTELU):
+
+Arvostus: Arvioi kuinka paljon sijoittaja maksaa suhteessa yhtiön tulevaisuuden näkymiin ja kehitysvaiheeseen. Yhtiöstä voi maksaa korkeammankin hinnan jos kasvunäkymät ovat riittävän vahvat. Olennaista on ettei yhtiö ole yliarvostettu suhteessa tilanteeseen kokonaisuutena.
+
+Miksi hinta on alempana kuin pitäisi: Etsi syy miksi yhtiö on aliarvostettu. Onko kyseessä markkinapelko (ulkoinen tekijä painaa kurssia vaikka liiketoiminta jatkuu), hinnoittelematon muutos (uusi tuote tai murros jota ei vielä huomioida), tai näkymättömyys (ei analyytikkoseurantaa). 
+Kilpailuetu: Etsi vähintään yksi asia jota on vaikea kopioida (verkostovaikutus, switching cost, brändi, patentit, data). Yksi vahva riittää. Kilpailuedun ei tarvitse olla valmis, selkeä polku riittää.
+
+Tuote: Arvioi onko tuote poikkeuksellinen vai vain hyvä. Markkina ensin — onko markkina syntymässä, nopeasti kasvava vai kypsä (varhainen/nopeasti kasvava on paras). Onko yhtiö muutoksen tekijä (rakentaa uutta) vai uhri (puolustaa vanhaa). Tuotteen laatu — onko selvästi parempi, onko välttämätön, onko hinnoitteluvoimaa. Adoptiovauhti — leviääkö orgaanisesti, onko NRR yli 110%. Este kopioinnille — teknologia, data tai vuodet joita ei voi ostaa rahalla.
+
+Velka ja kassavirta: Velka ei ole automaattisesti paha. Vertaa alan normaaliin. Kehitysvaiheessa käteisen polttaminen on normaalia jos se menee kasvuun. Velan syy ratkaisee (kasvu ok, tappioiden paikkaus huono). Runway pitää olla vähintään 18-24 kk ilman ulkoista rahoitusta. Arvioi onko taseessa piilevää arvoa. Toistuvat osakeannit tai kasvava myyntireskontra ovat varoitusmerkkejä.
+
+Johto: Oikea ihminen ratkaisee. Tausta ja kokemus — ovatko rakentaneet aiemmin, selvinneet vaikeista ajoista. Omistus — omistaako johto yhtiötä (optiot ok, insider-ostot vahva signaali). Rehellisyys — puhuuko avoimesti epäonnistumisista. Ilmapiiri — onko johtotason vaihtuvuus korkea.
+
+AIKAJÄNNE JA KATSE:
+Analyysi on vähintään 3 vuoden aikajänteelle. Älä arvaile lyhyen aikavälin liikkeitä, kvartaaliodotuksia tai uutisreaktioita. Kaiken analyysin pitää perustua faktoihin, ei arvauksiin. Pieni tilapäinen vastoinkäyminen ei ole este, mutta iso rakenteellinen ongelma on.
 
 YHTEENVETO ("summary" kenttä):
 1. Lause 1: Läpäiseekö strategian vai ei.
