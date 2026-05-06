@@ -112,7 +112,7 @@ def search_and_analyze():
         return jsonify({"success": False, "error": "Query missing"}), 400
         
     try:
-        from src.ai_analyzer import resolve_ticker, generate_scenarios, get_client
+        from src.ai_analyzer import resolve_ticker, analyze_single_stock, get_client
         from src.stock_analyzer import get_stock_data
         from src.database import add_scenario
         
@@ -138,16 +138,18 @@ def search_and_analyze():
         
         # 4. Pyydä AI-analyysi
         from src.news_fetcher import fetch_all_news, format_news_for_prompt
+        from src.stock_analyzer import get_research_bundle
         news_articles = fetch_all_news(max_age_hours=168)
         news_text = format_news_for_prompt(news_articles, max_articles=40)
         
-        scenarios = generate_scenarios(news_text, movers_text, client, watchlist_hint=ticker)
+        bundle = get_research_bundle(ticker)
+        scenario = analyze_single_stock(ticker, bundle, news_text)
         
-        if not scenarios:
+        if not scenario:
              return jsonify({"success": False, "error": "AI-analyysin luonti epäonnistui."}), 500
              
         # 5. Tallenna kantaan manuaalisena hakuna (is_manual=True)
-        add_scenario(scenarios[0], is_manual=True)
+        add_scenario(scenario, is_manual=True)
         
         return jsonify({"success": True, "ticker": ticker})
         
